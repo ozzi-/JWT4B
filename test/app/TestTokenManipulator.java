@@ -22,5 +22,26 @@ public class TestTokenManipulator {
 		JWT manipulatedToken = JWT.decode(manipulatedTokenString);
 		assertEquals(Algorithm.none().getName(), manipulatedToken.getAlgorithm());
 	}
+	
+	@Test
+	public void testClaimCountIsUnchangedAfterChangingAlgorithm() { 
+		JWT origToken = JWT.decode(token);
+		
+		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(token);
+		JWT manipulatedToken = JWT.decode(manipulatedTokenString);
+		assertEquals(origToken.getClaims().keySet().size(), manipulatedToken.getClaims().keySet().size());	
+	}
+	
+	@Test
+	public void testClaimsAreUnchangedAfterChangingAlgorithm() { 
+		JWT origToken = JWT.decode(token);
+		
+		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(token);
+		JWT manipulatedToken = JWT.decode(manipulatedTokenString);
+		
+		for(String key : origToken.getClaims().keySet()) { 
+			assertEquals(origToken.getClaim(key).asString(), manipulatedToken.getClaim(key).asString());
+		}
+	}
 
 }
