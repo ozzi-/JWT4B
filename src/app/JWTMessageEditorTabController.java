@@ -1,11 +1,12 @@
-package app;import java.awt.Component;
+package app;
+
+import java.awt.Component;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTCreator.Builder;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
@@ -21,7 +22,6 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	
 	private IExtensionHelpers helpers;
 	private String jwtTokenString;
-	private JWT jwtToken;
 	private JPanel jwtTab;
 
 	
@@ -61,8 +61,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 				: helpers.analyzeResponse(content).getHeaders();
 		
 		this.jwtTokenString = JWTFinder.findJWTInHeaders(headers);
-		this.jwtToken = (JWT.decode(this.jwtTokenString));
-		
+				
 		setChanged();
 		notifyObservers();
 	}
@@ -79,7 +78,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 
 	public JWT getJwtToken() {
-		return jwtToken;
+		return JWT.decode(jwtTokenString);
 	}
 
 	public String getJwtTokenString() {
@@ -135,6 +134,8 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	}
 	
 	public void changeSingatureAlgorithmToNone() {
-		Builder newToken = JWT.create();
+		this.jwtTokenString = TokenManipulator.setAlgorithmToNone(this.jwtTokenString);
+		setChanged();
+		notifyObservers();
 	}
 }
