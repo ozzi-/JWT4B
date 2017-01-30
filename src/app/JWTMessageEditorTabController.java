@@ -2,6 +2,8 @@ package app;
 
 import java.awt.Component;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -16,6 +18,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
+import burp.IRequestInfo;
+
 import javax.swing.JPanel;
 
 public class JWTMessageEditorTabController extends Observable implements IMessageEditorTab {
@@ -23,6 +27,8 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	private IExtensionHelpers helpers;
 	private String jwtTokenString;
 	private JPanel jwtTab;
+	private byte[] message;
+	private boolean isRequest;
 
 	
 	public JWTMessageEditorTabController(IBurpExtenderCallbacks callbacks) { 
@@ -57,6 +63,9 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	@Override
 	public void setMessage(byte[] content, boolean isRequest) {
+		this.message = content;
+		this.isRequest = isRequest;
+		
 		List<String> headers = isRequest ? helpers.analyzeRequest(content).getHeaders()
 				: helpers.analyzeResponse(content).getHeaders();
 		
@@ -68,7 +77,26 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	@Override
 	public byte[] getMessage() {
-		return "".getBytes(); // TODO ? 
+		if(isRequest) { 
+			IRequestInfo a = helpers.analyzeRequest(message);
+			List<String> headers = a.getHeaders();
+			headers = replaceAuthorizationHeader(headers, this.jwtTokenString);
+			return helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, a.getBodyOffset(), message.length));
+		}
+		return message;
+	}
+
+	private List<String> replaceAuthorizationHeader(List<String> headers, String newToken) {
+		LinkedList<String> newHeaders = new LinkedList<>();
+		
+		for(String h : headers) { 
+			if(h.startsWith("Authorization: Bearer ")) { 
+				newHeaders.add("Authorization: Bearer " + newToken);
+			} else { 
+				newHeaders.add(h);
+			}
+		}
+		return newHeaders;
 	}
 
 	@Override
