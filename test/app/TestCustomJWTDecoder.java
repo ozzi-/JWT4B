@@ -11,7 +11,7 @@ public class TestCustomJWTDecoder {
 
 	@Test
 	public void testIfTokenCanbeDecoded() {
-		CustomJWTDecoder reConstructedToken = new CustomJWTDecoder(token);
+		CustomJWTToken reConstructedToken = new CustomJWTToken(token);
 		assertEquals(token, reConstructedToken.getToken());
 	}
 

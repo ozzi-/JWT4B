@@ -9,13 +9,13 @@ import com.auth0.jwt.algorithms.Algorithm;
 
 import app.TokenManipulator;
 
-public class TestTokenManipulator {
+public class TestAlgorightmSetToNoneManipulation {
 	
 	public static final String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ";
 
 	@Test
 	public void testAlgorithmChangedToNone() {
-		JWT origToken = JWT.decode(token);
+		CustomJWTToken origToken = new CustomJWTToken(token);
 		assertNotEquals(Algorithm.none().getName(), origToken.getAlgorithm());
 		
 		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(token);
@@ -25,33 +25,40 @@ public class TestTokenManipulator {
 	
 	@Test
 	public void testClaimCountIsUnchangedAfterChangingAlgorithm() { 
-		JWT origToken = JWT.decode(token);
+		CustomJWTToken origToken = new CustomJWTToken(token);
 		
 		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(token);
-		JWT manipulatedToken = JWT.decode(manipulatedTokenString);
-		assertEquals(origToken.getClaims().keySet().size(), manipulatedToken.getClaims().keySet().size());	
+		CustomJWTToken manipulatedToken = new CustomJWTToken(manipulatedTokenString);
+		assertEquals(origToken.getPayloadJsonNode().size(), manipulatedToken.getPayloadJsonNode().size());	
 	}
 	
 	@Test
 	public void testClaimsAreUnchangedAfterChangingAlgorithm() { 
-		JWT origToken = JWT.decode(token);
+		CustomJWTToken origToken = new CustomJWTToken(token);
 		
 		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(token);
-		JWT manipulatedToken = JWT.decode(manipulatedTokenString);
-		
-		for(String key : origToken.getClaims().keySet()) { 
-			assertEquals(origToken.getClaim(key).asString(), manipulatedToken.getClaim(key).asString());
-		}
+		CustomJWTToken manipulatedToken = new CustomJWTToken(manipulatedTokenString);
+
+		assertEquals(origToken.getPayloadJsonNode(), manipulatedToken.getPayloadJsonNode());
 	}
 	
 	@Test
 	public void testContentTypeIsUnchangedAfterChangingAlgorithm() { 
-		JWT origToken = JWT.decode(token);
+		CustomJWTToken origToken = new CustomJWTToken(token);
 		
 		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(token);
-		JWT manipulatedToken = JWT.decode(manipulatedTokenString);
+		CustomJWTToken manipulatedToken = new CustomJWTToken(manipulatedTokenString);
+		
 		assertEquals(origToken.getContentType(), manipulatedToken.getContentType());	
 		assertNotEquals(null, manipulatedToken.getContentType());
+	}
+	
+	@Test
+	public void testIfSignatureIsEmpty() { 
+		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(token);
+		CustomJWTToken manipulatedToken = new CustomJWTToken(manipulatedTokenString);
+		
+		assertEquals(0, manipulatedToken.getSignature().length());
 	}
 
 }

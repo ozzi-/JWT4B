@@ -1,6 +1,7 @@
 package app;
 
 import java.awt.Component;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -14,6 +15,9 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
@@ -23,15 +27,14 @@ import burp.IRequestInfo;
 import javax.swing.JPanel;
 
 public class JWTMessageEditorTabController extends Observable implements IMessageEditorTab {
-	
+
 	private IExtensionHelpers helpers;
 	private String jwtTokenString;
 	private JPanel jwtTab;
 	private byte[] message;
 	private boolean isRequest;
 
-	
-	public JWTMessageEditorTabController(IBurpExtenderCallbacks callbacks) { 
+	public JWTMessageEditorTabController(IBurpExtenderCallbacks callbacks) {
 		this.helpers = callbacks.getHelpers();
 	}
 
@@ -44,10 +47,10 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	public Component getUiComponent() {
 		return this.jwtTab;
 	}
-	
+
 	@Override
-	public void addObserver(Observer o) { 
-		// awful solution, enables GetUiCompent() to work.  
+	public void addObserver(Observer o) {
+		// awful solution, enables GetUiCompent() to work.
 		this.jwtTab = (JPanel) o;
 		super.addObserver(o);
 	}
@@ -57,7 +60,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		List<String> headers = isRequest ? helpers.analyzeRequest(content).getHeaders()
 				: helpers.analyzeResponse(content).getHeaders();
 		String jwt = JWTFinder.findJWTInHeaders(headers);
-		
+
 		return jwt != null;
 	}
 
@@ -65,19 +68,19 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	public void setMessage(byte[] content, boolean isRequest) {
 		this.message = content;
 		this.isRequest = isRequest;
-		
+
 		List<String> headers = isRequest ? helpers.analyzeRequest(content).getHeaders()
 				: helpers.analyzeResponse(content).getHeaders();
-		
+
 		this.jwtTokenString = JWTFinder.findJWTInHeaders(headers);
-				
+
 		setChanged();
 		notifyObservers();
 	}
 
 	@Override
 	public byte[] getMessage() {
-		if(isRequest) { 
+		if (isRequest) {
 			IRequestInfo a = helpers.analyzeRequest(message);
 			List<String> headers = a.getHeaders();
 			headers = replaceAuthorizationHeader(headers, this.jwtTokenString);
@@ -88,11 +91,11 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	private List<String> replaceAuthorizationHeader(List<String> headers, String newToken) {
 		LinkedList<String> newHeaders = new LinkedList<>();
-		
-		for(String h : headers) { 
-			if(h.startsWith("Authorization: Bearer ")) { 
+
+		for (String h : headers) {
+			if (h.startsWith("Authorization: Bearer ")) {
 				newHeaders.add("Authorization: Bearer " + newToken);
-			} else { 
+			} else {
 				newHeaders.add(h);
 			}
 		}
@@ -104,25 +107,24 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		return false;
 	}
 
-
-	public JWT getJwtToken() {
-		return new CustomJWTDecoder(this.jwtTokenString);
+	public CustomJWTToken getJwtToken() {
+		return new CustomJWTToken(this.jwtTokenString);
 	}
 
 	public String getJwtTokenString() {
 		return jwtTokenString;
-	}	
-	
+	}
+
 	public void checkKey(String key) {
 		// TODO get real algo
-	    try {
+		try {
 			JWTVerifier verifier = JWT.require(Algorithm.HMAC256(key)).build();
 			DecodedJWT a = verifier.verify(jwtTokenString);
 			System.out.println("SIG OK");
-	    } catch (JWTVerificationException e) {
+		} catch (JWTVerificationException e) {
 			System.out.println("NOK - verification ");
 			e.printStackTrace();
-		}catch (IllegalArgumentException | UnsupportedEncodingException e) {
+		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 	}
@@ -132,38 +134,42 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	public String getFormatedToken() {
-		JWT token = this.getJwtToken();
-		
-		try { 
-			StringBuilder result = new StringBuilder();
-			
-			
-			result.append("Headers: \n");
-			
-			result.append("\tAlgorithm : ");
-			result.append(token.getAlgorithm()).append('\n');
-			
-			result.append("Claims: \n");
-			
-			for (String key :token.getClaims().keySet()){ 
-				result.append("\t" + key + ":" + token.getClaim(key).asString() + "\n");
-			}
-			
-			result.append("Signature: \n");
 
-			result.append("\tSignature : " + token.getSignature());
-			return result.toString();
-			
-		} catch ( JWTDecodeException e)  {
-			return e.getMessage();
-		}
+	public String getFormatedToken() {
+		CustomJWTToken token = this.getJwtToken();
+
+		StringBuilder result = new StringBuilder();
+
+		result.append("Headers = ");
+		result.append(jsonBeautify(token.getHeaderJson()));
+
+		result.append("\n\nPayload = ");
+		result.append(jsonBeautify(token.getPayloadJson()));
+
+		result.append("\n\nSignature = ");
+		result.append(token.getSignature());
+		return result.toString();
+
 	}
-	
+
 	public void changeSingatureAlgorithmToNone() {
 		this.jwtTokenString = TokenManipulator.setAlgorithmToNone(this.jwtTokenString);
 		setChanged();
 		notifyObservers();
+	}
+	
+	private String jsonBeautify(String input) { 
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+		JsonNode tree;
+		String output;
+		try {
+			tree = objectMapper.readTree(input);
+			 output = objectMapper.writeValueAsString(tree);
+		} catch (IOException e) {
+			return input;
+		}
+		return output;
 	}
 }
