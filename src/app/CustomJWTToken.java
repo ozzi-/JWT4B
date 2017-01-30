@@ -10,6 +10,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.interfaces.Claim;
@@ -67,6 +68,11 @@ public class CustomJWTToken extends JWT {
 			return null;
 		}
 	}
+	
+	public void setSignature(Algorithm algorithm){ 
+		 byte[] contentBytes = String.format("%s.%s", b64(getHeaderJson()), b64(getPayloadJson())).getBytes(StandardCharsets.UTF_8);
+		 signature = algorithm.sign(contentBytes);
+	}
 
 	public JsonNode getPayloadJsonNode() {
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -105,15 +111,17 @@ public class CustomJWTToken extends JWT {
 
 	@Override
 	public String getToken() {
-		String header = Base64.encodeBase64URLSafeString((headerJson.getBytes(StandardCharsets.UTF_8)));
-		String payload = Base64.encodeBase64URLSafeString((payloadJson.getBytes(StandardCharsets.UTF_8)));
-		String content = String.format("%s.%s", header, payload);
+		String content = String.format("%s.%s", b64(getHeaderJson()), b64(getPayloadJson()));
 
 		String signatureEncoded = Base64.encodeBase64URLSafeString(this.signature);
 
 		return String.format("%s.%s", content, signatureEncoded);
 	}
 
+	private String b64(String input) { 
+		return Base64.encodeBase64URLSafeString(input.getBytes(StandardCharsets.UTF_8));
+	}
+	
 	@Override
 	public List<String> getAudience() {
 		int fail = 2 / 0;

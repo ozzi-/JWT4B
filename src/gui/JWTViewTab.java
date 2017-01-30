@@ -34,7 +34,6 @@ public class JWTViewTab extends JPanel implements Observer {
 
 	
 	public JWTViewTab(JWTMessageEditorTabController visualizer) {
-		
 		this.jwtTabController = visualizer;
 		jwtTabController.addObserver(this);
 		

@@ -58,18 +58,18 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	@Override
 	public boolean isEnabled(byte[] content, boolean isRequest) {
-		return findTokenPositionImplementation(content, isRequest) !=null;
+		return findTokenPositionImplementation(content, isRequest) != null;
 	}
 
 	private ITokenPosition findTokenPositionImplementation(byte[] content, boolean isRequest) {
 		List<Class<? extends ITokenPosition>> implementations = Arrays.asList(AuthorizationBearerHeader.class);
-		
-		for(Class<? extends ITokenPosition> implClass : implementations) { 
+
+		for (Class<? extends ITokenPosition> implClass : implementations) {
 			try {
 				ITokenPosition impl = (ITokenPosition) implClass.getConstructors()[0].newInstance();
 				impl.setHelpers(helpers);
 				impl.setMessage(content, isRequest);
-				if(impl.positionFound()) { 
+				if (impl.positionFound()) {
 					return impl;
 				}
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
@@ -84,8 +84,9 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	public void setMessage(byte[] content, boolean isRequest) {
 		this.message = content;
 		this.isRequest = isRequest;
-		
+
 		this.tokenPosition = findTokenPositionImplementation(content, isRequest);
+		assert (this.tokenPosition == null);
 		this.jwtTokenString = tokenPosition.getToken();
 
 		setChanged();
@@ -147,14 +148,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	}
 
-	public void changeSingatureAlgorithmToNone() {
-		updateToken(TokenManipulator.setAlgorithmToNone(this.jwtTokenString));
-
-		setChanged();
-		notifyObservers();
-	}
-	
-	private String jsonBeautify(String input) { 
+	private String jsonBeautify(String input) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
@@ -162,15 +156,27 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		String output;
 		try {
 			tree = objectMapper.readTree(input);
-			 output = objectMapper.writeValueAsString(tree);
+			output = objectMapper.writeValueAsString(tree);
 		} catch (IOException e) {
 			return input;
 		}
 		return output;
 	}
-	
-	private void updateToken(String token) { 
+
+	private void updateToken(String token) {
 		this.jwtTokenString = token;
 		this.message = this.tokenPosition.replaceToken(this.jwtTokenString);
+	}
+
+	public String getCurrentAlgorithm() {
+		return new CustomJWTToken(this.jwtTokenString).getAlgorithm();
+	}
+
+	public void changeAlgorithm(String algorithm, Boolean recalculateSignature, String signatureKey) {
+		updateToken(
+				TokenManipulator.changeAlgorithm(this.jwtTokenString, algorithm, recalculateSignature, signatureKey));
+
+		setChanged();
+		notifyObservers();
 	}
 }

@@ -5,7 +5,6 @@ import app.Settings;
 import gui.JWTEditableTab;
 import gui.JWTViewTab;
 
-
 public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 	private IBurpExtenderCallbacks callbacks;
 
@@ -19,13 +18,12 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 	@Override
 	public IMessageEditorTab createNewInstance(IMessageEditorController controller, boolean editable) {
 		JWTMessageEditorTabController visualizer = new JWTMessageEditorTabController(callbacks);
-		
-		if(editable) { 
+
+		if (editable) {
 			new JWTEditableTab(visualizer);
-		} else { 
+		} else {
 			new JWTViewTab(visualizer);
 		}
-
 		return visualizer;
 	}
 
