@@ -23,6 +23,7 @@ import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
 import burp.IRequestInfo;
+import burp.IResponseInfo;
 
 import javax.swing.JPanel;
 
@@ -80,13 +81,21 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	@Override
 	public byte[] getMessage() {
+		List<String>  headers;
+		int bodyOffset;
+		
 		if (isRequest) {
-			IRequestInfo a = helpers.analyzeRequest(message);
-			List<String> headers = a.getHeaders();
-			headers = replaceAuthorizationHeader(headers, this.jwtTokenString);
-			return helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, a.getBodyOffset(), message.length));
+			IRequestInfo requestInfo = helpers.analyzeRequest(message);
+			headers = requestInfo.getHeaders();
+			bodyOffset = requestInfo.getBodyOffset();
+		} else { 
+			IResponseInfo responseInfo = helpers.analyzeResponse(message);
+			headers = responseInfo.getHeaders();
+			bodyOffset = responseInfo.getBodyOffset();
 		}
-		return message;
+		
+		headers = replaceAuthorizationHeader(headers, this.jwtTokenString);
+		return helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, bodyOffset, message.length));
 	}
 
 	private List<String> replaceAuthorizationHeader(List<String> headers, String newToken) {
