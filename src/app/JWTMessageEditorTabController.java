@@ -3,29 +3,28 @@ package app;
 import java.awt.Component;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.JPanel;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import app.tokenposition.AuthorizationBearerHeader;
+import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
-import burp.IRequestInfo;
-import burp.IResponseInfo;
-
-import javax.swing.JPanel;
 
 public class JWTMessageEditorTabController extends Observable implements IMessageEditorTab {
 
@@ -34,6 +33,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	private JPanel jwtTab;
 	private byte[] message;
 	private boolean isRequest;
+	private ITokenPosition tokenPosition;
 
 	public JWTMessageEditorTabController(IBurpExtenderCallbacks callbacks) {
 		this.helpers = callbacks.getHelpers();
@@ -58,22 +58,35 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	@Override
 	public boolean isEnabled(byte[] content, boolean isRequest) {
-		List<String> headers = isRequest ? helpers.analyzeRequest(content).getHeaders()
-				: helpers.analyzeResponse(content).getHeaders();
-		String jwt = JWTFinder.findJWTInHeaders(headers);
+		return findTokenPositionImplementation(content, isRequest) !=null;
+	}
 
-		return jwt != null;
+	private ITokenPosition findTokenPositionImplementation(byte[] content, boolean isRequest) {
+		List<Class<? extends ITokenPosition>> implementations = Arrays.asList(AuthorizationBearerHeader.class);
+		
+		for(Class<? extends ITokenPosition> implClass : implementations) { 
+			try {
+				ITokenPosition impl = (ITokenPosition) implClass.getConstructors()[0].newInstance();
+				impl.setHelpers(helpers);
+				impl.setMessage(content, isRequest);
+				if(impl.positionFound()) { 
+					return impl;
+				}
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException | SecurityException e) {
+				return null;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public void setMessage(byte[] content, boolean isRequest) {
 		this.message = content;
 		this.isRequest = isRequest;
-
-		List<String> headers = isRequest ? helpers.analyzeRequest(content).getHeaders()
-				: helpers.analyzeResponse(content).getHeaders();
-
-		this.jwtTokenString = JWTFinder.findJWTInHeaders(headers);
+		
+		this.tokenPosition = findTokenPositionImplementation(content, isRequest);
+		this.jwtTokenString = tokenPosition.getToken();
 
 		setChanged();
 		notifyObservers();
@@ -81,34 +94,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	@Override
 	public byte[] getMessage() {
-		List<String>  headers;
-		int bodyOffset;
-		
-		if (isRequest) {
-			IRequestInfo requestInfo = helpers.analyzeRequest(message);
-			headers = requestInfo.getHeaders();
-			bodyOffset = requestInfo.getBodyOffset();
-		} else { 
-			IResponseInfo responseInfo = helpers.analyzeResponse(message);
-			headers = responseInfo.getHeaders();
-			bodyOffset = responseInfo.getBodyOffset();
-		}
-		
-		headers = replaceAuthorizationHeader(headers, this.jwtTokenString);
-		return helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, bodyOffset, message.length));
-	}
-
-	private List<String> replaceAuthorizationHeader(List<String> headers, String newToken) {
-		LinkedList<String> newHeaders = new LinkedList<>();
-
-		for (String h : headers) {
-			if (h.startsWith("Authorization: Bearer ")) {
-				newHeaders.add("Authorization: Bearer " + newToken);
-			} else {
-				newHeaders.add(h);
-			}
-		}
-		return newHeaders;
+		return message;
 	}
 
 	@Override
@@ -162,7 +148,8 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	}
 
 	public void changeSingatureAlgorithmToNone() {
-		this.jwtTokenString = TokenManipulator.setAlgorithmToNone(this.jwtTokenString);
+		updateToken(TokenManipulator.setAlgorithmToNone(this.jwtTokenString));
+
 		setChanged();
 		notifyObservers();
 	}
@@ -180,5 +167,10 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 			return input;
 		}
 		return output;
+	}
+	
+	private void updateToken(String token) { 
+		this.jwtTokenString = token;
+		this.message = this.tokenPosition.replaceToken(this.jwtTokenString);
 	}
 }

@@ -18,7 +18,6 @@ import com.auth0.jwt.interfaces.Payload;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 /* 
  * This Class is implemented separately to get raw access to the content of the Tokens. 
