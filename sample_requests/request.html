@@ -1,0 +1,16 @@
+<html>
+	JS Sending a Request! 
+	<script>
+		var request = new XMLHttpRequest();
+		var path="response.php";
+		request.onreadystatechange=state_change;
+
+		request.open("GET", path, true);
+		request.setRequestHeader("Referer", "http://www.google.com");
+		//request.setRequestHeader("User-Agent", "Mozilla/5.0");
+		request.setRequestHeader("Accept","text/plain");
+		request.setRequestHeader("Content-Type","text/plain");
+		request.setRequestHeader("Authorization","Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ");
+		request.send(null);
+	</script>
+</html>
