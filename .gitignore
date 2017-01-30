@@ -56,3 +56,6 @@ target/
 
 # lib directory (containing the burp jar)
 lib/
+
+# ignore debug output
+*log
