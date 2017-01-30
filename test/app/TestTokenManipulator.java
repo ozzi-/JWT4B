@@ -43,5 +43,15 @@ public class TestTokenManipulator {
 			assertEquals(origToken.getClaim(key).asString(), manipulatedToken.getClaim(key).asString());
 		}
 	}
+	
+	@Test
+	public void testContentTypeIsUnchangedAfterChangingAlgorithm() { 
+		JWT origToken = JWT.decode(token);
+		
+		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(token);
+		JWT manipulatedToken = JWT.decode(manipulatedTokenString);
+		assertEquals(origToken.getContentType(), manipulatedToken.getContentType());	
+		assertNotEquals(null, manipulatedToken.getContentType());
+	}
 
 }

@@ -106,7 +106,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 
 	public JWT getJwtToken() {
-		return JWT.decode(jwtTokenString);
+		return new CustomJWTDecoder(this.jwtTokenString);
 	}
 
 	public String getJwtTokenString() {
