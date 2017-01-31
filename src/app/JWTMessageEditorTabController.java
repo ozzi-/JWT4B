@@ -34,6 +34,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	private byte[] message;
 	private boolean isRequest;
 	private ITokenPosition tokenPosition;
+	private String state = "orignial token";
 
 	public JWTMessageEditorTabController(IBurpExtenderCallbacks callbacks) {
 		this.helpers = callbacks.getHelpers();
@@ -131,38 +132,6 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		return null;
 	}
 
-	public String getFormatedToken() {
-		CustomJWTToken token = this.getJwtToken();
-
-		StringBuilder result = new StringBuilder();
-
-		result.append("Headers = ");
-		result.append(jsonBeautify(token.getHeaderJson()));
-
-		result.append("\n\nPayload = ");
-		result.append(jsonBeautify(token.getPayloadJson()));
-
-		result.append("\n\nSignature = ");
-		result.append(token.getSignature());
-		return result.toString();
-
-	}
-
-	private String jsonBeautify(String input) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
-		JsonNode tree;
-		String output;
-		try {
-			tree = objectMapper.readTree(input);
-			output = objectMapper.writeValueAsString(tree);
-		} catch (IOException e) {
-			return input;
-		}
-		return output;
-	}
-
 	private void updateToken(String token) {
 		this.jwtTokenString = token;
 		this.message = this.tokenPosition.replaceToken(this.jwtTokenString);
@@ -178,5 +147,26 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 		setChanged();
 		notifyObservers();
+	}
+
+	public String getState() {
+		return state;
+	}
+	
+	public void setChangedToken(String userFormattedToken) { 
+		CustomJWTToken newToken = ReadableTokenFormat.getTokenFromReadableFormat(userFormattedToken);
+		if(newToken == null) { 
+			this.state = "Cannot read token in text field";
+		} else { 
+			updateToken(newToken.getToken());
+			this.state = "Token updated";
+		}
+		setChanged();
+		notifyObservers();
+		
+	}
+
+	public String getFormatedToken() {
+		return ReadableTokenFormat.getReadableFormat(this.getJwtToken());
 	}
 }

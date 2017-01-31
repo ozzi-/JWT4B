@@ -52,6 +52,12 @@ public class CustomJWTToken extends JWT {
 
 	}
 
+	public CustomJWTToken(String headerJson, String payloadJson, String signature) {
+		this.headerJson = headerJson;
+		this.payloadJson = payloadJson;
+		this.signature = Base64.decodeBase64(signature);
+	}
+
 	public String getHeaderJson() {
 		return headerJson;
 	}

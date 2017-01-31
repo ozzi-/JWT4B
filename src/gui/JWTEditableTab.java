@@ -24,6 +24,7 @@ import javax.swing.event.ChangeListener;
 
 import app.AlgorithmWrapper;
 import app.JWTMessageEditorTabController;
+import javax.swing.JLabel;
 
 public class JWTEditableTab extends JPanel implements Observer {
 
@@ -33,6 +34,8 @@ public class JWTEditableTab extends JPanel implements Observer {
 	private JCheckBox chckbxRecalculateSignature;
 	private JButton btnChangeAlgorithm;
 	JComboBox<String> comboBoxAlgorithmSelection;
+	private JButton btnAcceptChanges;
+	private JLabel lblState;
 
 	public JWTEditableTab(JWTMessageEditorTabController messageEditorTabController) {
 
@@ -51,6 +54,25 @@ public class JWTEditableTab extends JPanel implements Observer {
 				0.0, 0.0, 1.0, Double.MIN_VALUE };
 		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
+
+		btnAcceptChanges = new JButton("Accept Changes");
+		btnAcceptChanges.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				messageEditorTabController.setChangedToken(textPaneTokenEditor.getText());
+			}
+		});
+		GridBagConstraints gbc_btnAcceptChanges = new GridBagConstraints();
+		gbc_btnAcceptChanges.insets = new Insets(0, 0, 5, 5);
+		gbc_btnAcceptChanges.gridx = 2;
+		gbc_btnAcceptChanges.gridy = 0;
+		add(btnAcceptChanges, gbc_btnAcceptChanges);
+
+		lblState = new JLabel("Original Token");
+		GridBagConstraints gbc_lblOriginalToken = new GridBagConstraints();
+		gbc_lblOriginalToken.insets = new Insets(0, 0, 5, 5);
+		gbc_lblOriginalToken.gridx = 3;
+		gbc_lblOriginalToken.gridy = 0;
+		add(lblState, gbc_lblOriginalToken);
 
 		textPaneTokenEditor = new JTextPane();
 		GridBagConstraints gbc_textPane = new GridBagConstraints();
@@ -92,7 +114,8 @@ public class JWTEditableTab extends JPanel implements Observer {
 
 			public void stateChanged(ChangeEvent e) {
 				Boolean signatureIsRecalculated = chckbxRecalculateSignature.isSelected();
-				textFieldInputKey.setEnabled(signatureIsRecalculated && !messageEditorTabController.getCurrentAlgorithm().equals("none"));
+				textFieldInputKey.setEnabled(
+						signatureIsRecalculated && !messageEditorTabController.getCurrentAlgorithm().equals("none"));
 			}
 
 		});
@@ -132,6 +155,8 @@ public class JWTEditableTab extends JPanel implements Observer {
 			textFieldInputKey.setEnabled(false);
 			btnChangeAlgorithm.setEnabled(false);
 		}
+
+		this.lblState.setText(this.messageEditorTabController.getState());
 	}
 
 	private Boolean hasAlgorithmChanged() {
