@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /* 
  * This Class is implemented separately to get raw access to the content of the Tokens. 
  * The JWTDecoder class cannot be extended because it is final
- * 
  */
 
 public class CustomJWTToken extends JWT {

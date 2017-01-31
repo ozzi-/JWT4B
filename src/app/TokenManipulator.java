@@ -2,7 +2,6 @@ package app;
 
 import java.io.UnsupportedEncodingException;
 
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 

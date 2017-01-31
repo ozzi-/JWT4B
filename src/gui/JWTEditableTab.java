@@ -1,6 +1,5 @@
 package gui;
 
-import java.awt.Checkbox;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -15,6 +14,7 @@ import java.util.Observer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -24,10 +24,10 @@ import javax.swing.event.ChangeListener;
 
 import app.AlgorithmWrapper;
 import app.JWTMessageEditorTabController;
-import javax.swing.JLabel;
 
 public class JWTEditableTab extends JPanel implements Observer {
 
+	private static final long serialVersionUID = 1L;
 	private JWTMessageEditorTabController messageEditorTabController;
 	private JTextPane textPaneTokenEditor;
 	private JTextField textFieldInputKey;
