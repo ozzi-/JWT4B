@@ -140,44 +140,48 @@ public class JWTViewTab extends JPanel implements Observer {
 		} else {
 			outputfield.setText(jwtTabController.getFormatedToken());
 			outputfield.setEditable(true);
-			// TODO check if signature / key is valid and update signatureValidIndicator accordingly
+		}
+	}
+	
+	public void updateAlgorithm(){
+		// TODO check if signature / key is valid and update signatureValidIndicator accordingly
 
-			// RS256 / HS256
-			validIndicator.setBackground(Color.green);
-			validIndicatorLabel.setText("Signature Valid");
+		// RS256 / HS256
+		validIndicator.setBackground(Color.green);
+		validIndicatorLabel.setText("Signature Valid");
 
-			validIndicator.setBackground(Color.red);
-			validIndicatorLabel.setText("Signature Invalid");
+		validIndicator.setBackground(Color.red);
+		validIndicatorLabel.setText("Signature Invalid");
 
-			// ALG NONE
-			validIndicator.setBackground(Color.gray);
-			validIndicatorLabel.setText(" ");
-			
-			switch (jwtTabController.getCurrentAlgorithm()) {
-			case AlgorithmWrapper.alg_HS256:
-				inputLabel1.setText("Secret");
-				inputLabel2.setText("");
-				inputField1.setEnabled(true);
-				inputField2.setEnabled(false);
-				break;
-			case AlgorithmWrapper.alg_RS256:
-				inputLabel1.setText("Public Key");
-				inputLabel2.setText("Private Key");
-				inputField1.setEnabled(true);
-				inputField1.setEnabled(true);
-				break;
-			case AlgorithmWrapper.alg_None:
-				inputLabel1.setText("");
-				inputLabel2.setText("");
-				inputField1.setEnabled(false);
-				inputField1.setEnabled(false);
-				break;
-			}
+		// ALG NONE
+		validIndicator.setBackground(Color.gray);
+		validIndicatorLabel.setText(" ");
+		
+		switch (jwtTabController.getCurrentAlgorithm()) {
+		case AlgorithmWrapper.alg_HS256:
+			inputLabel1.setText("Secret");
+			inputLabel2.setText("");
+			inputField1.setEnabled(true);
+			inputField2.setEnabled(false);
+			break;
+		case AlgorithmWrapper.alg_RS256:
+			inputLabel1.setText("Public Key");
+			inputLabel2.setText("Private Key");
+			inputField1.setEnabled(true);
+			inputField2.setEnabled(true);
+			break;
+		case AlgorithmWrapper.alg_None:
+			inputLabel1.setText("");
+			inputLabel2.setText("");
+			inputField1.setEnabled(false);
+			inputField1.setEnabled(false);
+			break;
 		}
 	}
 
 	@Override
 	public void update(Observable o, Object arg) {
+		updateAlgorithm();			
 		updateToken();
 	}
 
