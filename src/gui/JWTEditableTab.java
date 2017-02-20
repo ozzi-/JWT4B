@@ -123,13 +123,11 @@ public class JWTEditableTab extends JPanel implements Observer {
 		btnChangeAlgorithm.setVerticalAlignment(SwingConstants.TOP);
 		panel.add(btnChangeAlgorithm);
 		btnChangeAlgorithm.setEnabled(false);
-		btnChangeAlgorithm.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String algorithm = comboBoxAlgorithmSelection.getSelectedItem().toString();
-				Boolean recalculateSignature = chckbxRecalculateSignature.isSelected();
-				String signatureKey = textFieldInputKey.getText();
-				messageEditorTabController.changeAlgorithm(algorithm, recalculateSignature, signatureKey);
-			}
+		btnChangeAlgorithm.addActionListener(e -> {
+			String algorithm = comboBoxAlgorithmSelection.getSelectedItem().toString();
+			Boolean recalculateSignature = chckbxRecalculateSignature.isSelected();
+			String signatureKey = textFieldInputKey.getText();
+			messageEditorTabController.changeAlgorithm(algorithm, recalculateSignature, signatureKey);
 		});
 	}
 
