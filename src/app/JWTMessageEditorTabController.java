@@ -1,5 +1,6 @@
 package app;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
@@ -31,6 +32,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	private boolean isRequest;
 	private ITokenPosition tokenPosition;
 	private String state = "orignial token";
+	private Color stateColor = Color.BLACK;
 
 	public JWTMessageEditorTabController(IBurpExtenderCallbacks callbacks) {
 		this.helpers = callbacks.getHelpers();
@@ -153,9 +155,11 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		CustomJWTToken newToken = ReadableTokenFormat.getTokenFromReadableFormat(userFormattedToken);
 		if(newToken == null) { 
 			this.state = "Cannot read token in text field";
+			this.stateColor = Color.RED;
 		} else { 
 			updateToken(newToken.getToken());
 			this.state = "Token updated";
+			this.stateColor = Color.GREEN;
 		}
 		setChanged();
 		notifyObservers();
@@ -164,5 +168,9 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	public String getFormatedToken() {
 		return ReadableTokenFormat.getReadableFormat(this.getJwtToken());
+	}
+
+	public Color getStateColor() {
+		return this.stateColor;
 	}
 }
