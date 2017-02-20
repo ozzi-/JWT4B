@@ -97,14 +97,12 @@ public class JWTEditableTab extends JPanel implements Observer {
 		for (AlgorithmWrapper algorithm : AlgorithmLinker.getSupportedAlgorithms()) {
 			comboBoxAlgorithmSelection.addItem(algorithm.getAlgorithm());
 		}
-		comboBoxAlgorithmSelection.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				Boolean algorithmChanged = hasAlgorithmChanged();
+		comboBoxAlgorithmSelection.addItemListener(e -> {
+			Boolean algorithmChanged = hasAlgorithmChanged();
 
-				btnChangeAlgorithm.setEnabled(algorithmChanged);
-				chckbxRecalculateSignature.setEnabled(algorithmChanged);
+			btnChangeAlgorithm.setEnabled(algorithmChanged);
+			chckbxRecalculateSignature.setEnabled(algorithmChanged);
 
-			}
 		});
 
 		panel.add(comboBoxAlgorithmSelection);
