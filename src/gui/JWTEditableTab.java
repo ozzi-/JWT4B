@@ -22,8 +22,9 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import app.AlgorithmWrapper;
 import app.JWTMessageEditorTabController;
+import app.algorithm.AlgorithmWrapper;
+import app.algorithm.AlgorithmLinker;
 
 public class JWTEditableTab extends JPanel implements Observer {
 
@@ -93,8 +94,8 @@ public class JWTEditableTab extends JPanel implements Observer {
 		add(panel, gbc_panel);
 
 		comboBoxAlgorithmSelection = new JComboBox<>();
-		for (String algorithm : AlgorithmWrapper.getSupportedAlgorithms()) {
-			comboBoxAlgorithmSelection.addItem(algorithm);
+		for (AlgorithmWrapper algorithm : AlgorithmLinker.getSupportedAlgorithms()) {
+			comboBoxAlgorithmSelection.addItem(algorithm.getAlgorithm());
 		}
 		comboBoxAlgorithmSelection.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {

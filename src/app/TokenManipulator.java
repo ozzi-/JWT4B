@@ -5,6 +5,8 @@ import java.io.UnsupportedEncodingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import app.algorithm.AlgorithmLinker;
+
 public class TokenManipulator {
 	
 	public static String setAlgorithmToNone(String token) { 
@@ -29,7 +31,7 @@ public class TokenManipulator {
 		if(recalculateSignature) { 
 			origToken.setHeaderJsonNode(header);
 			try {
-				origToken.setSignature(AlgorithmWrapper.getAlgorithm(algorithm, signatureKey));
+				origToken.setSignature(AlgorithmLinker.getAlgorithm(algorithm, signatureKey));
 			} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 				origToken.setSignature(e.getMessage());
 			}

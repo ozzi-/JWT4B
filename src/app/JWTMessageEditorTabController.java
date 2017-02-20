@@ -12,10 +12,10 @@ import javax.swing.JPanel;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
+import app.algorithm.AlgorithmLinker;
 import app.tokenposition.AuthorizationBearerHeader;
 import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
@@ -109,9 +109,9 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	}
 
 	public void checkKey(String key) {
-		// TODO get real algo
+		String curAlgo = getCurrentAlgorithm();
 		try {
-			JWTVerifier verifier = JWT.require(Algorithm.HMAC256(key)).build();
+			JWTVerifier verifier = JWT.require(AlgorithmLinker.getAlgorithm(curAlgo, key)).build();
 			DecodedJWT a = verifier.verify(jwtTokenString);
 			System.out.println("SIG OK");
 		} catch (JWTVerificationException e) {

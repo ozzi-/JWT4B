@@ -7,6 +7,8 @@ import java.awt.Insets;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -15,10 +17,9 @@ import javax.swing.event.DocumentListener;
 
 import com.auth0.jwt.JWT;
 
-import app.AlgorithmWrapper;
 import app.JWTMessageEditorTabController;
-import javax.swing.JLabel;
-import javax.swing.JButton;
+import app.algorithm.AlgorithmLinker;
+import app.algorithm.AlgorithmType;
 
 public class JWTViewTab extends JPanel implements Observer {
 
@@ -157,25 +158,25 @@ public class JWTViewTab extends JPanel implements Observer {
 		validIndicator.setBackground(Color.gray);
 		validIndicatorLabel.setText(" ");
 		
-		switch (jwtTabController.getCurrentAlgorithm()) {
-		case AlgorithmWrapper.alg_HS256:
+		String algorithmType = AlgorithmLinker.getTypeOf(jwtTabController.getCurrentAlgorithm());
+		
+		if(algorithmType.equals(AlgorithmType.symmetric)){
 			inputLabel1.setText("Secret");
 			inputLabel2.setText("");
 			inputField1.setEnabled(true);
 			inputField2.setEnabled(false);
-			break;
-		case AlgorithmWrapper.alg_RS256:
+		}
+		if(algorithmType.equals(AlgorithmType.asymmetric)){
 			inputLabel1.setText("Public Key");
 			inputLabel2.setText("Private Key");
 			inputField1.setEnabled(true);
 			inputField2.setEnabled(true);
-			break;
-		case AlgorithmWrapper.alg_None:
+		}
+		if(algorithmType.equals(AlgorithmType.none)){
 			inputLabel1.setText("");
 			inputLabel2.setText("");
 			inputField1.setEnabled(false);
 			inputField1.setEnabled(false);
-			break;
 		}
 	}
 
