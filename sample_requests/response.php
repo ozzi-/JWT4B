@@ -1,3 +1,7 @@
-<?php 
-	header("Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ");
+<?php
+        echo("Responding with same auth bearer . . . ");
+
+        if(isset($_SERVER['HTTP_AUTHORIZATION'])){
+                header("Authoriazion: ".$_SERVER['HTTP_AUTHORIZATION']);
+        }
 ?>
