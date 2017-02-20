@@ -6,8 +6,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -19,10 +17,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import app.JWTMessageEditorTabController;
+import app.algorithm.AlgorithmType;
 import app.algorithm.AlgorithmWrapper;
 import app.algorithm.AlgorithmLinker;
 
@@ -37,6 +34,7 @@ public class JWTEditableTab extends JPanel implements Observer {
 	JComboBox<String> comboBoxAlgorithmSelection;
 	private JButton btnAcceptChanges;
 	private JLabel lblState;
+	private JTextField textFieldPublicKey;
 
 	public JWTEditableTab(JWTMessageEditorTabController messageEditorTabController) {
 
@@ -49,11 +47,11 @@ public class JWTEditableTab extends JPanel implements Observer {
 	private void drawGui(JWTMessageEditorTabController messageEditorTabController) {
 		this.messageEditorTabController = messageEditorTabController;
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 0, 0, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-				0.0, 0.0, 1.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
+		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gridBagLayout.rowHeights = new int[]{0, 0, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+				0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 
 		btnAcceptChanges = new JButton("Accept Changes");
@@ -97,47 +95,57 @@ public class JWTEditableTab extends JPanel implements Observer {
 		for (AlgorithmWrapper algorithm : AlgorithmLinker.getSupportedAlgorithms()) {
 			comboBoxAlgorithmSelection.addItem(algorithm.getAlgorithm());
 		}
-		comboBoxAlgorithmSelection.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
-				Boolean algorithmChanged = hasAlgorithmChanged();
-
-				btnChangeAlgorithm.setEnabled(algorithmChanged);
-				chckbxRecalculateSignature.setEnabled(algorithmChanged);
-
-			}
-
+		comboBoxAlgorithmSelection.addItemListener(e -> {
+			updateKeyFieldsAccordingToTheOtherTwoUiFieldsBefore();
 		});
 
 		panel.add(comboBoxAlgorithmSelection);
 
 		chckbxRecalculateSignature = new JCheckBox("Recalculate Signature");
-		chckbxRecalculateSignature.addChangeListener(new ChangeListener() {
+		chckbxRecalculateSignature.addChangeListener(
+				e -> {
+					updateKeyFieldsAccordingToTheOtherTwoUiFieldsBefore();
+				});
 
-			public void stateChanged(ChangeEvent e) {
-				Boolean signatureIsRecalculated = chckbxRecalculateSignature.isSelected();
-				textFieldInputKey.setEnabled(
-						signatureIsRecalculated && !messageEditorTabController.getCurrentAlgorithm().equals("none"));
-			}
-
-		});
 		panel.add(chckbxRecalculateSignature);
 
 		textFieldInputKey = new JTextField();
 		panel.add(textFieldInputKey);
 		textFieldInputKey.setColumns(10);
 
-		btnChangeAlgorithm = new JButton("Change Algorithm");
+		textFieldPublicKey = new JTextField();
+		panel.add(textFieldPublicKey);
+		textFieldPublicKey.setColumns(10);
+
+
+		btnChangeAlgorithm = new JButton("Update Algorithm / Signature");
 		btnChangeAlgorithm.setVerticalAlignment(SwingConstants.TOP);
 		panel.add(btnChangeAlgorithm);
-		btnChangeAlgorithm.setEnabled(false);
-		btnChangeAlgorithm.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String algorithm = comboBoxAlgorithmSelection.getSelectedItem().toString();
-				Boolean recalculateSignature = chckbxRecalculateSignature.isSelected();
-				String signatureKey = textFieldInputKey.getText();
-				messageEditorTabController.changeAlgorithm(algorithm, recalculateSignature, signatureKey);
-			}
+		btnChangeAlgorithm.setEnabled(true);
+		btnChangeAlgorithm.addActionListener(e -> {
+			String algorithm = comboBoxAlgorithmSelection.getSelectedItem().toString();
+			Boolean recalculateSignature = chckbxRecalculateSignature.isSelected();
+			String signatureKey = textFieldInputKey.getText();
+			messageEditorTabController.changeAlgorithm(algorithm, recalculateSignature, signatureKey);
 		});
+	}
+
+	private void updateKeyFieldsAccordingToTheOtherTwoUiFieldsBefore() {
+		String algorithmType = AlgorithmLinker.getTypeOf(getSelectedAlgorithm());
+		if (algorithmType.equals(AlgorithmType.none) || !chckbxRecalculateSignature.isSelected()) {
+			textFieldPublicKey.setEnabled(false);
+			textFieldInputKey.setEnabled(false);
+			return;
+		}
+
+		if (algorithmType.equals(AlgorithmType.symmetric)) {
+			textFieldInputKey.setEnabled(true);
+			textFieldPublicKey.setEnabled(false);
+			return;
+		}
+
+		textFieldPublicKey.setEnabled(true);
+		textFieldInputKey.setEnabled(true);
 	}
 
 	@Override
@@ -149,23 +157,21 @@ public class JWTEditableTab extends JPanel implements Observer {
 		String formattedToken = messageEditorTabController.getFormatedToken();
 		this.textPaneTokenEditor.setText(formattedToken);
 
-		if (hasAlgorithmChanged()) {
-			comboBoxAlgorithmSelection.setSelectedItem(this.messageEditorTabController.getCurrentAlgorithm());
-			chckbxRecalculateSignature.setSelected(false);
-			chckbxRecalculateSignature.setEnabled(false);
-			textFieldInputKey.setEnabled(false);
-			btnChangeAlgorithm.setEnabled(false);
-		}
+		comboBoxAlgorithmSelection.setSelectedItem(this.messageEditorTabController.getCurrentAlgorithm());
+		chckbxRecalculateSignature.setSelected(false);
+		chckbxRecalculateSignature.setEnabled(true);
+		textFieldInputKey.setEnabled(chckbxRecalculateSignature.isSelected());
+		btnChangeAlgorithm.setEnabled(true);
 
 		this.lblState.setText(this.messageEditorTabController.getState());
 		this.lblState.setForeground(this.messageEditorTabController.getVerificationStatusColor());
 	}
 
-	private Boolean hasAlgorithmChanged() {
+	public String getSelectedAlgorithm() {
 		if (this.comboBoxAlgorithmSelection.getSelectedItem() == null) {
-			return false;
+			return "";
 		}
-		return !this.comboBoxAlgorithmSelection.getSelectedItem().toString()
-				.equals(messageEditorTabController.getCurrentAlgorithm());
+
+		return this.comboBoxAlgorithmSelection.getSelectedItem().toString();
 	}
 }
