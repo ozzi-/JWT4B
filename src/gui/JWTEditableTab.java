@@ -49,11 +49,11 @@ public class JWTEditableTab extends JPanel implements Observer {
 	private void drawGui(JWTMessageEditorTabController messageEditorTabController) {
 		this.messageEditorTabController = messageEditorTabController;
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 0, 0, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-				0.0, 0.0, 1.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
+		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gridBagLayout.rowHeights = new int[]{0, 0, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+				0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 
 		btnAcceptChanges = new JButton("Accept Changes");
@@ -105,20 +105,15 @@ public class JWTEditableTab extends JPanel implements Observer {
 				chckbxRecalculateSignature.setEnabled(algorithmChanged);
 
 			}
-
 		});
 
 		panel.add(comboBoxAlgorithmSelection);
 
 		chckbxRecalculateSignature = new JCheckBox("Recalculate Signature");
-		chckbxRecalculateSignature.addChangeListener(new ChangeListener() {
-
-			public void stateChanged(ChangeEvent e) {
-				Boolean signatureIsRecalculated = chckbxRecalculateSignature.isSelected();
-				textFieldInputKey.setEnabled(
-						signatureIsRecalculated && !messageEditorTabController.getCurrentAlgorithm().equals("none"));
-			}
-
+		chckbxRecalculateSignature.addChangeListener(e -> {
+			Boolean signatureIsRecalculated = chckbxRecalculateSignature.isSelected();
+			textFieldInputKey.setEnabled(
+					signatureIsRecalculated && !messageEditorTabController.getCurrentAlgorithm().equals("none"));
 		});
 		panel.add(chckbxRecalculateSignature);
 
