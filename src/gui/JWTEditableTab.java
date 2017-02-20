@@ -156,7 +156,7 @@ public class JWTEditableTab extends JPanel implements Observer {
 		btnChangeAlgorithm.setEnabled(true);
 
 		this.lblState.setText(this.messageEditorTabController.getState());
-		this.lblState.setForeground(this.messageEditorTabController.getStateColor());
+		this.lblState.setForeground(this.messageEditorTabController.getVerificationStatusColor());
 	}
 
 	public String getSelectedAlgorithm() {
