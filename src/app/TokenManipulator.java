@@ -2,6 +2,7 @@ package app;
 
 import java.io.UnsupportedEncodingException;
 
+import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -26,15 +27,19 @@ public class TokenManipulator {
 		CustomJWTToken origToken = new CustomJWTToken(token);
 		
 		JsonNode header = origToken.getHeaderJsonNode();
-		((ObjectNode)header).put("alg", algorithm);
+
+		Algorithm algorithmObject;
+		try {
+			algorithmObject = AlgorithmLinker.getAlgorithm(algorithm, signatureKey);
+		} catch (UnsupportedEncodingException e) {
+			return null;
+		}
+
+		((ObjectNode)header).put("alg", algorithmObject.getName());
 		
 		if(recalculateSignature) { 
 			origToken.setHeaderJsonNode(header);
-			try {
-				origToken.setSignature(AlgorithmLinker.getAlgorithm(algorithm, signatureKey));
-			} catch (IllegalArgumentException | UnsupportedEncodingException e) {
-				origToken.setSignature(e.getMessage());
-			}
+			origToken.setSignature(algorithmObject);
 		}
 		return origToken.getToken();
 	}

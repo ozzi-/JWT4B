@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.security.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
@@ -22,6 +23,7 @@ import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
+import org.bouncycastle.util.encoders.Base64;
 
 public class JWTMessageEditorTabController extends Observable implements IMessageEditorTab {
 
@@ -141,7 +143,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	public void changeAlgorithm(String algorithm, Boolean recalculateSignature, String signatureKey) {
 		updateToken(
-			 TokenManipulator.changeAlgorithm(this.jwtTokenString, algorithm, recalculateSignature, signatureKey));
+			 TokenManipulator.changeAlgorithm(this.jwtTokenString, algorithm, recalculateSignature, signatureKey.split("-------")[0]));
 
 		setChanged();
 		notifyObservers();
@@ -172,5 +174,27 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	public Color getStateColor() {
 		return this.stateColor;
+	}
+
+	public String generateKeyPair() {
+		try {
+			KeyPair pair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
+			return adn(Base64.toBase64String(pair.getPrivate().getEncoded())) +
+					 "\n\n-------\n\n" +
+					adn(Base64.toBase64String(pair.getPublic().getEncoded()));
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return "no success";
+	}
+
+	private String adn(String si) {
+		String result = "";
+		for(String s : si.split("(?<=\\G.{25})")) {
+			result += s;
+			result += "\n";
+		}
+		System.out.println(result);
+		return result;
 	}
 }

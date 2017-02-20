@@ -4,19 +4,10 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 
 import app.JWTMessageEditorTabController;
 import app.algorithm.AlgorithmType;
@@ -28,13 +19,13 @@ public class JWTEditableTab extends JPanel implements Observer {
 	private static final long serialVersionUID = 1L;
 	private JWTMessageEditorTabController messageEditorTabController;
 	private JTextPane textPaneTokenEditor;
-	private JTextField textFieldInputKey;
+	private JTextArea textFieldInputKey;
 	private JCheckBox chckbxRecalculateSignature;
 	private JButton btnChangeAlgorithm;
 	JComboBox<String> comboBoxAlgorithmSelection;
 	private JButton btnAcceptChanges;
 	private JLabel lblState;
-	private JTextField textFieldPublicKey;
+	private JButton btnGenerateRandomKey;
 
 	public JWTEditableTab(JWTMessageEditorTabController messageEditorTabController) {
 
@@ -55,11 +46,7 @@ public class JWTEditableTab extends JPanel implements Observer {
 		setLayout(gridBagLayout);
 
 		btnAcceptChanges = new JButton("Accept Changes");
-		btnAcceptChanges.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				messageEditorTabController.setChangedToken(textPaneTokenEditor.getText());
-			}
-		});
+		btnAcceptChanges.addActionListener(e -> messageEditorTabController.setChangedToken(textPaneTokenEditor.getText()));
 		GridBagConstraints gbc_btnAcceptChanges = new GridBagConstraints();
 		gbc_btnAcceptChanges.insets = new Insets(0, 0, 5, 5);
 		gbc_btnAcceptChanges.gridx = 2;
@@ -109,13 +96,10 @@ public class JWTEditableTab extends JPanel implements Observer {
 
 		panel.add(chckbxRecalculateSignature);
 
-		textFieldInputKey = new JTextField();
+		textFieldInputKey = new JTextArea("");
 		panel.add(textFieldInputKey);
-		textFieldInputKey.setColumns(10);
-
-		textFieldPublicKey = new JTextField();
-		panel.add(textFieldPublicKey);
-		textFieldPublicKey.setColumns(10);
+		textFieldInputKey.setColumns(27);
+		textFieldInputKey.setRows(27);
 
 
 		btnChangeAlgorithm = new JButton("Update Algorithm / Signature");
@@ -128,23 +112,31 @@ public class JWTEditableTab extends JPanel implements Observer {
 			String signatureKey = textFieldInputKey.getText();
 			messageEditorTabController.changeAlgorithm(algorithm, recalculateSignature, signatureKey);
 		});
+
+		btnGenerateRandomKey = new JButton("Generate Random Key");
+		btnGenerateRandomKey.setVerticalAlignment(SwingConstants.TOP);
+		panel.add(btnGenerateRandomKey);
+		btnGenerateRandomKey.setEnabled(false);
+		btnGenerateRandomKey.addActionListener(e -> {
+			String key = this.messageEditorTabController.generateKeyPair();
+			this.textFieldInputKey.setText(key);
+		});
 	}
 
 	private void updateKeyFieldsAccordingToTheOtherTwoUiFieldsBefore() {
 		String algorithmType = AlgorithmLinker.getTypeOf(getSelectedAlgorithm());
+
+		if (algorithmType.equals(AlgorithmType.asymmetric)) {
+			this.btnGenerateRandomKey.setEnabled(true);
+		} else {
+			this.btnGenerateRandomKey.setEnabled(false);
+		}
+
 		if (algorithmType.equals(AlgorithmType.none) || !chckbxRecalculateSignature.isSelected()) {
-			textFieldPublicKey.setEnabled(false);
 			textFieldInputKey.setEnabled(false);
 			return;
 		}
 
-		if (algorithmType.equals(AlgorithmType.symmetric)) {
-			textFieldInputKey.setEnabled(true);
-			textFieldPublicKey.setEnabled(false);
-			return;
-		}
-
-		textFieldPublicKey.setEnabled(true);
 		textFieldInputKey.setEnabled(true);
 	}
 
