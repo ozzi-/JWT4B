@@ -1,5 +1,6 @@
 package app;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
@@ -31,6 +32,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	private boolean isRequest;
 	private ITokenPosition tokenPosition;
 	private String state = "orignial token";
+	private Color stateColor = Color.BLACK;
 
 	public JWTMessageEditorTabController(IBurpExtenderCallbacks callbacks) {
 		this.helpers = callbacks.getHelpers();
@@ -70,7 +72,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 					return impl;
 				}
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException | SecurityException e) {
+				 | InvocationTargetException | SecurityException e) {
 				return null;
 			}
 		}
@@ -139,7 +141,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	public void changeAlgorithm(String algorithm, Boolean recalculateSignature, String signatureKey) {
 		updateToken(
-				TokenManipulator.changeAlgorithm(this.jwtTokenString, algorithm, recalculateSignature, signatureKey));
+			 TokenManipulator.changeAlgorithm(this.jwtTokenString, algorithm, recalculateSignature, signatureKey));
 
 		setChanged();
 		notifyObservers();
@@ -148,21 +150,27 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	public String getState() {
 		return state;
 	}
-	
-	public void setChangedToken(String userFormattedToken) { 
-		CustomJWTToken newToken = ReadableTokenFormat.getTokenFromReadableFormat(userFormattedToken);
-		if(newToken == null) { 
-			this.state = "Cannot read token in text field";
-		} else { 
+
+	public void setChangedToken(String userFormattedToken) {
+		try {
+			CustomJWTToken newToken = ReadableTokenFormat.getTokenFromReadableFormat(userFormattedToken);
 			updateToken(newToken.getToken());
 			this.state = "Token updated";
+			this.stateColor = Color.GREEN;
+		} catch (ReadableTokenFormat.InvalidTokenFormat e) {
+			this.state = e.getMessage();
+			this.stateColor = Color.RED;
 		}
 		setChanged();
 		notifyObservers();
-		
+
 	}
 
 	public String getFormatedToken() {
 		return ReadableTokenFormat.getReadableFormat(this.getJwtToken());
+	}
+
+	public Color getStateColor() {
+		return this.stateColor;
 	}
 }
