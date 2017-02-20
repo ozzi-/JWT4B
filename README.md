@@ -1,5 +1,5 @@
 # JWT4B
-Jawa Web Tokens (JWT) support for the Burp Interception Proxy. JWT4B will let you manipulate a JWT on the fly, automate common attacks against JWT and decode it for you in the proxy history.
+JSON Web Tokens (JWT) support for the Burp Interception Proxy. JWT4B will let you manipulate a JWT on the fly, automate common attacks against JWT and decode it for you in the proxy history.
 
 # Acknowledgments
 The most work was done during the [Hack-Labs] (https://blog.compass-security.com/2017/01/wrap-up-hack-lab-1-2017/) offered by [Compass Security] (https://compass-security.com) to its employees.
