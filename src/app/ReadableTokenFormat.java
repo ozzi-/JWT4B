@@ -7,9 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class ReadableTokenFormat {
+	private static final String newline = System.getProperty("line.separator");
 	private static final String titleHeaders = "Headers = ";
-	private static final String titlePayload = "\n\nPayload = ";
-	private static final String titleSignature = "\n\nSignature = ";
+	private static final String titlePayload = newline + newline + "Payload = ";
+	private static final String titleSignature = newline + newline + "Signature = ";
 	
 	public static String getReadableFormat(CustomJWTToken token) { 
 
