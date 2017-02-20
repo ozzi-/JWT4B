@@ -1,7 +1,8 @@
 package app;
 
 public class NotifyTypes {
-	public static final String gui_signaturecheck="signaturecheck";
-	public static final Object gui_algorithm = "algorithm";
-	public static final Object gui_token = "token";
+	public static final int all = 0;
+	public static final int gui_signaturecheck = 1;
+	public static final int gui_algorithm = 2;
+	public static final int gui_token = 3;
 }
