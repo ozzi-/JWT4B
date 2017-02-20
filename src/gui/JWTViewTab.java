@@ -61,9 +61,9 @@ public class JWTViewTab extends JPanel implements Observer {
 	private void drawPanel() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 79, 447, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
 		inputLabel1 = new JLabel("");
@@ -83,12 +83,26 @@ public class JWTViewTab extends JPanel implements Observer {
 		gbc_inputField1.gridy = 1;
 		add(inputField1, gbc_inputField1);
 		inputField1.setColumns(10);
+		
+		validIndicatorLabel = new JLabel("");
+		GridBagConstraints gbc_validIndicatorLabel = new GridBagConstraints();
+		gbc_validIndicatorLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_validIndicatorLabel.gridx = 1;
+		gbc_validIndicatorLabel.gridy = 3;
+		add(validIndicatorLabel, gbc_validIndicatorLabel);
+		
+		validIndicator = new JButton("                           ");
+		GridBagConstraints gbc_validIndicator = new GridBagConstraints();
+		gbc_validIndicator.insets = new Insets(0, 0, 5, 5);
+		gbc_validIndicator.gridx = 2;
+		gbc_validIndicator.gridy = 3;
+		add(validIndicator, gbc_validIndicator);
 
 		outputLabel = new JLabel("JWT");
 		GridBagConstraints gbc_outputLabel = new GridBagConstraints();
 		gbc_outputLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_outputLabel.gridx = 1;
-		gbc_outputLabel.gridy = 3;
+		gbc_outputLabel.gridy = 5;
 		add(outputLabel, gbc_outputLabel);
 
 		outputfield = new JTextArea();
@@ -97,22 +111,8 @@ public class JWTViewTab extends JPanel implements Observer {
 		gbc_outputfield.insets = new Insets(0, 0, 5, 5);
 		gbc_outputfield.fill = GridBagConstraints.BOTH;
 		gbc_outputfield.gridx = 2;
-		gbc_outputfield.gridy = 3;
+		gbc_outputfield.gridy = 5;
 		add(outputfield, gbc_outputfield);
-		
-		validIndicatorLabel = new JLabel("");
-		GridBagConstraints gbc_validIndicatorLabel = new GridBagConstraints();
-		gbc_validIndicatorLabel.insets = new Insets(0, 0, 0, 5);
-		gbc_validIndicatorLabel.gridx = 1;
-		gbc_validIndicatorLabel.gridy = 5;
-		add(validIndicatorLabel, gbc_validIndicatorLabel);
-		
-		validIndicator = new JButton(" ");
-		GridBagConstraints gbc_validIndicator = new GridBagConstraints();
-		gbc_validIndicator.insets = new Insets(0, 0, 0, 5);
-		gbc_validIndicator.gridx = 2;
-		gbc_validIndicator.gridy = 5;
-		add(validIndicator, gbc_validIndicator);
 	}
 
 	
