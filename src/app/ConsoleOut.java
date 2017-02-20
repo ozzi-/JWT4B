@@ -7,7 +7,7 @@ public class ConsoleOut {
 	
 	
     static Calendar cal = Calendar.getInstance();
-    static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+    static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
 
 	public static void output(String string){
 		if(Settings.output){
