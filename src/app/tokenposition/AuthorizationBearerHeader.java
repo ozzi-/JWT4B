@@ -34,7 +34,7 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 		if(this.headerIndex == null) { 
 			return "";
 		}
-		return this.getHeaders().get(this.headerIndex).substring(this.selectedKeyword.length());
+		return this.getHeaders().get(this.headerIndex).substring(this.selectedKeyword.length()+1);
 	}
 
 	public byte[] replaceToken(String newToken) {
