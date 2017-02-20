@@ -26,15 +26,15 @@ public class ReadableTokenFormat {
 		return result.toString();
 	}
 	
-	public static CustomJWTToken getTokenFromReadableFormat(String token) { 
+	public static CustomJWTToken getTokenFromReadableFormat(String token) throws InvalidTokenFormat {
 		if(!token.startsWith(titleHeaders)) { 
-			return null;
+			throw new InvalidTokenFormat("Cannot parse token");
 		}
 	
 		token = token.substring(titleHeaders.length());
 	
-		if(!token.contains(titlePayload)) { 
-			return null;
+		if(!token.contains(titlePayload)) {
+			throw new InvalidTokenFormat("Cannot parse token");
 		}
 		
 		String [] splitted = token.split(titlePayload);
@@ -42,8 +42,8 @@ public class ReadableTokenFormat {
 		String header = splitted[0];
 		String payloadAndSignature = splitted[1];
 		
-		if(!payloadAndSignature.contains(titleSignature)) { 
-			return null;
+		if(!payloadAndSignature.contains(titleSignature)) {
+			throw new InvalidTokenFormat("Cannot parse token");
 		}
 		
 		String [] splitted2 = payloadAndSignature.split(titleSignature);
@@ -82,4 +82,13 @@ public class ReadableTokenFormat {
 		}
 		return output;
 	}
+
+	static class InvalidTokenFormat extends Exception {
+
+		public InvalidTokenFormat(String message) {
+			super(message);
+		}
+	}
 }
+
+

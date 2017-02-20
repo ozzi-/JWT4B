@@ -72,7 +72,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 					return impl;
 				}
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException | SecurityException e) {
+				 | InvocationTargetException | SecurityException e) {
 				return null;
 			}
 		}
@@ -141,7 +141,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	public void changeAlgorithm(String algorithm, Boolean recalculateSignature, String signatureKey) {
 		updateToken(
-				TokenManipulator.changeAlgorithm(this.jwtTokenString, algorithm, recalculateSignature, signatureKey));
+			 TokenManipulator.changeAlgorithm(this.jwtTokenString, algorithm, recalculateSignature, signatureKey));
 
 		setChanged();
 		notifyObservers();
@@ -150,20 +150,20 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	public String getState() {
 		return state;
 	}
-	
-	public void setChangedToken(String userFormattedToken) { 
-		CustomJWTToken newToken = ReadableTokenFormat.getTokenFromReadableFormat(userFormattedToken);
-		if(newToken == null) { 
-			this.state = "Cannot read token in text field";
-			this.stateColor = Color.RED;
-		} else { 
+
+	public void setChangedToken(String userFormattedToken) {
+		try {
+			CustomJWTToken newToken = ReadableTokenFormat.getTokenFromReadableFormat(userFormattedToken);
 			updateToken(newToken.getToken());
 			this.state = "Token updated";
 			this.stateColor = Color.GREEN;
+		} catch (ReadableTokenFormat.InvalidTokenFormat e) {
+			this.state = e.getMessage();
+			this.stateColor = Color.RED;
 		}
 		setChanged();
 		notifyObservers();
-		
+
 	}
 
 	public String getFormatedToken() {
