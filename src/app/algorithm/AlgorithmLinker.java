@@ -12,7 +12,7 @@ import java.util.Base64;
 
 import com.auth0.jwt.algorithms.Algorithm;
 
-import app.ConsoleOut;
+import app.helpers.ConsoleOut;
 
 public class AlgorithmLinker {
 

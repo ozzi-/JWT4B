@@ -1,10 +1,12 @@
-package app;
+package app.helpers;
 
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+
+import app.controllers.CustomJWTToken;
 
 public class ReadableTokenFormat {
 	private static final String newline = System.getProperty("line.separator");
@@ -84,8 +86,8 @@ public class ReadableTokenFormat {
 		return output;
 	}
 
-	static class InvalidTokenFormat extends Exception {
-
+	public static class InvalidTokenFormat extends Exception {
+		private static final long serialVersionUID = 1L;
 		public InvalidTokenFormat(String message) {
 			super(message);
 		}

@@ -11,18 +11,15 @@ public abstract class ITokenPosition {
 	protected IExtensionHelpers helpers;
 	protected byte[] message;
 	protected boolean isRequest;
+	public abstract boolean positionFound();
+	public abstract String getToken();
+	public abstract byte[] replaceToken(String newToken);
 	
 	public void setMessage(byte [] message, boolean isRequest) { 
 		this.message = message;
 		this.isRequest = isRequest;
 	}
 	
-	public abstract boolean positionFound();
-	
-	public abstract String getToken();
-	
-	public abstract byte[] replaceToken(String newToken);
-
 	public void setHelpers(IExtensionHelpers helpers) { 
 		this.helpers = helpers;
 	}

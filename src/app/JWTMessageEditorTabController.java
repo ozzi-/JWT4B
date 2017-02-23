@@ -4,13 +4,16 @@ import java.awt.Color;
 import java.awt.Component;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
-import java.security.*;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JPanel;
+
+import org.bouncycastle.util.encoders.Base64;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -18,12 +21,16 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import app.algorithm.AlgorithmLinker;
+import app.controllers.CustomJWTToken;
+import app.helpers.ConsoleOut;
+import app.helpers.ReadableTokenFormat;
 import app.tokenposition.AuthorizationBearerHeader;
 import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
-import org.bouncycastle.util.encoders.Base64;
+import gui.JWTEditableTab;
+import gui.JWTViewTab;
 
 public class JWTMessageEditorTabController extends Observable implements IMessageEditorTab {
 
@@ -31,10 +38,9 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	private String jwtTokenString;
 	private JPanel jwtTab;
 	private byte[] message;
-	private boolean isRequest;
 	private ITokenPosition tokenPosition;
 	private String state = "orignial token";
-	private Color verificationResultColor = Color.GRAY;
+	private Color verificationResultColor = Settings.colorUndefined;
 	private String verificationResult = "";
 
 	public JWTMessageEditorTabController(IBurpExtenderCallbacks callbacks) {
@@ -49,13 +55,6 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	@Override
 	public Component getUiComponent() {
 		return this.jwtTab;
-	}
-
-	@Override
-	public void addObserver(Observer o) {
-		// awful solution, enables GetUiCompent() to work.
-		this.jwtTab = (JPanel) o;
-		super.addObserver(o);
 	}
 
 	@Override
@@ -85,7 +84,6 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	@Override
 	public void setMessage(byte[] content, boolean isRequest) {
 		this.message = content;
-		this.isRequest = isRequest;
 
 		this.tokenPosition = findTokenPositionImplementation(content, isRequest);
 		assert (this.tokenPosition == null);
@@ -117,23 +115,23 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		String curAlgo = getCurrentAlgorithm();
 		try {
 			JWTVerifier verifier = JWT.require(AlgorithmLinker.getAlgorithm(curAlgo, key)).build();
-			@SuppressWarnings("unused")
 			DecodedJWT test = verifier.verify(jwtTokenString);
 			ConsoleOut.output("Verification okay");
 			this.verificationResult = "Valid Signature";
-			this.verificationResultColor = Color.GREEN;
+			this.verificationResultColor = Settings.colorValid;
+			test.getAlgorithm();
 			setChanged();
 			notifyObservers(NotifyTypes.gui_signaturecheck);
 		} catch (JWTVerificationException e) {
 			ConsoleOut.output("Verification failed ");
 			this.verificationResult = "Invalid Key / Signature";
-			this.verificationResultColor = Color.RED;
+			this.verificationResultColor = Settings.colorInvalid;
 			setChanged();
 			notifyObservers(NotifyTypes.gui_signaturecheck);
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			ConsoleOut.output("Verification failed due to illegal key material / unsupported encoding");
 			this.verificationResult = "Unparsable Key";
-			this.verificationResultColor = Color.YELLOW;
+			this.verificationResultColor = Settings.colorProblemInvalid;
 			setChanged();
 			notifyObservers(NotifyTypes.gui_signaturecheck);
 		}
@@ -141,8 +139,15 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	@Override
 	public byte[] getSelectedData() {
-		// TODO Auto-generated method stub
-		return null;
+		String selected="";
+		if(jwtTab instanceof JWTViewTab){
+			JWTViewTab typedTab  = (JWTViewTab)jwtTab;
+			selected = typedTab.getOutputfield().getSelectedText();
+		}else if(jwtTab instanceof JWTEditableTab){
+			JWTEditableTab typedTab = (JWTEditableTab)jwtTab;
+			selected = typedTab.getTextPaneTokenEditor().getSelectedText();
+		}
+		return selected.getBytes();
 	}
 
 	private void updateToken(String token) {
@@ -171,10 +176,10 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 			CustomJWTToken newToken = ReadableTokenFormat.getTokenFromReadableFormat(userFormattedToken);
 			updateToken(newToken.getToken());
 			this.state = "Token updated";
-			this.verificationResultColor = Color.GREEN;
+			this.verificationResultColor = Settings.colorValid;
 		} catch (ReadableTokenFormat.InvalidTokenFormat e) {
 			this.state = e.getMessage();
-			this.verificationResultColor = Color.RED;
+			this.verificationResultColor = Settings.colorInvalid;
 			this.verificationResult = "";
 		}
 		setChanged();
@@ -189,7 +194,8 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	public Color getVerificationStatusColor() {
 		return this.verificationResultColor;
 	}
-
+	
+	// TODO separate input fields , no newline business 
 	public String generateKeyPair() {
 		try {
 			KeyPair pair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
@@ -214,6 +220,10 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	public String getVerificationResult() {
 		return verificationResult;
+	}
+
+	public void addTab(JPanel tab) {
+		this.jwtTab =  tab;
 	}
 
 }

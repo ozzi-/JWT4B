@@ -8,6 +8,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
 import app.TokenManipulator;
+import app.controllers.CustomJWTToken;
 
 public class TestAlgorightmSetToNoneManipulation {
 	

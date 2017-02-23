@@ -30,7 +30,6 @@ public class JWTEditableTab extends JPanel implements Observer {
 	public JWTEditableTab(JWTMessageEditorTabController messageEditorTabController) {
 
 		this.messageEditorTabController = messageEditorTabController;
-		messageEditorTabController.addObserver(this);
 
 		drawGui(messageEditorTabController);
 	}
@@ -163,7 +162,10 @@ public class JWTEditableTab extends JPanel implements Observer {
 		if (this.comboBoxAlgorithmSelection.getSelectedItem() == null) {
 			return "";
 		}
-
 		return this.comboBoxAlgorithmSelection.getSelectedItem().toString();
+	}
+	
+	public JTextPane getTextPaneTokenEditor() {
+		return textPaneTokenEditor;
 	}
 }

@@ -25,35 +25,30 @@ import app.algorithm.AlgorithmType;
 public class JWTViewTab extends JPanel implements Observer {
 
 	private static final long serialVersionUID = 1L;
-	private JTextArea outputfield;
-	private JTextField inputField1;
+	private JTextArea outputField;
+	private JTextField inputField;
 	private JLabel outputLabel;
-	private JLabel inputLabel1;
-
+	private JLabel inputLabel;
 	private JWTMessageEditorTabController jwtTabController;
 	private JButton validIndicator;
 	private JLabel validIndicatorLabel;
 
 	public JWTViewTab(JWTMessageEditorTabController visualizer) {
 		this.jwtTabController = visualizer;
-		jwtTabController.addObserver(this);
-
 		drawPanel();
 		registerDocumentListener();
 	}
 
 	private void registerDocumentListener() {
-		inputField1.getDocument().addDocumentListener(new DocumentListener() {
+		inputField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
-				jwtTabController.checkKey(inputField1.getText());
+				jwtTabController.checkKey(inputField.getText());
 			}
-
 			public void removeUpdate(DocumentEvent e) {
-				jwtTabController.checkKey(inputField1.getText());
+				jwtTabController.checkKey(inputField.getText());
 			}
-
 			public void insertUpdate(DocumentEvent e) {
-				jwtTabController.checkKey(inputField1.getText());
+				jwtTabController.checkKey(inputField.getText());
 			}
 		});
 	}
@@ -66,23 +61,23 @@ public class JWTViewTab extends JPanel implements Observer {
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
-		inputLabel1 = new JLabel("");
+		inputLabel = new JLabel("");
 		GridBagConstraints gbc_inputLabel1 = new GridBagConstraints();
 		gbc_inputLabel1.insets = new Insets(0, 0, 5, 5);
 		gbc_inputLabel1.anchor = GridBagConstraints.EAST;
 		gbc_inputLabel1.gridx = 1;
 		gbc_inputLabel1.gridy = 1;
-		add(inputLabel1, gbc_inputLabel1);
+		add(inputLabel, gbc_inputLabel1);
 
-		inputField1 = new JTextField();
-		inputField1.setToolTipText("Enter Key");
+		inputField = new JTextField();
+		inputField.setToolTipText("Enter Key");
 		GridBagConstraints gbc_inputField1 = new GridBagConstraints();
 		gbc_inputField1.insets = new Insets(0, 0, 5, 5);
 		gbc_inputField1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_inputField1.gridx = 2;
 		gbc_inputField1.gridy = 1;
-		add(inputField1, gbc_inputField1);
-		inputField1.setColumns(10);
+		add(inputField, gbc_inputField1);
+		inputField.setColumns(10);
 		
 		validIndicatorLabel = new JLabel("");
 		GridBagConstraints gbc_validIndicatorLabel = new GridBagConstraints();
@@ -105,23 +100,22 @@ public class JWTViewTab extends JPanel implements Observer {
 		gbc_outputLabel.gridy = 5;
 		add(outputLabel, gbc_outputLabel);
 
-		outputfield = new JTextArea();
-		outputfield.setEditable(false);
+		outputField = new JTextArea();
+		outputField.setEditable(false);
 		GridBagConstraints gbc_outputfield = new GridBagConstraints();
 		gbc_outputfield.insets = new Insets(0, 0, 5, 5);
 		gbc_outputfield.fill = GridBagConstraints.BOTH;
 		gbc_outputfield.gridx = 2;
 		gbc_outputfield.gridy = 5;
-		add(outputfield, gbc_outputfield);
+		add(outputField, gbc_outputfield);
 	}
-
 	
 	public void updateToken() {
 		JWT token = jwtTabController.getJwtToken();
 		if (token == null) {
-			outputfield.setText(null);
+			outputField.setText(null);
 		} else {
-			outputfield.setText(jwtTabController.getFormatedToken());
+			outputField.setText(jwtTabController.getFormatedToken());
 		}
 	}
 	
@@ -129,17 +123,17 @@ public class JWTViewTab extends JPanel implements Observer {
 		String algorithmType = AlgorithmLinker.getTypeOf(jwtTabController.getCurrentAlgorithm());
 		
 		if(algorithmType.equals(AlgorithmType.symmetric)){
-			inputLabel1.setText("Secret");
-			inputField1.setEnabled(true);
+			inputLabel.setText("Secret");
+			inputField.setEnabled(true);
 		}
 		if(algorithmType.equals(AlgorithmType.asymmetric)){
-			inputLabel1.setText("Public Key");
-			inputField1.setEnabled(true);
+			inputLabel.setText("Public Key");
+			inputField.setEnabled(true);
 		}
 		if(algorithmType.equals(AlgorithmType.none)){
-			inputLabel1.setText("");
-			inputField1.setEnabled(false);
-			inputField1.setEnabled(false);
+			inputLabel.setText("");
+			inputField.setEnabled(false);
+			inputField.setEnabled(false);
 		}
 	}
 
@@ -167,6 +161,10 @@ public class JWTViewTab extends JPanel implements Observer {
 		}
 	}
 
+	public JTextArea getOutputfield() {
+		return outputField;
+	}
+	
 	private void updateSignatureStatus() {
 		Color color = jwtTabController.getVerificationStatusColor();
 		validIndicatorLabel.setText("Signature "+jwtTabController.getVerificationResult());

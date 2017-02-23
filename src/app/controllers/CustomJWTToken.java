@@ -1,4 +1,4 @@
-package app;
+package app.controllers;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

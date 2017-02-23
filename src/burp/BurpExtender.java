@@ -18,11 +18,10 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 	@Override
 	public IMessageEditorTab createNewInstance(IMessageEditorController controller, boolean editable) {
 		JWTMessageEditorTabController visualizer = new JWTMessageEditorTabController(callbacks);
-
 		if (editable) {
-			new JWTEditableTab(visualizer);
+			visualizer.addTab(new JWTEditableTab(visualizer));
 		} else {
-			new JWTViewTab(visualizer);
+			visualizer.addTab(new JWTViewTab(visualizer));
 		}
 		return visualizer;
 	}
