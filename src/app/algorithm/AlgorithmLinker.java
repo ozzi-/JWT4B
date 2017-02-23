@@ -10,8 +10,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
-import javax.xml.bind.DatatypeConverter;
-
 import com.auth0.jwt.algorithms.Algorithm;
 
 import app.ConsoleOut;
@@ -30,18 +28,6 @@ public class AlgorithmLinker {
 	public static final app.algorithm.AlgorithmWrapper ES512 = new app.algorithm.AlgorithmWrapper("ES512", AlgorithmType.asymmetric);
 
 	private static final app.algorithm.AlgorithmWrapper[] supportedAlgorithms = {none, HS256, HS384, HS512, RS256, RS384, RS512, ES256, ES384, ES512};
-
-	/**
-	 * @return gets the type (asymmetric, symmetric, none) of the provided @param algo
-	 */
-	public static String getTypeOf(String algorithm) {
-		for (app.algorithm.AlgorithmWrapper supportedAlgorithm : supportedAlgorithms) {
-			if (algorithm.equals(supportedAlgorithm.getAlgorithm())) {
-				return supportedAlgorithm.getType();
-			}
-		}
-		return AlgorithmType.none;
-	}
 
 	private static PublicKey generatePublicKeyFromString(String key, String algorithm) {
 		PublicKey publicKey = null;
@@ -62,7 +48,7 @@ public class AlgorithmLinker {
 	/**
 	 * @param algo
 	 * @param key  , either the secret or the private key
-	 * @return the algorithm element from the library, if nothing matches, algo null is returned
+	 * @return the algorithm element from the library, if nothing matches the none algorithm element is returned
 	 * @throws IllegalArgumentException
 	 * @throws UnsupportedEncodingException
 	 */
@@ -83,7 +69,7 @@ public class AlgorithmLinker {
 			return Algorithm.HMAC384(key);
 		}
 		if (algo.equals(ES512.getAlgorithm())) {
-			return Algorithm.HMAC384(key); // --------------------------------
+			return Algorithm.HMAC384(key); // EOT -----------------------------
 		}
 		if (algo.equals(RS256.getAlgorithm())) {
 			return Algorithm.RSA256((RSAKey) generatePublicKeyFromString(key, "RSA"));
@@ -97,7 +83,19 @@ public class AlgorithmLinker {
 
 		return Algorithm.none();
 	}
-
+	
+	/**
+	 * @return gets the type (asymmetric, symmetric, none) of the provided @param algo
+	 */
+	public static String getTypeOf(String algorithm) {
+		for (app.algorithm.AlgorithmWrapper supportedAlgorithm : supportedAlgorithms) {
+			if (algorithm.equals(supportedAlgorithm.getAlgorithm())) {
+				return supportedAlgorithm.getType();
+			}
+		}
+		return AlgorithmType.none;
+	}
+	
 	public static app.algorithm.AlgorithmWrapper[] getSupportedAlgorithms() {
 		return supportedAlgorithms;
 	}
