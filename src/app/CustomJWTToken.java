@@ -129,57 +129,47 @@ public class CustomJWTToken extends JWT {
 	
 	@Override
 	public List<String> getAudience() {
-		int fail = 2 / 0;
-		return null;
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Claim getClaim(String arg0) {
-		int fail = 2 / 0;
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Map<String, Claim> getClaims() {
-		int fail = 2 / 0;
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Date getExpiresAt() {
-		int fail = 2 / 0;
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String getId() {
-		int fail = 2 / 0;
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Date getIssuedAt() {
-		int fail = 2 / 0;
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String getIssuer() {
-		int fail = 2 / 0;
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public Date getNotBefore() {
-		int fail = 2 / 0;
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String getSubject() {
-		int fail = 2 / 0;
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -194,20 +184,17 @@ public class CustomJWTToken extends JWT {
 
 	@Override
 	public Claim getHeaderClaim(String arg0) {
-		int fail = 2 / 0;
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String getKeyId() {
-		int fail = 2 / 0;
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String getType() {
-		int fail = 2 / 0;
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
