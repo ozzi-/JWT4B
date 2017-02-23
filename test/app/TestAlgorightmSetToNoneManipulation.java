@@ -12,32 +12,31 @@ import app.controllers.CustomJWTToken;
 
 public class TestAlgorightmSetToNoneManipulation {
 	
-	public static final String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ";
 
 	@Test
 	public void testAlgorithmChangedToNone() {
-		CustomJWTToken origToken = new CustomJWTToken(token);
+		CustomJWTToken origToken = new CustomJWTToken(TestTokens.hs256_token);
 		assertNotEquals(Algorithm.none().getName(), origToken.getAlgorithm());
 		
-		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(token);
+		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(TestTokens.hs256_token);
 		JWT manipulatedToken = JWT.decode(manipulatedTokenString);
 		assertEquals(Algorithm.none().getName(), manipulatedToken.getAlgorithm());
 	}
 	
 	@Test
 	public void testClaimCountIsUnchangedAfterChangingAlgorithm() { 
-		CustomJWTToken origToken = new CustomJWTToken(token);
+		CustomJWTToken origToken = new CustomJWTToken(TestTokens.hs256_token);
 		
-		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(token);
+		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(TestTokens.hs256_token);
 		CustomJWTToken manipulatedToken = new CustomJWTToken(manipulatedTokenString);
 		assertEquals(origToken.getPayloadJsonNode().size(), manipulatedToken.getPayloadJsonNode().size());	
 	}
 	
 	@Test
 	public void testClaimsAreUnchangedAfterChangingAlgorithm() { 
-		CustomJWTToken origToken = new CustomJWTToken(token);
+		CustomJWTToken origToken = new CustomJWTToken(TestTokens.hs256_token);
 		
-		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(token);
+		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(TestTokens.hs256_token);
 		CustomJWTToken manipulatedToken = new CustomJWTToken(manipulatedTokenString);
 
 		assertEquals(origToken.getPayloadJsonNode(), manipulatedToken.getPayloadJsonNode());
@@ -45,9 +44,9 @@ public class TestAlgorightmSetToNoneManipulation {
 	
 	@Test
 	public void testContentTypeIsUnchangedAfterChangingAlgorithm() { 
-		CustomJWTToken origToken = new CustomJWTToken(token);
+		CustomJWTToken origToken = new CustomJWTToken(TestTokens.hs256_token);
 		
-		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(token);
+		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(TestTokens.hs256_token);
 		CustomJWTToken manipulatedToken = new CustomJWTToken(manipulatedTokenString);
 		
 		assertEquals(origToken.getContentType(), manipulatedToken.getContentType());	
@@ -56,7 +55,7 @@ public class TestAlgorightmSetToNoneManipulation {
 	
 	@Test
 	public void testIfSignatureIsEmpty() { 
-		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(token);
+		String manipulatedTokenString = TokenManipulator.setAlgorithmToNone(TestTokens.hs256_token);
 		CustomJWTToken manipulatedToken = new CustomJWTToken(manipulatedTokenString);
 		
 		assertEquals(0, manipulatedToken.getSignature().length());

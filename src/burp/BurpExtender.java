@@ -7,7 +7,7 @@ import gui.JWTViewTab;
 
 public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 	private IBurpExtenderCallbacks callbacks;
-
+	
 	@Override
 	public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
 		this.callbacks = callbacks;
@@ -25,5 +25,8 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 		}
 		return visualizer;
 	}
-
+	
+	public IBurpExtenderCallbacks getCallbacks() {
+		return callbacks;
+	}
 }
