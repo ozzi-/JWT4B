@@ -1,5 +1,7 @@
 package app;
-
+/** 
+ * NotifyTypes are used for selective observer updates
+ */
 public class NotifyTypes {
 	public static final int all = 0;
 	public static final int gui_signaturecheck = 1;

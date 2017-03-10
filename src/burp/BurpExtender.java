@@ -1,6 +1,7 @@
 package burp;
 
 import app.JWTMessageEditorTabController;
+import app.JWTSuiteTabController;
 import app.Settings;
 import gui.JWTEditableTab;
 import gui.JWTViewTab;
@@ -13,6 +14,8 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 		this.callbacks = callbacks;
 		callbacks.setExtensionName(Settings.extensionName);
 		callbacks.registerMessageEditorTabFactory(this);
+		JWTSuiteTabController jstC = new JWTSuiteTabController();
+		callbacks.addSuiteTab(jstC);
 	}
 
 	@Override
