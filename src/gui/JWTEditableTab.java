@@ -9,9 +9,9 @@ import java.util.Observer;
 
 import javax.swing.*;
 
-import app.JWTMessageEditorTabController;
 import app.algorithm.AlgorithmType;
 import app.algorithm.AlgorithmWrapper;
+import app.controllers.JWTMessageEditorTabController;
 import app.algorithm.AlgorithmLinker;
 
 public class JWTEditableTab extends JPanel implements Observer {

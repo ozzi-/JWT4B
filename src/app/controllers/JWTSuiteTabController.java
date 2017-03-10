@@ -1,7 +1,8 @@
-package app;
+package app.controllers;
 
 import java.awt.Component;
 
+import app.Settings;
 import burp.ITab;
 import gui.JWTSuiteTab;
 

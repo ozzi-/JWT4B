@@ -1,4 +1,4 @@
-package app;
+package app.controllers;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -20,8 +20,10 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
+import app.NotifyTypes;
+import app.Settings;
+import app.TokenManipulator;
 import app.algorithm.AlgorithmLinker;
-import app.controllers.CustomJWTToken;
 import app.helpers.ConsoleOut;
 import app.helpers.ReadableTokenFormat;
 import app.tokenposition.AuthorizationBearerHeader;
