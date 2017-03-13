@@ -9,7 +9,6 @@ import app.Settings;
 import app.helpers.ConsoleOut;
 import burp.IContextMenuFactory;
 import burp.IContextMenuInvocation;
-import gui.JWTSuiteTab;
 
 public class ContextMenuController implements IContextMenuFactory {
 

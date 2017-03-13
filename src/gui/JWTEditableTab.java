@@ -30,7 +30,7 @@ public class JWTEditableTab extends JPanel implements Observer {
 	public JWTEditableTab(JWTMessageEditorTabController messageEditorTabController) {
 
 		this.messageEditorTabController = messageEditorTabController;
-
+		messageEditorTabController.addObserver(this); 
 		drawGui(messageEditorTabController);
 	}
 
