@@ -50,6 +50,9 @@ public class JWTSuiteTab  extends JPanel {
 	}
 	private static final long serialVersionUID = 1L;
 	private JTextField textField;
+	public JTextField getTextField() {
+		return textField;
+	}
 	
 
 }

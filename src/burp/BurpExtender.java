@@ -17,7 +17,7 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 		callbacks.registerMessageEditorTabFactory(this);
 		JWTSuiteTabController jstC = new JWTSuiteTabController();
 		callbacks.addSuiteTab(jstC);
-		ContextMenuController cmC = new ContextMenuController();
+		ContextMenuController cmC = new ContextMenuController(jstC);
 		callbacks.registerContextMenuFactory(cmC);
 	}
 

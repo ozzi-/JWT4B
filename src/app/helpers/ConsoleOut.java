@@ -15,7 +15,7 @@ public class ConsoleOut {
 	 */
 	public static void output(String string){
 		if(Settings.output){
-			System.out.println( sdf.format(cal.getTime())+" | "+string);
+			System.out.println(Settings.extensionName+" "+sdf.format(cal.getTime())+" | "+string);
 		}
 	}
 }
