@@ -20,12 +20,12 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import app.NotifyTypes;
 import app.Settings;
-import app.TokenManipulator;
 import app.algorithm.AlgorithmLinker;
 import app.helpers.ConsoleOut;
+import app.helpers.NotifyTypes;
 import app.helpers.ReadableTokenFormat;
+import app.helpers.TokenManipulator;
 import app.tokenposition.AuthorizationBearerHeader;
 import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
@@ -41,7 +41,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	private JPanel jwtTab;
 	private byte[] message;
 	private ITokenPosition tokenPosition;
-	private String state = "orignial token";
+	private String state = Settings.tokenStateOriginal;
 	private Color verificationResultColor = Settings.colorUndefined;
 	private String verificationResult = "";
 
@@ -58,7 +58,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	public Component getUiComponent() {
 		return this.jwtTab;
 	}
-
+	
 	@Override
 	public boolean isEnabled(byte[] content, boolean isRequest) {
 		return findTokenPositionImplementation(content, isRequest) != null;
@@ -105,34 +105,25 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		return false;
 	}
 
-	public CustomJWTToken getJwtToken() {
-		return new CustomJWTToken(this.jwtTokenString);
-	}
-
-	public String getJwtTokenString() {
-		return jwtTokenString;
-	}
-
 	public void checkKey(String key) {
 		String curAlgo = getCurrentAlgorithm();
 		try {
 			JWTVerifier verifier = JWT.require(AlgorithmLinker.getAlgorithm(curAlgo, key)).build();
 			DecodedJWT test = verifier.verify(jwtTokenString);
-			ConsoleOut.output("Verification okay");
-			this.verificationResult = "Valid Signature";
+			this.verificationResult = Settings.verificationValid;
 			this.verificationResultColor = Settings.colorValid;
 			test.getAlgorithm();
 			setChanged();
 			notifyObservers(NotifyTypes.gui_signaturecheck);
 		} catch (JWTVerificationException e) {
-			ConsoleOut.output("Verification failed ");
-			this.verificationResult = "Invalid Key / Signature";
+			ConsoleOut.output("Verification failed ("+e.getMessage()+")");
+			this.verificationResult = Settings.verificationWrongKey;
 			this.verificationResultColor = Settings.colorInvalid;
 			setChanged();
 			notifyObservers(NotifyTypes.gui_signaturecheck);
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
-			ConsoleOut.output("Verification failed due to illegal key material / unsupported encoding");
-			this.verificationResult = "Unparsable Key";
+			ConsoleOut.output("Verification failed ("+e.getMessage()+")");
+			this.verificationResult = Settings.verificationInvalidKey;
 			this.verificationResultColor = Settings.colorProblemInvalid;
 			setChanged();
 			notifyObservers(NotifyTypes.gui_signaturecheck);
@@ -141,7 +132,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 
 	@Override
 	public byte[] getSelectedData() {
-		String selected="";
+		String selected = "";
 		if(jwtTab instanceof JWTViewTab){
 			JWTViewTab typedTab  = (JWTViewTab)jwtTab;
 			selected = typedTab.getOutputfield().getSelectedText();
@@ -164,20 +155,17 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	public void changeAlgorithm(String algorithm, Boolean recalculateSignature, String signatureKey) {
 		updateToken(
 				TokenManipulator.changeAlgorithm(this.jwtTokenString, algorithm, recalculateSignature, signatureKey.split("-------")[0]));
-
 		setChanged();
 		notifyObservers(NotifyTypes.gui_algorithm);
 	}
 
-	public String getState() {
-		return state;
-	}
+
 
 	public void setChangedToken(String userFormattedToken) {
 		try {
 			CustomJWTToken newToken = ReadableTokenFormat.getTokenFromReadableFormat(userFormattedToken);
 			updateToken(newToken.getToken());
-			this.state = "Token updated";
+			this.state = Settings.tokenStateUpdated;
 			this.verificationResultColor = Settings.colorValid;
 		} catch (ReadableTokenFormat.InvalidTokenFormat e) {
 			this.state = e.getMessage();
@@ -186,9 +174,41 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		}
 		setChanged();
 		notifyObservers(NotifyTypes.gui_token);
-
+	}
+	
+	// TODO separate input fields , no newline business 
+	public String generateKeyPair() {
+		try {
+			KeyPair pair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
+			return addNewlines(Base64.toBase64String(pair.getPrivate().getEncoded())) +
+					"\n\n-------\n\n" +
+					addNewlines(Base64.toBase64String(pair.getPublic().getEncoded()));
+		} catch (NoSuchAlgorithmException e) {
+			ConsoleOut.output("Generating key pair failed ("+e.getMessage()+")");
+			return null;
+		}
 	}
 
+	private String addNewlines(String si) {
+		return addNewlines(si, 25);
+	}
+	private String addNewlines(String si, int width) {
+		String result = "";
+		for (String s : si.split("(?<=\\G.{"+width+"})")) {
+			result += s;
+			result += "\n";
+		}
+		return result;
+	}
+
+	public String getState() {
+		return state;
+	}
+	
+	public String getVerificationResult() {
+		return verificationResult;
+	}
+	
 	public String getFormatedToken() {
 		return ReadableTokenFormat.getReadableFormat(this.getJwtToken());
 	}
@@ -196,36 +216,16 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	public Color getVerificationStatusColor() {
 		return this.verificationResultColor;
 	}
-	
-	// TODO separate input fields , no newline business 
-	public String generateKeyPair() {
-		try {
-			KeyPair pair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
-			return adn(Base64.toBase64String(pair.getPrivate().getEncoded())) +
-					"\n\n-------\n\n" +
-					adn(Base64.toBase64String(pair.getPublic().getEncoded()));
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		return "no success";
-	}
-
-	private String adn(String si) {
-		String result = "";
-		for (String s : si.split("(?<=\\G.{25})")) {
-			result += s;
-			result += "\n";
-		}
-		System.out.println(result);
-		return result;
-	}
-
-	public String getVerificationResult() {
-		return verificationResult;
-	}
 
 	public void addTab(JPanel tab) {
 		this.jwtTab =  tab;
 	}
+	
+	public CustomJWTToken getJwtToken() {
+		return new CustomJWTToken(this.jwtTokenString);
+	}
 
+	public String getJwtTokenString() {
+		return jwtTokenString;
+	}
 }

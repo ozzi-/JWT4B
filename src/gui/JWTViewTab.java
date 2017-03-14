@@ -17,10 +17,10 @@ import javax.swing.event.DocumentListener;
 
 import com.auth0.jwt.JWT;
 
-import app.NotifyTypes;
 import app.algorithm.AlgorithmLinker;
 import app.algorithm.AlgorithmType;
 import app.controllers.JWTMessageEditorTabController;
+import app.helpers.NotifyTypes;
 
 public class JWTViewTab extends JPanel implements Observer {
 

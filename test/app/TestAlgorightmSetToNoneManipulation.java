@@ -7,8 +7,8 @@ import org.junit.Test;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
-import app.TokenManipulator;
 import app.controllers.CustomJWTToken;
+import app.helpers.TokenManipulator;
 
 public class TestAlgorightmSetToNoneManipulation {
 	

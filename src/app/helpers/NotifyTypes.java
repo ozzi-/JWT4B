@@ -1,4 +1,4 @@
-package app;
+package app.helpers;
 /** 
  * NotifyTypes are used for selective observer updates
  */

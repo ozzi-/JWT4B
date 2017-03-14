@@ -9,6 +9,7 @@ import app.Settings;
 import app.helpers.ConsoleOut;
 import burp.IContextMenuFactory;
 import burp.IContextMenuInvocation;
+import burp.IHttpRequestResponse;
 
 public class ContextMenuController implements IContextMenuFactory {
 
@@ -24,19 +25,24 @@ public class ContextMenuController implements IContextMenuFactory {
 		int[] selection = invocation.getSelectionBounds();
 		byte iContext = invocation.getInvocationContext();
 		if (selection != null) { // only if user currently is in an input field
-			String selectedText="";
-			if(iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_REQUEST || iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_REQUEST){
-				selectedText = new String(invocation.getSelectedMessages()[0].getRequest()).substring(selection[0], selection[1]);
-			}else if(iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_RESPONSE  || iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_RESPONSE){
-				selectedText = new String(invocation.getSelectedMessages()[0].getResponse()).substring(selection[0], selection[1]);
-			}else{
-				ConsoleOut.output("This context menu case ("+iContext+")has not been covered yet!");
+			String selectedText = "";
+			IHttpRequestResponse ihrr = invocation.getSelectedMessages()[0];
+
+			if (iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_REQUEST
+					|| iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_REQUEST) {
+				selectedText = new String(ihrr.getRequest()).substring(selection[0], selection[1]);
+			} else if (iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_RESPONSE
+					|| iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_RESPONSE) {
+				selectedText = new String(ihrr.getResponse()).substring(selection[0], selection[1]);
+			} else {
+				ConsoleOut.output("This context menu case (" + iContext + ")has not been covered yet!");
 			}
+
 			JMenuItem item = new JMenuItem(Settings.contextMenuString);
-			item.addActionListener(new MenuItemListener(selectedText,jstC));
+			item.addActionListener(new MenuItemListener(selectedText, jstC));
 			menuItems.add(item);
 		}
-		return menuItems; 
+		return menuItems;
 	}
 
 }

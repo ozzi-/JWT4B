@@ -20,6 +20,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import app.helpers.ConsoleOut;
+
 /* 
  * This Class is implemented separately to get raw access to the content of the Tokens. 
  * The JWTDecoder class cannot be extended because it is final
@@ -43,7 +45,7 @@ public class CustomJWTToken extends JWT {
 			headerJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[0]));
 			payloadJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[1]));
 		} catch (NullPointerException e) {
-			throw new JWTDecodeException("The UTF-8 Charset isn't initialized.", e);
+			ConsoleOut.output("The UTF-8 Charset isn't initialized ("+e.getMessage()+")");
 		}
 		header = converter.parseHeader(headerJson);
 		payload = converter.parsePayload(payloadJson);
@@ -70,6 +72,7 @@ public class CustomJWTToken extends JWT {
 		try {
 			return objectMapper.readTree(getHeaderJson());
 		} catch (IOException e) {
+			ConsoleOut.output("IO exception reading json tree ("+e.getMessage()+")");
 			return null;
 		}
 	}
@@ -98,12 +101,11 @@ public class CustomJWTToken extends JWT {
 
 	public void setHeaderJsonNode(JsonNode headerPayloadJson) {
 		ObjectMapper objectMapper = new ObjectMapper();
-
 		try {
 			this.headerJson = objectMapper.writeValueAsString(headerPayloadJson);
 		} catch (JsonProcessingException e) {
+			ConsoleOut.output("Setting header for json failed ("+e.getMessage()+")");
 		}
-
 	}
 
 	public void setPayloadJsonNode(JsonNode payloadJsonNode) {
@@ -111,6 +113,7 @@ public class CustomJWTToken extends JWT {
 		try {
 			this.payloadJson = objectMapper.writeValueAsString(payloadJsonNode);
 		} catch (JsonProcessingException e) {
+			ConsoleOut.output("Setting payload for json failed ("+e.getMessage()+")");
 		}
 	}
 
@@ -206,7 +209,7 @@ public class CustomJWTToken extends JWT {
 		this.signature = Base64.decodeBase64(signature);
 	}
 
-	// method copied from
+	// Method copied from:
 	// https://github.com/auth0/java-jwt/blob/9148ca20adf679721591e1d012b7c6b8c4913d75/lib/src/main/java/com/auth0/jwt/TokenUtils.java#L14
 	// Cannot be reused, it's visibility is protected.
 	static String[] splitToken(String token) throws JWTDecodeException {

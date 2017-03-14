@@ -19,6 +19,6 @@ public class MenuItemListener implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 		ConsoleOut.output(selectedText);
 		jstC.setJWT(selectedText);
-		jstC.selectTab();
+		jstC.selectJWTSuiteTab();
 	}
 }

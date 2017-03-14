@@ -1,4 +1,4 @@
-package app;
+package app.helpers;
 
 import java.io.UnsupportedEncodingException;
 
@@ -11,6 +11,11 @@ import app.controllers.CustomJWTToken;
 
 public class TokenManipulator {
 	
+	/**
+	 * Set the algorithm to 'none'
+	 * @param token
+	 * @return the edited token string
+	 */
 	public static String setAlgorithmToNone(String token) { 
 		CustomJWTToken origToken = new CustomJWTToken(token);
 		
@@ -24,6 +29,14 @@ public class TokenManipulator {
 		return origToken.getToken();
 	}
 
+	/**
+	 * Change the algorithm of the provided token string
+	 * @param token
+	 * @param algorithm
+	 * @param recalculateSignature 
+	 * @param signatureKey
+	 * @return the edited token string
+	 */
 	public static String changeAlgorithm(String token, String algorithm, Boolean recalculateSignature, String signatureKey) {
 		CustomJWTToken origToken = new CustomJWTToken(token);
 		
@@ -33,12 +46,13 @@ public class TokenManipulator {
 		try {
 			algorithmObject = AlgorithmLinker.getAlgorithm(algorithm, signatureKey);
 		} catch (UnsupportedEncodingException e) {
+			ConsoleOut.output("Changing the tokens algorithm failed ("+e.getMessage()+")");
 			return null;
 		}
 
 		((ObjectNode)header).put("alg", algorithmObject.getName());
 		
-		if(recalculateSignature) { 
+		if (recalculateSignature) {
 			origToken.setHeaderJsonNode(header);
 			origToken.setSignature(algorithmObject);
 		}
