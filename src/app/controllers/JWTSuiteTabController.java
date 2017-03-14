@@ -1,6 +1,8 @@
 package app.controllers;
 
 import java.awt.Component;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JTabbedPane;
 
@@ -8,12 +10,12 @@ import app.Settings;
 import burp.ITab;
 import gui.JWTSuiteTab;
 
-public class JWTSuiteTabController implements ITab {
+public class JWTSuiteTabController extends Observable implements ITab, Observer {
 
 	private JWTSuiteTab jsT;
 
 	public JWTSuiteTabController() {
-		jsT = new JWTSuiteTab();
+		jsT = new JWTSuiteTab(this);
 	}
 
 	public void setJWT(String jwt) {
@@ -47,6 +49,14 @@ public class JWTSuiteTabController implements ITab {
 			if (tabPane.getTitleAt(i).equals(this.getTabCaption()))
 				tabPane.setSelectedIndex(i);
 		}
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		String selectedText = (String)arg;
+		// TODO do checks for logic / decoding
+		setChanged();
+		notifyObservers(selectedText);
 	}
 
 }

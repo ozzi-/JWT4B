@@ -28,7 +28,6 @@ public class JWTEditableTab extends JPanel implements Observer {
 	private JButton btnGenerateRandomKey;
 
 	public JWTEditableTab(JWTMessageEditorTabController messageEditorTabController) {
-
 		this.messageEditorTabController = messageEditorTabController;
 		messageEditorTabController.addObserver(this); 
 		drawGui(messageEditorTabController);

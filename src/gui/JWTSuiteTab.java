@@ -6,10 +6,28 @@ import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
 import javax.swing.JTextField;
 import java.awt.Insets;
+import java.util.Observable;
+import java.util.Observer;
+
 import javax.swing.JTextPane;
 
-public class JWTSuiteTab  extends JPanel {
-	public JWTSuiteTab() {
+import app.controllers.JWTMessageEditorTabController;
+import app.controllers.JWTSuiteTabController;
+import app.helpers.ConsoleOut;
+
+public class JWTSuiteTab  extends JPanel implements Observer  {
+	
+	private static final long serialVersionUID = 1L;
+	private JTextField textField;
+	private JWTSuiteTabController sTC;
+	
+	public JWTSuiteTab(JWTSuiteTabController sTC) {
+		this.sTC = sTC;
+		sTC.addObserver(this); 
+		drawGui();
+	}
+	
+	private void drawGui() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0};
@@ -39,7 +57,7 @@ public class JWTSuiteTab  extends JPanel {
 		gbc_lblDecodedJwt.gridx = 1;
 		gbc_lblDecodedJwt.gridy = 3;
 		add(lblDecodedJwt, gbc_lblDecodedJwt);
-		
+			
 		JTextPane textPane = new JTextPane();
 		GridBagConstraints gbc_textPane = new GridBagConstraints();
 		gbc_textPane.insets = new Insets(0, 0, 5, 5);
@@ -48,11 +66,14 @@ public class JWTSuiteTab  extends JPanel {
 		gbc_textPane.gridy = 3;
 		add(textPane, gbc_textPane);
 	}
-	private static final long serialVersionUID = 1L;
-	private JTextField textField;
+
 	public JTextField getTextField() {
 		return textField;
 	}
-	
 
+	@Override
+	public void update(Observable o, Object arg) {
+		String selectedText = (String) arg; // TODO notify types, check cast
+		textField.setText(selectedText);
+	}	
 }

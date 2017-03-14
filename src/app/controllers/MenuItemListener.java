@@ -2,23 +2,14 @@ package app.controllers;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Observable;
 
-import app.helpers.ConsoleOut;
+import app.helpers.NotifyTypes;
 
-public class MenuItemListener implements ActionListener {
-
-	private String selectedText;
-	private JWTSuiteTabController jstC;
-
-	public MenuItemListener(String selectedText, JWTSuiteTabController jstC) {
-		this.selectedText = selectedText;
-		this.jstC = jstC;
-	}
-
+public class MenuItemListener extends Observable implements ActionListener   {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		ConsoleOut.output(selectedText);
-		jstC.setJWT(selectedText);
-		jstC.selectJWTSuiteTab();
+		setChanged();
+		notifyObservers(NotifyTypes.all);
 	}
 }
