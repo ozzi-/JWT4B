@@ -3,8 +3,6 @@ package app.helpers;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import app.Settings;
-
 public class ConsoleOut {
 
 	private static Calendar cal = Calendar.getInstance();

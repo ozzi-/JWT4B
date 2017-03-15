@@ -7,8 +7,8 @@ import java.util.Observer;
 
 import javax.swing.JMenuItem;
 
-import app.Strings;
 import app.helpers.ConsoleOut;
+import app.helpers.Strings;
 import burp.IContextMenuFactory;
 import burp.IContextMenuInvocation;
 import burp.IHttpRequestResponse;

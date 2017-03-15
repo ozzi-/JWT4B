@@ -21,12 +21,12 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import app.Settings;
-import app.Strings;
 import app.algorithm.AlgorithmLinker;
 import app.helpers.ConsoleOut;
+import app.helpers.CustomJWTToken;
 import app.helpers.NotifyTypes;
-import app.helpers.ReadableTokenFormat;
+import app.helpers.Settings;
+import app.helpers.Strings;
 import app.helpers.TokenManipulator;
 import app.helpers.ViewState;
 import app.tokenposition.AuthorizationBearerHeader;

@@ -11,8 +11,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
-import app.Strings;
 import app.controllers.JWTSuiteTabController;
+import app.helpers.Strings;
 
 public class JWTSuiteTab  extends JPanel implements Observer  {
 	
@@ -70,7 +70,7 @@ public class JWTSuiteTab  extends JPanel implements Observer  {
 
 	@Override
 	public void update(Observable o, Object arg) {
-		String selectedText = (String) arg; // TODO notify types, check cast
+		String selectedText = (String) arg;
 		textField.setText(selectedText);
 	}	
 }

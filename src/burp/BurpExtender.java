@@ -1,9 +1,9 @@
 package burp;
 
-import app.Settings;
 import app.controllers.ContextMenuController;
 import app.controllers.JWTMessageEditorTabController;
 import app.controllers.JWTSuiteTabController;
+import app.helpers.Settings;
 import gui.JWTEditableTab;
 import gui.JWTViewTab;
 

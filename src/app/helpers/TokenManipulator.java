@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import app.algorithm.AlgorithmLinker;
-import app.controllers.CustomJWTToken;
 
 public class TokenManipulator {
 	

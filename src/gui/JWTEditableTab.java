@@ -17,11 +17,11 @@ import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 
-import app.Strings;
 import app.algorithm.AlgorithmLinker;
 import app.algorithm.AlgorithmType;
 import app.algorithm.AlgorithmWrapper;
 import app.controllers.JWTMessageEditorTabController;
+import app.helpers.Strings;
 
 public class JWTEditableTab extends JWTTab implements Observer {
 

@@ -1,4 +1,4 @@
-package app;
+package app.helpers;
 
 public class Strings {
 	public static final String contextMenuString = "Send selected text to JWT4B Tab to decode";

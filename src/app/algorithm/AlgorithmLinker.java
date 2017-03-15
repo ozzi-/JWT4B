@@ -2,18 +2,14 @@ package app.algorithm;
 
 import java.io.UnsupportedEncodingException;
 import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
 import java.security.spec.EncodedKeySpec;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
 import com.auth0.jwt.algorithms.Algorithm;
-
-import app.helpers.ConsoleOut;
 
 public class AlgorithmLinker {
 
@@ -50,11 +46,8 @@ public class AlgorithmLinker {
 			KeyFactory kf = KeyFactory.getInstance(algorithm);
 			EncodedKeySpec keySpec = new X509EncodedKeySpec(keyByteArray);
 			publicKey = kf.generatePublic(keySpec);
-		} catch (NoSuchAlgorithmException e) {
-			ConsoleOut.output(
-					"Could not reconstruct the public key, the given algorithm could not be found - " + e.getMessage());
-		} catch (InvalidKeySpecException e) {
-			ConsoleOut.output("Could not reconstruct the public key - " + e.getMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return publicKey;
 	}

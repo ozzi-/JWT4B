@@ -6,7 +6,7 @@ import java.util.Observer;
 
 import javax.swing.JTabbedPane;
 
-import app.Settings;
+import app.helpers.Settings;
 import burp.ITab;
 import gui.JWTSuiteTab;
 
