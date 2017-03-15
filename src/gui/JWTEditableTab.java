@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -7,14 +8,21 @@ import java.awt.Insets;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
 
+import app.algorithm.AlgorithmLinker;
 import app.algorithm.AlgorithmType;
 import app.algorithm.AlgorithmWrapper;
 import app.controllers.JWTMessageEditorTabController;
-import app.algorithm.AlgorithmLinker;
 
-public class JWTEditableTab extends JPanel implements Observer {
+public class JWTEditableTab extends JWTTab implements Observer {
 
 	private static final long serialVersionUID = 1L;
 	private JWTMessageEditorTabController messageEditorTabController;
@@ -167,4 +175,26 @@ public class JWTEditableTab extends JPanel implements Observer {
 	public JTextPane getTextPaneTokenEditor() {
 		return textPaneTokenEditor;
 	}
+
+	@Override
+	public String getKeyValue() {
+		return textFieldInputKey.getText();
+	}
+
+	@Override
+	public void setKeyValue(String value) {
+		textFieldInputKey.setText(value);
+	}
+
+	@Override
+	public void setVerificationResult(String value) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void setVerificationResultColor(Color verificationResultColor) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

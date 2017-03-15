@@ -9,7 +9,6 @@ import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -22,7 +21,7 @@ import app.algorithm.AlgorithmType;
 import app.controllers.JWTMessageEditorTabController;
 import app.helpers.NotifyTypes;
 
-public class JWTViewTab extends JPanel implements Observer {
+public class JWTViewTab extends JWTTab implements Observer {
 
 	private static final long serialVersionUID = 1L;
 	private JTextArea outputField;
@@ -170,6 +169,25 @@ public class JWTViewTab extends JPanel implements Observer {
 		Color color = jwtTabController.getVerificationStatusColor();
 		validIndicatorLabel.setText("Signature "+jwtTabController.getVerificationResult());
 		validIndicator.setBackground(color);	
+	}
+	
+	public String getKeyValue() {
+		return inputField.getText();
+	}
+
+	@Override
+	public void setKeyValue(String value) {
+		inputField.setText(value);		
+	}
+
+	@Override
+	public void setVerificationResult(String value) {
+		validIndicatorLabel.setText(value);
+	}
+
+	@Override
+	public void setVerificationResultColor(Color verificationResultColor) {
+		validIndicator.setBackground(verificationResultColor);
 	}
 
 }

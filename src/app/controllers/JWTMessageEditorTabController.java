@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
@@ -26,12 +27,14 @@ import app.helpers.ConsoleOut;
 import app.helpers.NotifyTypes;
 import app.helpers.ReadableTokenFormat;
 import app.helpers.TokenManipulator;
+import app.helpers.ViewState;
 import app.tokenposition.AuthorizationBearerHeader;
 import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
 import gui.JWTEditableTab;
+import gui.JWTTab;
 import gui.JWTViewTab;
 
 public class JWTMessageEditorTabController extends Observable implements IMessageEditorTab {
@@ -44,7 +47,9 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	private String state = Settings.tokenStateOriginal;
 	private Color verificationResultColor = Settings.colorUndefined;
 	private String verificationResult = "";
-
+	private ArrayList<ViewState> viewStateList = new ArrayList<ViewState>();
+	private byte[] content;
+	
 	public JWTMessageEditorTabController(IBurpExtenderCallbacks callbacks) {
 		this.helpers = callbacks.getHelpers();
 	}
@@ -61,6 +66,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	
 	@Override
 	public boolean isEnabled(byte[] content, boolean isRequest) {
+		this.content = content;
 		return findTokenPositionImplementation(content, isRequest) != null;
 	}
 
@@ -91,6 +97,20 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		assert (this.tokenPosition == null);
 		this.jwtTokenString = tokenPosition.getToken();
 
+		JWTViewTab typedTab  = (JWTViewTab)jwtTab;
+    	ViewState current = new ViewState(typedTab.getKeyValue(),content);
+		int containsIndex = viewStateList.indexOf(current);
+		if(containsIndex!=-1){ // we know this request, load the last 
+			typedTab.setKeyValue(viewStateList.get(containsIndex).getKeyValue());
+			this.verificationResult=viewStateList.get(containsIndex).getVerificationResult();
+			this.verificationResultColor=viewStateList.get(containsIndex).getVerificationResultColor();
+		}else{ // we haven't seen this request yet, add it and empty the field.
+			viewStateList.add(current);
+			typedTab.setKeyValue("");
+			this.verificationResultColor=Settings.colorUndefined;
+			this.verificationResult="";
+		}
+		
 		setChanged();
 		notifyObservers(NotifyTypes.all);
 	}
@@ -128,6 +148,13 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 			setChanged();
 			notifyObservers(NotifyTypes.gui_signaturecheck);
 		}
+		ViewState current = new ViewState(key,content);
+		int containsIndex = viewStateList.indexOf(current);
+		if(containsIndex!=-1){ // we know this request, update the viewstate
+			viewStateList.get(containsIndex).setKeyValueAndHash(key, current.getHashCode());
+			viewStateList.get(containsIndex).setVerificationResult(this.verificationResult);
+			viewStateList.get(containsIndex).setVerificationResultColor(this.verificationResultColor);
+		}
 	}
 
 	@Override
@@ -159,9 +186,8 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		notifyObservers(NotifyTypes.gui_algorithm);
 	}
 
-
-
 	public void setChangedToken(String userFormattedToken) {
+		ConsoleOut.output("csetchanged");
 		try {
 			CustomJWTToken newToken = ReadableTokenFormat.getTokenFromReadableFormat(userFormattedToken);
 			updateToken(newToken.getToken());

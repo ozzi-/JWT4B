@@ -1,28 +1,24 @@
 package gui;
 
-import javax.swing.JPanel;
-import java.awt.GridBagLayout;
-import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
-import javax.swing.JTextField;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
-import app.controllers.JWTMessageEditorTabController;
 import app.controllers.JWTSuiteTabController;
-import app.helpers.ConsoleOut;
 
 public class JWTSuiteTab  extends JPanel implements Observer  {
 	
 	private static final long serialVersionUID = 1L;
 	private JTextField textField;
-	private JWTSuiteTabController sTC;
 	
 	public JWTSuiteTab(JWTSuiteTabController sTC) {
-		this.sTC = sTC;
 		sTC.addObserver(this); 
 		drawGui();
 	}
