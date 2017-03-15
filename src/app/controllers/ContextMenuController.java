@@ -7,7 +7,7 @@ import java.util.Observer;
 
 import javax.swing.JMenuItem;
 
-import app.Settings;
+import app.Strings;
 import app.helpers.ConsoleOut;
 import burp.IContextMenuFactory;
 import burp.IContextMenuInvocation;
@@ -42,7 +42,7 @@ public class ContextMenuController extends Observable implements Observer, ICont
 				ConsoleOut.output("This context menu case (" + iContext + ")has not been covered yet!");
 			}
 
-			JMenuItem item = new JMenuItem(Settings.contextMenuString);
+			JMenuItem item = new JMenuItem(Strings.contextMenuString);
 			item.addActionListener(menuItemListener);
 			menuItems.add(item);
 		}

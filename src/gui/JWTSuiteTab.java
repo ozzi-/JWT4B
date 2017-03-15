@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
+import app.Strings;
 import app.controllers.JWTSuiteTabController;
 
 public class JWTSuiteTab  extends JPanel implements Observer  {
@@ -31,7 +32,7 @@ public class JWTSuiteTab  extends JPanel implements Observer  {
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
-		JLabel lblPasteJwtToken = new JLabel("Paste JWT Token");
+		JLabel lblPasteJwtToken = new JLabel(Strings.enterJWT);
 		GridBagConstraints gbc_lblPasteJwtToken = new GridBagConstraints();
 		gbc_lblPasteJwtToken.insets = new Insets(0, 0, 5, 5);
 		gbc_lblPasteJwtToken.gridx = 1;
@@ -47,7 +48,7 @@ public class JWTSuiteTab  extends JPanel implements Observer  {
 		add(textField, gbc_textField);
 		textField.setColumns(10);
 		
-		JLabel lblDecodedJwt = new JLabel("Decoded JWT");
+		JLabel lblDecodedJwt = new JLabel(Strings.decodedJWT);
 		GridBagConstraints gbc_lblDecodedJwt = new GridBagConstraints();
 		gbc_lblDecodedJwt.insets = new Insets(0, 0, 5, 5);
 		gbc_lblDecodedJwt.gridx = 1;

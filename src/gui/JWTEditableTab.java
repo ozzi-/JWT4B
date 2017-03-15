@@ -17,6 +17,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 
+import app.Strings;
 import app.algorithm.AlgorithmLinker;
 import app.algorithm.AlgorithmType;
 import app.algorithm.AlgorithmWrapper;
@@ -51,7 +52,7 @@ public class JWTEditableTab extends JWTTab implements Observer {
 		gridBagLayout.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 
-		btnAcceptChanges = new JButton("Accept Changes");
+		btnAcceptChanges = new JButton(Strings.acceptChanges);
 		btnAcceptChanges.addActionListener(e -> messageEditorTabController.setChangedToken(textPaneTokenEditor.getText()));
 		GridBagConstraints gbc_btnAcceptChanges = new GridBagConstraints();
 		gbc_btnAcceptChanges.insets = new Insets(0, 0, 5, 5);
@@ -59,7 +60,7 @@ public class JWTEditableTab extends JWTTab implements Observer {
 		gbc_btnAcceptChanges.gridy = 0;
 		add(btnAcceptChanges, gbc_btnAcceptChanges);
 
-		lblState = new JLabel("Original Token");
+		lblState = new JLabel(Strings.originalToken);
 		GridBagConstraints gbc_lblOriginalToken = new GridBagConstraints();
 		gbc_lblOriginalToken.insets = new Insets(0, 0, 5, 5);
 		gbc_lblOriginalToken.gridx = 3;
@@ -94,7 +95,7 @@ public class JWTEditableTab extends JWTTab implements Observer {
 
 		panel.add(comboBoxAlgorithmSelection);
 
-		chckbxRecalculateSignature = new JCheckBox("Recalculate Signature");
+		chckbxRecalculateSignature = new JCheckBox(Strings.recalculateSignature);
 		chckbxRecalculateSignature.addChangeListener(
 				e -> {
 					updateKeyFieldsAccordingToTheOtherTwoUiFieldsBefore();
@@ -108,7 +109,7 @@ public class JWTEditableTab extends JWTTab implements Observer {
 		textFieldInputKey.setRows(27);
 
 
-		btnChangeAlgorithm = new JButton("Update Algorithm / Signature");
+		btnChangeAlgorithm = new JButton(Strings.updateAlgorithmSignature);
 		btnChangeAlgorithm.setVerticalAlignment(SwingConstants.TOP);
 		panel.add(btnChangeAlgorithm);
 		btnChangeAlgorithm.setEnabled(true);

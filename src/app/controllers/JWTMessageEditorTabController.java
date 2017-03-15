@@ -22,6 +22,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import app.Settings;
+import app.Strings;
 import app.algorithm.AlgorithmLinker;
 import app.helpers.ConsoleOut;
 import app.helpers.NotifyTypes;
@@ -34,7 +35,6 @@ import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
 import gui.JWTEditableTab;
-import gui.JWTTab;
 import gui.JWTViewTab;
 
 public class JWTMessageEditorTabController extends Observable implements IMessageEditorTab {
@@ -44,7 +44,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	private JPanel jwtTab;
 	private byte[] message;
 	private ITokenPosition tokenPosition;
-	private String state = Settings.tokenStateOriginal;
+	private String state = Strings.tokenStateOriginal;
 	private Color verificationResultColor = Settings.colorUndefined;
 	private String verificationResult = "";
 	private ArrayList<ViewState> viewStateList = new ArrayList<ViewState>();
@@ -130,20 +130,20 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		try {
 			JWTVerifier verifier = JWT.require(AlgorithmLinker.getAlgorithm(curAlgo, key)).build();
 			DecodedJWT test = verifier.verify(jwtTokenString);
-			this.verificationResult = Settings.verificationValid;
+			this.verificationResult = Strings.verificationValid;
 			this.verificationResultColor = Settings.colorValid;
 			test.getAlgorithm();
 			setChanged();
 			notifyObservers(NotifyTypes.gui_signaturecheck);
 		} catch (JWTVerificationException e) {
 			ConsoleOut.output("Verification failed ("+e.getMessage()+")");
-			this.verificationResult = Settings.verificationWrongKey;
+			this.verificationResult = Strings.verificationWrongKey;
 			this.verificationResultColor = Settings.colorInvalid;
 			setChanged();
 			notifyObservers(NotifyTypes.gui_signaturecheck);
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			ConsoleOut.output("Verification failed ("+e.getMessage()+")");
-			this.verificationResult = Settings.verificationInvalidKey;
+			this.verificationResult = Strings.verificationInvalidKey;
 			this.verificationResultColor = Settings.colorProblemInvalid;
 			setChanged();
 			notifyObservers(NotifyTypes.gui_signaturecheck);
@@ -191,7 +191,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		try {
 			CustomJWTToken newToken = ReadableTokenFormat.getTokenFromReadableFormat(userFormattedToken);
 			updateToken(newToken.getToken());
-			this.state = Settings.tokenStateUpdated;
+			this.state = Strings.tokenStateUpdated;
 			this.verificationResultColor = Settings.colorValid;
 		} catch (ReadableTokenFormat.InvalidTokenFormat e) {
 			this.state = e.getMessage();

@@ -70,7 +70,6 @@ public class JWTViewTab extends JWTTab implements Observer {
 		add(inputLabel, gbc_inputLabel1);
 
 		inputField = new JTextField();
-		inputField.setToolTipText("Enter Key");
 		GridBagConstraints gbc_inputField1 = new GridBagConstraints();
 		gbc_inputField1.insets = new Insets(0, 0, 5, 5);
 		gbc_inputField1.fill = GridBagConstraints.HORIZONTAL;
