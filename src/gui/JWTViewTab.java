@@ -14,6 +14,9 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+
 import com.auth0.jwt.JWT;
 
 import app.algorithm.AlgorithmLinker;
@@ -24,7 +27,7 @@ import app.helpers.NotifyTypes;
 public class JWTViewTab extends JWTTab implements Observer {
 
 	private static final long serialVersionUID = 1L;
-	private JTextArea outputField;
+	private RSyntaxTextArea  outputField;
 	private JTextField inputField;
 	private JLabel outputLabel;
 	private JLabel inputLabel;
@@ -99,7 +102,8 @@ public class JWTViewTab extends JWTTab implements Observer {
 		gbc_outputLabel.gridy = 5;
 		add(outputLabel, gbc_outputLabel);
 
-		outputField = new JTextArea();
+		outputField = new RSyntaxTextArea();
+		outputField.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
 		outputField.setEditable(false);
 		GridBagConstraints gbc_outputfield = new GridBagConstraints();
 		gbc_outputfield.insets = new Insets(0, 0, 5, 5);
