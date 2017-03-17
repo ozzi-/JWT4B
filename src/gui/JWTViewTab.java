@@ -9,6 +9,7 @@ import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -16,6 +17,7 @@ import javax.swing.event.DocumentListener;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rtextarea.RTextScrollPane;
 
 import com.auth0.jwt.JWT;
 
@@ -105,12 +107,15 @@ public class JWTViewTab extends JWTTab implements Observer {
 		outputField = new RSyntaxTextArea();
 		outputField.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
 		outputField.setEditable(false);
+		outputField.setPopupMenu(new JPopupMenu()); // no context menu on right-click
+		RTextScrollPane sp = new RTextScrollPane(outputField);
+		
 		GridBagConstraints gbc_outputfield = new GridBagConstraints();
 		gbc_outputfield.insets = new Insets(0, 0, 5, 5);
 		gbc_outputfield.fill = GridBagConstraints.BOTH;
 		gbc_outputfield.gridx = 2;
 		gbc_outputfield.gridy = 5;
-		add(outputField, gbc_outputfield);
+		add(sp, gbc_outputfield);
 	}
 	
 	public void updateToken() {

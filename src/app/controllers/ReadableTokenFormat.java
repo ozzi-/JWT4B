@@ -25,7 +25,7 @@ public class ReadableTokenFormat {
 		result.append(jsonBeautify(token.getPayloadJson()));
 
 		result.append(titleSignature);
-		result.append(token.getSignature());
+		result.append("\""+token.getSignature()+"\"");
 		return result.toString();
 	}
 	
