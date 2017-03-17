@@ -37,6 +37,8 @@ import burp.IMessageEditorTab;
 import gui.JWTEditableTab;
 import gui.JWTViewTab;
 
+
+// TODO verificationResult differing default grey. Result Label improvments.
 public class JWTMessageEditorTabController extends Observable implements IMessageEditorTab {
 
 	private IExtensionHelpers helpers;
@@ -100,11 +102,14 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		JWTViewTab typedTab  = (JWTViewTab)jwtTab;
     	ViewState current = new ViewState(typedTab.getKeyValue(),content);
 		int containsIndex = viewStateList.indexOf(current);
-		if(containsIndex!=-1){ // we know this request, load the last 
+		
+		// we know this request, load the last 
+		if(containsIndex!=-1){ 
 			typedTab.setKeyValue(viewStateList.get(containsIndex).getKeyValue());
 			this.verificationResult=viewStateList.get(containsIndex).getVerificationResult();
 			this.verificationResultColor=viewStateList.get(containsIndex).getVerificationResultColor();
-		}else{ // we haven't seen this request yet, add it and empty the field.
+		// we haven't seen this request yet, add it and set the view to default
+		}else{
 			viewStateList.add(current);
 			typedTab.setKeyValue("");
 			this.verificationResultColor=Settings.colorUndefined;
@@ -187,7 +192,6 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	}
 
 	public void setChangedToken(String userFormattedToken) {
-		ConsoleOut.output("csetchanged");
 		try {
 			CustomJWTToken newToken = ReadableTokenFormat.getTokenFromReadableFormat(userFormattedToken);
 			updateToken(newToken.getToken());
@@ -240,7 +244,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	}
 
 	public Color getVerificationStatusColor() {
-		return this.verificationResultColor;
+		return verificationResultColor;
 	}
 
 	public void addTab(JPanel tab) {

@@ -13,15 +13,16 @@ import burp.IContextMenuFactory;
 import burp.IContextMenuInvocation;
 import burp.IHttpRequestResponse;
 
-public class ContextMenuController extends Observable implements Observer, IContextMenuFactory{
+public class ContextMenuController implements Observer, IContextMenuFactory{
 
 	private MenuItemListener menuItemListener;
 	private String selectedText = null;
+	private JWTSuiteTabController jstC;
 	
 	public ContextMenuController(JWTSuiteTabController jstC) {
 		menuItemListener = new MenuItemListener();
 		menuItemListener.addObserver(this); 
-		this.addObserver(jstC);
+		this.jstC = jstC;
 	}
 
 	@Override
@@ -51,8 +52,8 @@ public class ContextMenuController extends Observable implements Observer, ICont
 
 	@Override
 	public void update(Observable o, Object arg) {
-		setChanged();
-		notifyObservers(selectedText);
+		// Menu Item Listener was clicked, notify the Suite Tab Controller
+		jstC.contextAction(selectedText);
 	}
 
 	public String getSelectedText() {

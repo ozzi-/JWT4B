@@ -10,6 +10,6 @@ public class Settings {
 	
 	public static final Color colorValid = Color.GREEN;
 	public static final Color colorInvalid = Color.RED;
-	public static final Color colorUndefined = Color.GRAY;
+	public static final Color colorUndefined = Color.LIGHT_GRAY;
 	public static final Color colorProblemInvalid = Color.YELLOW;
 }

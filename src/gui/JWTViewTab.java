@@ -24,6 +24,7 @@ import com.auth0.jwt.JWT;
 import app.algorithm.AlgorithmLinker;
 import app.algorithm.AlgorithmType;
 import app.controllers.JWTMessageEditorTabController;
+import app.helpers.ConsoleOut;
 import app.helpers.NotifyTypes;
 
 public class JWTViewTab extends JWTTab implements Observer {
@@ -105,10 +106,13 @@ public class JWTViewTab extends JWTTab implements Observer {
 		add(outputLabel, gbc_outputLabel);
 
 		outputField = new RSyntaxTextArea();
+		outputField.setHighlightCurrentLine(false);
+		outputField.setCurrentLineHighlightColor(Color.WHITE);
 		outputField.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
 		outputField.setEditable(false);
 		outputField.setPopupMenu(new JPopupMenu()); // no context menu on right-click
 		RTextScrollPane sp = new RTextScrollPane(outputField);
+		sp.setLineNumbersEnabled(false);
 		
 		GridBagConstraints gbc_outputfield = new GridBagConstraints();
 		gbc_outputfield.insets = new Insets(0, 0, 5, 5);
@@ -158,11 +162,13 @@ public class JWTViewTab extends JWTTab implements Observer {
 				break;
 			case NotifyTypes.gui_token:
 				updateToken();
+				setCaret();
 				break;
 			case NotifyTypes.all:
 				updateAlgorithm();
 				updateSignatureStatus();
 				updateToken();
+				setCaret();
 			default:
 				break;
 			}
@@ -196,6 +202,10 @@ public class JWTViewTab extends JWTTab implements Observer {
 	@Override
 	public void setVerificationResultColor(Color verificationResultColor) {
 		validIndicator.setBackground(verificationResultColor);
+	}
+
+	public void setCaret() {
+		outputField.setCaretPosition(0);
 	}
 
 }

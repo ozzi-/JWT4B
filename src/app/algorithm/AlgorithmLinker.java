@@ -11,6 +11,8 @@ import java.util.Base64;
 
 import com.auth0.jwt.algorithms.Algorithm;
 
+import app.helpers.ConsoleOut;
+
 public class AlgorithmLinker {
 
 	public static final app.algorithm.AlgorithmWrapper none = new app.algorithm.AlgorithmWrapper("none",
@@ -39,15 +41,17 @@ public class AlgorithmLinker {
 
 	private static PublicKey generatePublicKeyFromString(String key, String algorithm) {
 		PublicKey publicKey = null;
-		key = key.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "")
-				.replaceAll("\\s+", "").replaceAll("\\r+", "").replaceAll("\\n+", "");
-		byte[] keyByteArray = Base64.getDecoder().decode(key);
-		try {
-			KeyFactory kf = KeyFactory.getInstance(algorithm);
-			EncodedKeySpec keySpec = new X509EncodedKeySpec(keyByteArray);
-			publicKey = kf.generatePublic(keySpec);
-		} catch (Exception e) {
-			e.printStackTrace();
+		if(key.length()>1){
+			key = key.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "")
+					.replaceAll("\\s+", "").replaceAll("\\r+", "").replaceAll("\\n+", "");
+			byte[] keyByteArray = Base64.getDecoder().decode(key);
+			try {
+				KeyFactory kf = KeyFactory.getInstance(algorithm);
+				EncodedKeySpec keySpec = new X509EncodedKeySpec(keyByteArray);
+				publicKey = kf.generatePublic(keySpec);
+			} catch (Exception e) {
+				ConsoleOut.output(e.getMessage());
+			}
 		}
 		return publicKey;
 	}
