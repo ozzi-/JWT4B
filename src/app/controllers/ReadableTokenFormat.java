@@ -72,20 +72,6 @@ public class ReadableTokenFormat {
 		return output;
 	}
 	
-	private static String jsonMinify(String input) {
-		ObjectMapper objectMapper = new ObjectMapper();
-
-		JsonNode tree;
-		String output;
-		try {
-			tree = objectMapper.readTree(input);
-			output = objectMapper.writeValueAsString(tree);
-		} catch (IOException e) {
-			return input;
-		}
-		return output;
-	}
-
 	public static class InvalidTokenFormat extends Exception {
 		private static final long serialVersionUID = 1L;
 		public InvalidTokenFormat(String message) {

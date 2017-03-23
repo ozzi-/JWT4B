@@ -1,21 +1,27 @@
 package burp;
 
+import javax.swing.SwingUtilities;
+
 import app.controllers.ContextMenuController;
 import app.controllers.JWTMessageEditorTabController;
 import app.controllers.JWTSuiteTabController;
 import app.helpers.Settings;
 import gui.JWTEditableTab;
+import gui.JWTSuiteTab;
 import gui.JWTViewTab;
+import model.JWTSuiteTabModel;
 
 public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 	private IBurpExtenderCallbacks callbacks;
-	
+
 	@Override
 	public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
 		this.callbacks = callbacks;
 		callbacks.setExtensionName(Settings.extensionName);
 		callbacks.registerMessageEditorTabFactory(this);
-		JWTSuiteTabController jstC = new JWTSuiteTabController();
+		JWTSuiteTabModel jwtSTM =  new JWTSuiteTabModel();
+		JWTSuiteTab jwtST = new JWTSuiteTab(jwtSTM);
+		JWTSuiteTabController jstC = new JWTSuiteTabController(jwtSTM, jwtST);
 		callbacks.addSuiteTab(jstC);
 		ContextMenuController cmC = new ContextMenuController(jstC);
 		callbacks.registerContextMenuFactory(cmC);
