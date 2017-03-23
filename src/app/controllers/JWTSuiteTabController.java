@@ -5,6 +5,7 @@ import java.util.Observable;
 
 import javax.swing.JTabbedPane;
 
+import app.helpers.ConsoleOut;
 import app.helpers.CustomJWTToken;
 import app.helpers.Settings;
 import burp.ITab;
@@ -15,7 +16,7 @@ public class JWTSuiteTabController extends Observable implements ITab{
 	private JWTSuiteTab jsT;
 
 	public JWTSuiteTabController() {
-		jsT = new JWTSuiteTab();
+		jsT = new JWTSuiteTab(this);
 	}
 
 	@Override
@@ -44,10 +45,18 @@ public class JWTSuiteTabController extends Observable implements ITab{
 	}
 
 	public void contextAction(String jwts) {
+		jwts=jwts.replace("Authorization:","");
+		jwts=jwts.replace("Bearer","");
+		jwts=jwts.replaceAll("\\s","");
 		jsT.getInputField().setText(jwts);
-		CustomJWTToken jwt = new CustomJWTToken(jwts);
-		// TODO decoded token jsT.getOuputField().setText(jwt.getToken());
+		try{
+			CustomJWTToken jwt = new CustomJWTToken(jwts);
+			jsT.getOuputField().setText(ReadableTokenFormat.getReadableFormat(jwt));
+		}catch (Exception e){
+			ConsoleOut.output(e.getMessage());
+		}
 		selectJWTSuiteTab();
 	}
+
 
 }

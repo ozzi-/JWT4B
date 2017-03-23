@@ -1,24 +1,49 @@
 package gui;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
-import javax.swing.JTextPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rtextarea.RTextScrollPane;
+
+import app.controllers.JWTSuiteTabController;
 import app.helpers.Strings;
 
 public class JWTSuiteTab extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JTextArea jwtInputField;
-	private JTextPane jwtOuputField;
+	private RSyntaxTextArea jwtOuputField;
+	private JWTSuiteTabController jwtSuiteTabController;
 
-	public JWTSuiteTab() {
+	public JWTSuiteTab(JWTSuiteTabController jwtSuiteTabController) {
+		this.jwtSuiteTabController=jwtSuiteTabController;
 		drawGui();
+		registerDocumentListener();
+	}
+	
+	private void registerDocumentListener() {
+		jwtInputField.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				jwtSuiteTabController.contextAction(jwtInputField.getText());
+			}
+			public void removeUpdate(DocumentEvent e) {
+				jwtSuiteTabController.contextAction(jwtInputField.getText());
+			}
+			public void insertUpdate(DocumentEvent e) {
+				jwtSuiteTabController.contextAction(jwtInputField.getText());
+			}
+		});
 	}
 
 	private void drawGui() {
@@ -55,20 +80,32 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lblDecodedJwt.gridy = 3;
 		add(lblDecodedJwt, gbc_lblDecodedJwt);
 
-		jwtOuputField = new JTextPane();
+		
 		GridBagConstraints gbc_jwtOuputField = new GridBagConstraints();
 		gbc_jwtOuputField.insets = new Insets(0, 0, 5, 0);
 		gbc_jwtOuputField.fill = GridBagConstraints.BOTH;
 		gbc_jwtOuputField.gridx = 2;
 		gbc_jwtOuputField.gridy = 3;
+				
+		jwtOuputField = new RSyntaxTextArea();
+		jwtOuputField.setHighlightCurrentLine(false);
+		jwtOuputField.setCurrentLineHighlightColor(Color.WHITE);
+		jwtOuputField.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
+		jwtOuputField.setEditable(false);
+		jwtOuputField.setPopupMenu(new JPopupMenu()); // no context menu on right-click
+		RTextScrollPane sp = new RTextScrollPane(jwtOuputField);
+		sp.setLineNumbersEnabled(false);
+		
 		add(jwtOuputField, gbc_jwtOuputField);
+
+		
 	}
 
 	public JTextArea getInputField() {
 		return jwtInputField;
 	}
 	
-	public JTextPane getOuputField() {
+	public RSyntaxTextArea getOuputField() {
 		return jwtOuputField;
 	}
 

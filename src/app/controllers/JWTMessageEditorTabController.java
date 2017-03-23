@@ -38,7 +38,7 @@ import gui.JWTEditableTab;
 import gui.JWTViewTab;
 
 
-// TODO verificationResult differing default grey. Result Label improvments.
+// TODO verificationResult differing default grey. Result Label improvements.
 public class JWTMessageEditorTabController extends Observable implements IMessageEditorTab {
 
 	private IExtensionHelpers helpers;

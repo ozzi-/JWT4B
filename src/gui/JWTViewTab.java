@@ -24,7 +24,6 @@ import com.auth0.jwt.JWT;
 import app.algorithm.AlgorithmLinker;
 import app.algorithm.AlgorithmType;
 import app.controllers.JWTMessageEditorTabController;
-import app.helpers.ConsoleOut;
 import app.helpers.NotifyTypes;
 
 public class JWTViewTab extends JWTTab implements Observer {
