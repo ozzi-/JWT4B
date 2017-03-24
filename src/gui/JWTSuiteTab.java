@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.KeyListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -13,6 +12,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentListener;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -32,25 +32,44 @@ public class JWTSuiteTab extends JPanel {
 	private JWTSuiteTabModel jwtSTM;
 
 	public JWTSuiteTab(JWTSuiteTabModel jwtSTM) {
-		this.jwtSTM = jwtSTM;
 		drawGui();
+		this.jwtSTM = jwtSTM;
+	}
+	
+	public String getJWTInput(){
+		return jwtInputField.getText();
+	}
+	
+	public String getKeyInput(){
+		return jwtKeyField.getText();
 	}
 	
 	public void updateSetView(){
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				jwtInputField.setText(jwtSTM.getJwtInput());
-				jwtOuputField.setText(jwtSTM.getJwtJSON());
-				jwtKeyField.setText(jwtSTM.getJwtKey());
-				jwtSignatureButton.setBackground(jwtSTM.getJwtSignatureColor());
+				if(!jwtInputField.getText().equals(jwtSTM.getJwtInput())){
+					jwtInputField.setText(jwtSTM.getJwtInput());					
+				}
+				if(!jwtOuputField.getText().equals(jwtSTM.getJwtJSON())){
+					jwtOuputField.setText(jwtSTM.getJwtJSON());					
+				}
+				if(!jwtKeyField.getText().equals(jwtSTM.getJwtKey())){
+					jwtKeyField.setText(jwtSTM.getJwtKey());					
+				}
+				if(!jwtSignatureButton.getBackground().equals(jwtSTM.getJwtSignatureColor())){
+					jwtSignatureButton.setBackground(jwtSTM.getJwtSignatureColor());					
+				}
+				if(jwtKeyField.getText().equals("")){
+					jwtSTM.setJwtSignatureColor(new JButton().getBackground());
+					jwtSignatureButton.setBackground(jwtSTM.getJwtSignatureColor());
+				}
 			}
 		});
-
 	}
 
-	public void registerDocumentListener(KeyListener jwtInputListener, KeyListener jwtKeyListener) {
-		jwtInputField.addKeyListener(jwtInputListener);
-		jwtKeyField.addKeyListener(jwtKeyListener);
+	public void registerDocumentListener(DocumentListener jwtInputListener,DocumentListener jwtKeyListener) {
+		jwtInputField.getDocument().addDocumentListener(jwtInputListener);
+		jwtKeyField.getDocument().addDocumentListener(jwtKeyListener);
 	}
 
 	private void drawGui() {

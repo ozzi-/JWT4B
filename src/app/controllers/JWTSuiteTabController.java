@@ -2,11 +2,10 @@ package app.controllers;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.UnsupportedEncodingException;
 import java.util.Observable;
 
+import javax.swing.JButton;
 import javax.swing.JTabbedPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -36,40 +35,38 @@ public class JWTSuiteTabController extends Observable implements ITab {
 		this.jwtSTM = jwtSTM;
 		this.jwtST = jwtST;
 
-		KeyListener jwtInputListener = new KeyListener() {
-
+		DocumentListener jwtDocInputListener = new DocumentListener() {
 			@Override
-			public void keyTyped(KeyEvent e) {
-				contextActionJWT(jwtSTM.getJwtInput());
+			public void removeUpdate(DocumentEvent e) {
+				jwtSTM.setJwtInput(jwtST.getJWTInput());
+				contextActionJWT(jwtSTM.getJwtInput(),false);
 			}
-
 			@Override
-			public void keyReleased(KeyEvent e) {
-
+			public void insertUpdate(DocumentEvent e) {
+				jwtSTM.setJwtInput(jwtST.getJWTInput());
+				contextActionJWT(jwtSTM.getJwtInput(),false);
 			}
-
 			@Override
-			public void keyPressed(KeyEvent e) {
+			public void changedUpdate(DocumentEvent e) {
 			}
 		};
-
-		KeyListener jwtKeyListener = new KeyListener() {
-
+		DocumentListener jwtDocKeyListener = new DocumentListener() {
 			@Override
-			public void keyTyped(KeyEvent e) {
+			public void removeUpdate(DocumentEvent e) {
+				jwtSTM.setJwtKey(jwtST.getKeyInput());
 				contextActionKey(jwtSTM.getJwtKey());
 			}
-
 			@Override
-			public void keyReleased(KeyEvent e) {
+			public void insertUpdate(DocumentEvent e) {
+				jwtSTM.setJwtKey(jwtST.getKeyInput());
+				contextActionKey(jwtSTM.getJwtKey());
 			}
-
 			@Override
-			public void keyPressed(KeyEvent e) {
+			public void changedUpdate(DocumentEvent e) {
 			}
 		};
 
-		jwtST.registerDocumentListener(jwtInputListener, jwtKeyListener);
+		jwtST.registerDocumentListener(jwtDocInputListener, jwtDocKeyListener);
 	}
 
 	@Override
@@ -98,32 +95,44 @@ public class JWTSuiteTabController extends Observable implements ITab {
 	}
 
 	private String getCurrentAlgorithm() {
-		return new CustomJWTToken(jwtSTM.getJwtInput()).getAlgorithm();
+		String str = "";
+		try{
+			str = new CustomJWTToken(jwtSTM.getJwtInput()).getAlgorithm();
+		}catch(Exception e){
+			
+		}
+		return str;
 	}
 
-	public void contextActionJWT(String jwts) {
+	public void contextActionJWT(String jwts,boolean fromContextMenu) {
 		jwts = jwts.replace("Authorization:", "");
 		jwts = jwts.replace("Bearer", "");
 		jwts = jwts.replaceAll("\\s", "");
 		jwtSTM.setJwtInput(jwts);
-		contextActionKey(jwtSTM.getJwtInput());
 		try {
 			CustomJWTToken jwt = new CustomJWTToken(jwts);
 			jwtSTM.setJwtJSON(ReadableTokenFormat.getReadableFormat(jwt));
 		} catch (Exception e) {
 			// TODO handle invalid tokens in GUI
-			ConsoleOut.output(e.getMessage());
+			ConsoleOut.output("JWT Context Action"+e.getMessage());
+		}
+		if(fromContextMenu){
+			// Reset View and Select
+			jwtSTM.setJwtKey("");
+			selectJWTSuiteTab();
+		}else{
+			// Since we changed the JWT, we need to check the Key/Signature too
+			contextActionKey(jwtSTM.getJwtKey());
 		}
 		jwtST.updateSetView();
-		selectJWTSuiteTab();
 	}
 
 	public void contextActionKey(String key) {
-		String jwtTokenString = jwtSTM.getJwtInput();
+		jwtSTM.setJwtKey(key);
 		String curAlgo = getCurrentAlgorithm();
 		try {
 			JWTVerifier verifier = JWT.require(AlgorithmLinker.getAlgorithm(curAlgo, key)).build();
-			DecodedJWT test = verifier.verify(jwtTokenString);
+			DecodedJWT test = verifier.verify(jwtSTM.getJwtInput());
 			this.verificationResult = Strings.verificationValid;
 			this.verificationResultColor = Settings.colorValid;
 			test.getAlgorithm();
