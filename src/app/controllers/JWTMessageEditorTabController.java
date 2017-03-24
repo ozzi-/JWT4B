@@ -28,7 +28,6 @@ import app.helpers.NotifyTypes;
 import app.helpers.Settings;
 import app.helpers.Strings;
 import app.helpers.TokenManipulator;
-import app.helpers.ViewState;
 import app.tokenposition.AuthorizationBearerHeader;
 import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
@@ -36,6 +35,7 @@ import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
 import gui.JWTEditableTab;
 import gui.JWTViewTab;
+import model.JWTMessageEditorModel;
 
 
 // TODO verificationResult differing default grey. Result Label improvements.
@@ -49,7 +49,7 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 	private String state = Strings.tokenStateOriginal;
 	private Color verificationResultColor = Settings.colorUndefined;
 	private String verificationResult = "";
-	private ArrayList<ViewState> viewStateList = new ArrayList<ViewState>();
+	private ArrayList<JWTMessageEditorModel> viewStateList = new ArrayList<JWTMessageEditorModel>();
 	private byte[] content;
 	
 	public JWTMessageEditorTabController(IBurpExtenderCallbacks callbacks) {
@@ -100,20 +100,20 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		this.jwtTokenString = tokenPosition.getToken();
 
 		JWTViewTab typedTab  = (JWTViewTab)jwtTab;
-    	ViewState current = new ViewState(typedTab.getKeyValue(),content);
+    	JWTMessageEditorModel current = new JWTMessageEditorModel(typedTab.getKeyValue(),content);
 		int containsIndex = viewStateList.indexOf(current);
 		
 		// we know this request, load the last 
 		if(containsIndex!=-1){ 
 			typedTab.setKeyValue(viewStateList.get(containsIndex).getKeyValue());
-			this.verificationResult=viewStateList.get(containsIndex).getVerificationResult();
-			this.verificationResultColor=viewStateList.get(containsIndex).getVerificationResultColor();
+			verificationResult=viewStateList.get(containsIndex).getVerificationResult();
+			verificationResultColor=viewStateList.get(containsIndex).getVerificationResultColor();
 		// we haven't seen this request yet, add it and set the view to default
 		}else{
 			viewStateList.add(current);
 			typedTab.setKeyValue("");
-			this.verificationResultColor=Settings.colorUndefined;
-			this.verificationResult="";
+			verificationResultColor=Settings.colorUndefined;
+			verificationResult="";
 		}
 		
 		setChanged();
@@ -135,30 +135,30 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 		try {
 			JWTVerifier verifier = JWT.require(AlgorithmLinker.getAlgorithm(curAlgo, key)).build();
 			DecodedJWT test = verifier.verify(jwtTokenString);
-			this.verificationResult = Strings.verificationValid;
-			this.verificationResultColor = Settings.colorValid;
+			verificationResult = Strings.verificationValid;
+			verificationResultColor = Settings.colorValid;
 			test.getAlgorithm();
 			setChanged();
 			notifyObservers(NotifyTypes.gui_signaturecheck);
 		} catch (JWTVerificationException e) {
 			ConsoleOut.output("Verification failed ("+e.getMessage()+")");
-			this.verificationResult = Strings.verificationWrongKey;
-			this.verificationResultColor = Settings.colorInvalid;
+			verificationResult = Strings.verificationWrongKey;
+			verificationResultColor = Settings.colorInvalid;
 			setChanged();
 			notifyObservers(NotifyTypes.gui_signaturecheck);
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			ConsoleOut.output("Verification failed ("+e.getMessage()+")");
-			this.verificationResult = Strings.verificationInvalidKey;
-			this.verificationResultColor = Settings.colorProblemInvalid;
+			verificationResult = Strings.verificationInvalidKey;
+			verificationResultColor = Settings.colorProblemInvalid;
 			setChanged();
 			notifyObservers(NotifyTypes.gui_signaturecheck);
 		}
-		ViewState current = new ViewState(key,content);
+		JWTMessageEditorModel current = new JWTMessageEditorModel(key,content);
 		int containsIndex = viewStateList.indexOf(current);
 		if(containsIndex!=-1){ // we know this request, update the viewstate
 			viewStateList.get(containsIndex).setKeyValueAndHash(key, current.getHashCode());
-			viewStateList.get(containsIndex).setVerificationResult(this.verificationResult);
-			viewStateList.get(containsIndex).setVerificationResultColor(this.verificationResultColor);
+			viewStateList.get(containsIndex).setVerificationResult(verificationResult);
+			viewStateList.get(containsIndex).setVerificationResultColor(verificationResultColor);
 		}
 	}
 
@@ -196,11 +196,11 @@ public class JWTMessageEditorTabController extends Observable implements IMessag
 			CustomJWTToken newToken = ReadableTokenFormat.getTokenFromReadableFormat(userFormattedToken);
 			updateToken(newToken.getToken());
 			this.state = Strings.tokenStateUpdated;
-			this.verificationResultColor = Settings.colorValid;
+			verificationResultColor = Settings.colorValid;
 		} catch (ReadableTokenFormat.InvalidTokenFormat e) {
 			this.state = e.getMessage();
-			this.verificationResultColor = Settings.colorInvalid;
-			this.verificationResult = "";
+			verificationResultColor = Settings.colorInvalid;
+			verificationResult = "";
 		}
 		setChanged();
 		notifyObservers(NotifyTypes.gui_token);

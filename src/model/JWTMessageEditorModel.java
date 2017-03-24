@@ -1,22 +1,22 @@
-package app.helpers;
+package model;
 
 import java.awt.Color;
 
-public class ViewState {
+public class JWTMessageEditorModel {
 	private String keyValue;
 	private int hashCode;
 	private String verificationResult;
 	private Color verificationResultColor;
 
-	public ViewState(String keyValue, byte[] content) {
+	public JWTMessageEditorModel(String keyValue, byte[] content) {
 		this.keyValue = keyValue;
 		this.hashCode = new String(content).hashCode();
 	}
 
 	@Override
 	public boolean equals(Object otherObj) {
-		if (otherObj instanceof ViewState) {
-			ViewState otherViewState = (ViewState) otherObj;
+		if (otherObj instanceof JWTMessageEditorModel) {
+			JWTMessageEditorModel otherViewState = (JWTMessageEditorModel) otherObj;
 			return (otherViewState.getHashCode() == this.getHashCode());
 		}
 		return false;

@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.io.UnsupportedEncodingException;
 import java.util.Observable;
 
-import javax.swing.JButton;
 import javax.swing.JTabbedPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;

@@ -15,7 +15,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentListener;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.Style;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
+import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.helpers.Strings;
@@ -136,12 +139,17 @@ public class JWTSuiteTab extends JPanel {
 		gbc_jwtOuputField.gridy = 7;
 
 		jwtOuputField = new RSyntaxTextArea();
+		SyntaxScheme scheme = jwtOuputField.getSyntaxScheme();
+		Style style = new Style();
+		style.foreground = new Color(222,133,10);
+		scheme.setStyle(Token.LITERAL_STRING_DOUBLE_QUOTE, style);
+		jwtOuputField.revalidate();
 		jwtOuputField.setHighlightCurrentLine(false);
 		jwtOuputField.setCurrentLineHighlightColor(Color.WHITE);
 		jwtOuputField.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
 		jwtOuputField.setEditable(false);
-		jwtOuputField.setPopupMenu(new JPopupMenu()); // no context menu on
-														// right-click
+		// no context menu on right-click
+		jwtOuputField.setPopupMenu(new JPopupMenu()); 
 		RTextScrollPane sp = new RTextScrollPane(jwtOuputField);
 		sp.setLineNumbersEnabled(false);
 
