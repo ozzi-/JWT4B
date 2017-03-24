@@ -1,6 +1,5 @@
 package app.controllers;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.io.UnsupportedEncodingException;
 import java.util.Observable;
@@ -18,15 +17,12 @@ import app.algorithm.AlgorithmLinker;
 import app.helpers.ConsoleOut;
 import app.helpers.CustomJWTToken;
 import app.helpers.Settings;
-import app.helpers.Strings;
 import burp.ITab;
 import gui.JWTSuiteTab;
 import model.JWTSuiteTabModel;
 
 public class JWTSuiteTabController extends Observable implements ITab {
 
-	private String verificationResult;
-	private Color verificationResultColor;
 	private JWTSuiteTabModel jwtSTM;
 	private JWTSuiteTab jwtST;
 
@@ -132,19 +128,19 @@ public class JWTSuiteTabController extends Observable implements ITab {
 		try {
 			JWTVerifier verifier = JWT.require(AlgorithmLinker.getAlgorithm(curAlgo, key)).build();
 			DecodedJWT test = verifier.verify(jwtSTM.getJwtInput());
-			this.verificationResult = Strings.verificationValid;
-			this.verificationResultColor = Settings.colorValid;
+			jwtSTM.setJwtSignatureColor(Settings.colorValid);
+			// TODO Strings.verificationValid;
 			test.getAlgorithm();
 		} catch (JWTVerificationException e) {
 			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
-			this.verificationResult = Strings.verificationWrongKey;
-			this.verificationResultColor = Settings.colorInvalid;
+			jwtSTM.setJwtSignatureColor(Settings.colorInvalid);
+			// Strings.verificationWrongKey;
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
-			this.verificationResult = Strings.verificationInvalidKey;
-			this.verificationResultColor = Settings.colorProblemInvalid;
+			jwtSTM.setJwtSignatureColor(Settings.colorProblemInvalid);
+			// Strings.verificationInvalidKey;
 		}
-		jwtSTM.setJwtSignatureColor(this.verificationResultColor);
+		
 		jwtST.updateSetView();
 	}
 

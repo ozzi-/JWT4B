@@ -1,6 +1,5 @@
 package gui;
 
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -20,13 +19,13 @@ import javax.swing.SwingConstants;
 import app.algorithm.AlgorithmLinker;
 import app.algorithm.AlgorithmType;
 import app.algorithm.AlgorithmWrapper;
-import app.controllers.JWTMessageEditorTabController;
+import app.controllers.JWTTabController;
 import app.helpers.Strings;
 
-public class JWTEditableTab extends JWTTab implements Observer {
+public class JWTEditableTab extends JPanel implements Observer {
 
 	private static final long serialVersionUID = 1L;
-	private JWTMessageEditorTabController messageEditorTabController;
+	private JWTTabController messageEditorTabController;
 	private JTextPane textPaneTokenEditor;
 	private JTextArea textFieldInputKey;
 	private JCheckBox chckbxRecalculateSignature;
@@ -36,13 +35,13 @@ public class JWTEditableTab extends JWTTab implements Observer {
 	private JLabel lblState;
 	private JButton btnGenerateRandomKey;
 
-	public JWTEditableTab(JWTMessageEditorTabController messageEditorTabController) {
+	public JWTEditableTab(JWTTabController messageEditorTabController) {
 		this.messageEditorTabController = messageEditorTabController;
-		messageEditorTabController.addObserver(this); 
+		//messageEditorTabController.addObserver(this); 
 		drawGui(messageEditorTabController);
 	}
 
-	private void drawGui(JWTMessageEditorTabController messageEditorTabController) {
+	private void drawGui(JWTTabController messageEditorTabController) {
 		this.messageEditorTabController = messageEditorTabController;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -53,7 +52,7 @@ public class JWTEditableTab extends JWTTab implements Observer {
 		setLayout(gridBagLayout);
 
 		btnAcceptChanges = new JButton(Strings.acceptChanges);
-		btnAcceptChanges.addActionListener(e -> messageEditorTabController.setChangedToken(textPaneTokenEditor.getText()));
+		// TODO btnAcceptChanges.addActionListener(e -> messageEditorTabController.setChangedToken(textPaneTokenEditor.getText()));
 		GridBagConstraints gbc_btnAcceptChanges = new GridBagConstraints();
 		gbc_btnAcceptChanges.insets = new Insets(0, 0, 5, 5);
 		gbc_btnAcceptChanges.gridx = 2;
@@ -117,7 +116,7 @@ public class JWTEditableTab extends JWTTab implements Observer {
 			String algorithm = comboBoxAlgorithmSelection.getSelectedItem().toString();
 			Boolean recalculateSignature = chckbxRecalculateSignature.isSelected();
 			String signatureKey = textFieldInputKey.getText();
-			messageEditorTabController.changeAlgorithm(algorithm, recalculateSignature, signatureKey);
+			//messageEditorTabController.changeAlgorithm(algorithm, recalculateSignature, signatureKey);
 		});
 
 		btnGenerateRandomKey = new JButton("Generate Random Key");
@@ -125,8 +124,8 @@ public class JWTEditableTab extends JWTTab implements Observer {
 		panel.add(btnGenerateRandomKey);
 		btnGenerateRandomKey.setEnabled(false);
 		btnGenerateRandomKey.addActionListener(e -> {
-			String key = this.messageEditorTabController.generateKeyPair();
-			this.textFieldInputKey.setText(key);
+			//String key = this.messageEditorTabController.generateKeyPair();
+			//this.textFieldInputKey.setText(key);
 		});
 	}
 
@@ -153,8 +152,8 @@ public class JWTEditableTab extends JWTTab implements Observer {
 	}
 
 	private void updateView() {
-		String formattedToken = messageEditorTabController.getFormatedToken();
-		this.textPaneTokenEditor.setText(formattedToken);
+		// TODO String formattedToken = messageEditorTabController.getFormatedToken();
+		// this.textPaneTokenEditor.setText(formattedToken);
 
 		comboBoxAlgorithmSelection.setSelectedItem(this.messageEditorTabController.getCurrentAlgorithm());
 		chckbxRecalculateSignature.setSelected(false);
@@ -163,7 +162,7 @@ public class JWTEditableTab extends JWTTab implements Observer {
 		btnChangeAlgorithm.setEnabled(true);
 
 		this.lblState.setText(this.messageEditorTabController.getState());
-		this.lblState.setForeground(this.messageEditorTabController.getVerificationStatusColor());
+		// this.lblState.setForeground(this.messageEditorTabController.getVerificationStatusColor());
 	}
 
 	public String getSelectedAlgorithm() {
@@ -177,25 +176,16 @@ public class JWTEditableTab extends JWTTab implements Observer {
 		return textPaneTokenEditor;
 	}
 
-	@Override
 	public String getKeyValue() {
 		return textFieldInputKey.getText();
 	}
 
-	@Override
 	public void setKeyValue(String value) {
 		textFieldInputKey.setText(value);
 	}
 
-	@Override
-	public void setVerificationResult(String value) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void setVerificationResultColor(Color verificationResultColor) {
-		// TODO Auto-generated method stub
-		
+	public String getSelectedData() {
+		return getTextPaneTokenEditor().getSelectedText();
 	}
 
 }

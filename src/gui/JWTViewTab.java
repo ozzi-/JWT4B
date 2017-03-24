@@ -4,60 +4,45 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentListener;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
-import com.auth0.jwt.JWT;
-
-import app.algorithm.AlgorithmLinker;
 import app.algorithm.AlgorithmType;
-import app.controllers.JWTMessageEditorTabController;
-import app.helpers.NotifyTypes;
+import app.helpers.Settings;
+import model.JWTTabModel;
 
-public class JWTViewTab extends JWTTab implements Observer {
+public class JWTViewTab extends JPanel{
 
 	private static final long serialVersionUID = 1L;
 	private RSyntaxTextArea  outputField;
-	private JTextField inputField;
+	private JTextField keyField;
 	private JLabel outputLabel;
-	private JLabel inputLabel;
-	private JWTMessageEditorTabController jwtTabController;
-	private JButton validIndicator;
-	private JLabel validIndicatorLabel;
+	private JLabel keyLabel;
+	private JButton verificationIndicator;
+	private JLabel verificationLabel;
+	private JWTTabModel jwtTM;
 
-	public JWTViewTab(JWTMessageEditorTabController visualizer) {
-		this.jwtTabController = visualizer;
-		jwtTabController.addObserver(this);
+	public JWTViewTab(JWTTabModel jwtTM) {
 		drawPanel();
-		registerDocumentListener();
+		this.jwtTM = jwtTM;
 	}
 
-	private void registerDocumentListener() {
-		inputField.getDocument().addDocumentListener(new DocumentListener() {
-			public void changedUpdate(DocumentEvent e) {
-				jwtTabController.checkKey(inputField.getText());
-			}
-			public void removeUpdate(DocumentEvent e) {
-				jwtTabController.checkKey(inputField.getText());
-			}
-			public void insertUpdate(DocumentEvent e) {
-				jwtTabController.checkKey(inputField.getText());
-			}
-		});
+	public void registerDocumentListener(DocumentListener inputFieldListener) {
+		keyField.getDocument().addDocumentListener(inputFieldListener);
 	}
 
+	
 	private void drawPanel() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 79, 447, 0, 0 };
@@ -66,36 +51,36 @@ public class JWTViewTab extends JWTTab implements Observer {
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
-		inputLabel = new JLabel("");
+		keyLabel = new JLabel("");
 		GridBagConstraints gbc_inputLabel1 = new GridBagConstraints();
 		gbc_inputLabel1.insets = new Insets(0, 0, 5, 5);
 		gbc_inputLabel1.anchor = GridBagConstraints.EAST;
 		gbc_inputLabel1.gridx = 1;
 		gbc_inputLabel1.gridy = 1;
-		add(inputLabel, gbc_inputLabel1);
+		add(keyLabel, gbc_inputLabel1);
 
-		inputField = new JTextField();
+		keyField = new JTextField();
 		GridBagConstraints gbc_inputField1 = new GridBagConstraints();
 		gbc_inputField1.insets = new Insets(0, 0, 5, 5);
 		gbc_inputField1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_inputField1.gridx = 2;
 		gbc_inputField1.gridy = 1;
-		add(inputField, gbc_inputField1);
-		inputField.setColumns(10);
+		add(keyField, gbc_inputField1);
+		keyField.setColumns(10);
 		
-		validIndicatorLabel = new JLabel("");
+		verificationLabel = new JLabel("");
 		GridBagConstraints gbc_validIndicatorLabel = new GridBagConstraints();
 		gbc_validIndicatorLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_validIndicatorLabel.gridx = 1;
 		gbc_validIndicatorLabel.gridy = 3;
-		add(validIndicatorLabel, gbc_validIndicatorLabel);
+		add(verificationLabel, gbc_validIndicatorLabel);
 		
-		validIndicator = new JButton("                           ");
+		verificationIndicator = new JButton("                           ");
 		GridBagConstraints gbc_validIndicator = new GridBagConstraints();
 		gbc_validIndicator.insets = new Insets(0, 0, 5, 5);
 		gbc_validIndicator.gridx = 2;
 		gbc_validIndicator.gridy = 3;
-		add(validIndicator, gbc_validIndicator);
+		add(verificationIndicator, gbc_validIndicator);
 
 		outputLabel = new JLabel("JWT");
 		GridBagConstraints gbc_outputLabel = new GridBagConstraints();
@@ -122,89 +107,113 @@ public class JWTViewTab extends JWTTab implements Observer {
 	}
 	
 	public void updateToken() {
-		JWT token = jwtTabController.getJwtToken();
-		if (token == null) {
-			outputField.setText(null);
-		} else {
-			outputField.setText(jwtTabController.getFormatedToken());
-		}
+		//JWT token = jwtTabController.getJwtToken();
+		//if (token == null) {
+		//	outputField.setText(null);
+		//} else {
+		//	outputField.setText(jwtTabController.getFormatedToken());
+		//}
 	}
 	
 	public void updateAlgorithm(){
-		String algorithmType = AlgorithmLinker.getTypeOf(jwtTabController.getCurrentAlgorithm());
-		
+		//String algorithmType = AlgorithmLinker.getTypeOf(jwtTabController.getCurrentAlgorithm());
+		String algorithmType ="TODO";
 		if(algorithmType.equals(AlgorithmType.symmetric)){
-			inputLabel.setText("Secret");
-			inputField.setEnabled(true);
+			keyLabel.setText("Secret");
+			keyField.setEnabled(true);
 		}
 		if(algorithmType.equals(AlgorithmType.asymmetric)){
-			inputLabel.setText("Public Key");
-			inputField.setEnabled(true);
+			keyLabel.setText("Public Key");
+			keyField.setEnabled(true);
 		}
 		if(algorithmType.equals(AlgorithmType.none)){
-			inputLabel.setText("");
-			inputField.setEnabled(false);
-			inputField.setEnabled(false);
+			keyLabel.setText("");
+			keyField.setEnabled(false);
+			keyField.setEnabled(false);
 		}
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		if(arg instanceof Integer){
-			int updateType = (int) arg; 
-			switch (updateType) {
-			case NotifyTypes.gui_algorithm:
-				updateAlgorithm();
-				break;
-			case NotifyTypes.gui_signaturecheck:
-				updateSignatureStatus();
-				break;
-			case NotifyTypes.gui_token:
-				updateToken();
-				setCaret();
-				break;
-			case NotifyTypes.all:
-				updateAlgorithm();
-				updateSignatureStatus();
-				updateToken();
-				setCaret();
-			default:
-				break;
-			}
-		}
-	}
+
+//			int updateType = (int) arg; 
+//			switch (updateType) {
+//			case NotifyTypes.gui_algorithm:
+//				updateAlgorithm();
+//				break;
+//			case NotifyTypes.gui_signaturecheck:
+//				updateSignatureStatus();
+//				break;
+//			case NotifyTypes.gui_token:
+//				updateToken();
+//				setCaret();
+//				break;
+//			case NotifyTypes.all:
+//				updateAlgorithm();
+//				updateSignatureStatus();
+//				updateToken();
+//				setCaret();
+//			default:
+//				break;
+//			}
 
 	public JTextArea getOutputfield() {
 		return outputField;
 	}
 	
 	private void updateSignatureStatus() {
-		Color color = jwtTabController.getVerificationStatusColor();
-		validIndicatorLabel.setText("Signature "+jwtTabController.getVerificationResult());
-		validIndicator.setBackground(color);	
+		//Color color = jwtTabController.getVerificationStatusColor();
+		//validIndicatorLabel.setText("Signature "+jwtTabController.getVerificationResult());
+		//validIndicator.setBackground(color);	
 	}
 	
 	public String getKeyValue() {
-		return inputField.getText();
+		return keyField.getText();
 	}
 
-	@Override
 	public void setKeyValue(String value) {
-		inputField.setText(value);		
+		keyField.setText(value);		
 	}
 
-	@Override
 	public void setVerificationResult(String value) {
-		validIndicatorLabel.setText(value);
+		verificationLabel.setText(value);
 	}
 
-	@Override
 	public void setVerificationResultColor(Color verificationResultColor) {
-		validIndicator.setBackground(verificationResultColor);
+		verificationIndicator.setBackground(verificationResultColor);
 	}
 
 	public void setCaret() {
 		outputField.setCaretPosition(0);
+	}
+
+	public String getSelectedData() {
+		return getOutputfield().getSelectedText();
+	}
+
+	public void updateSetView() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				if(!jwtTM.getJWTJSON().equals(outputField.getText())){
+					outputField.setText(jwtTM.getJWTJSON());
+				}
+				if(!jwtTM.getKeyLabel().equals(keyLabel.getText())){
+					keyLabel.setText(jwtTM.getKeyLabel());
+				}
+				if(!jwtTM.getKey().equals(keyField.getText())){
+					keyField.setText(jwtTM.getKey());
+				}
+				if(!jwtTM.getVerificationColor().equals(verificationIndicator.getBackground())){
+					verificationIndicator.setBackground(jwtTM.getVerificationColor());
+				}
+				if(!jwtTM.getVerificationLabel().equals(verificationLabel.getText())){
+					verificationLabel.setText(jwtTM.getVerificationLabel());
+				}
+				if(outputField.getText().equals("")){
+					jwtTM.setVerificationColor(Settings.colorUndefined);
+					verificationIndicator.setBackground(Settings.colorUndefined);
+				}
+				setCaret();
+			}
+		});
 	}
 
 }

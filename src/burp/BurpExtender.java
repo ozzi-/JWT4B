@@ -1,13 +1,13 @@
 package burp;
 
 import app.controllers.ContextMenuController;
-import app.controllers.JWTMessageEditorTabController;
 import app.controllers.JWTSuiteTabController;
+import app.controllers.JWTTabController;
 import app.helpers.Settings;
-import gui.JWTEditableTab;
 import gui.JWTSuiteTab;
 import gui.JWTViewTab;
 import model.JWTSuiteTabModel;
+import model.JWTTabModel;
 
 public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 	private IBurpExtenderCallbacks callbacks;
@@ -29,12 +29,14 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 
 	@Override
 	public IMessageEditorTab createNewInstance(IMessageEditorController controller, boolean editable) {
-		JWTMessageEditorTabController visualizer = new JWTMessageEditorTabController(callbacks);
-		if (editable) {
-			visualizer.addTab(new JWTEditableTab(visualizer));
+		if (editable) { // Intercept
 		} else {
-			visualizer.addTab(new JWTViewTab(visualizer));
+			// TODO workaround until editable / intercept view is rewritten with MVC and refactored
 		}
+		JWTTabModel jwtTM = new JWTTabModel();
+		JWTViewTab jwtVT = new JWTViewTab(jwtTM);
+		JWTTabController visualizer = new JWTTabController(callbacks,jwtTM,jwtVT);
+		visualizer.addTab(jwtVT);
 		return visualizer;
 	}
 	
