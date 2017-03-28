@@ -1,5 +1,6 @@
 package app.tokenposition;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,6 +33,25 @@ public abstract class ITokenPosition {
 			IResponseInfo responseInfo = helpers.analyzeResponse(message);
 			return responseInfo.getHeaders();
 		}
+	}
+	
+	public static ITokenPosition findTokenPositionImplementation(byte[] content, boolean isRequest, IExtensionHelpers helpers) {
+		List<Class<? extends ITokenPosition>> implementations = Arrays.asList(AuthorizationBearerHeader.class);
+
+		for (Class<? extends ITokenPosition> implClass : implementations) {
+			try {
+				ITokenPosition impl = (ITokenPosition) implClass.getConstructors()[0].newInstance();
+				impl.setHelpers(helpers);
+				impl.setMessage(content, isRequest);
+				if (impl.positionFound()) {
+					return impl;
+				}
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException | SecurityException e) {
+				return null;
+			}
+		}
+		return null;
 	}
 	
 	protected int getBodyOffset(){

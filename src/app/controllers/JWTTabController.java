@@ -2,10 +2,7 @@ package app.controllers;
 
 import java.awt.Component;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -20,7 +17,6 @@ import app.helpers.ConsoleOut;
 import app.helpers.CustomJWTToken;
 import app.helpers.Settings;
 import app.helpers.Strings;
-import app.tokenposition.AuthorizationBearerHeader;
 import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
@@ -82,14 +78,14 @@ public class JWTTabController implements IMessageEditorTab {
 	@Override
 	public boolean isEnabled(byte[] content, boolean isRequest) {
 		this.content = content;
-		return findTokenPositionImplementation(content, isRequest) != null;
+		return ITokenPosition.findTokenPositionImplementation(content, isRequest,helpers) != null;
 	}
 
 	@Override
 	public void setMessage(byte[] content, boolean isRequest) {
 		this.message = content;
 
-		tokenPosition = findTokenPositionImplementation(content, isRequest);
+		tokenPosition = ITokenPosition.findTokenPositionImplementation(content, isRequest,helpers);
 		jwtTM.setJWT(tokenPosition.getToken());
 	
 		CustomJWTToken a = new CustomJWTToken(jwtTM.getJWT());
@@ -168,28 +164,4 @@ public class JWTTabController implements IMessageEditorTab {
 		return state;
 	}
 
-
-	public void addTab(JWTViewTab tab) {
-		this.jwtVT = tab;
-	}
-
-	
-	private ITokenPosition findTokenPositionImplementation(byte[] content, boolean isRequest) {
-		List<Class<? extends ITokenPosition>> implementations = Arrays.asList(AuthorizationBearerHeader.class);
-
-		for (Class<? extends ITokenPosition> implClass : implementations) {
-			try {
-				ITokenPosition impl = (ITokenPosition) implClass.getConstructors()[0].newInstance();
-				impl.setHelpers(helpers);
-				impl.setMessage(content, isRequest);
-				if (impl.positionFound()) {
-					return impl;
-				}
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException | SecurityException e) {
-				return null;
-			}
-		}
-		return null;
-	}
 }
