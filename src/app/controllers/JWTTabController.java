@@ -14,7 +14,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import app.algorithm.AlgorithmLinker;
 import app.helpers.ConsoleOut;
-import app.helpers.CustomJWTToken;
+import app.helpers.CustomJWToken;
 import app.helpers.Settings;
 import app.helpers.Strings;
 import app.tokenposition.ITokenPosition;
@@ -88,7 +88,7 @@ public class JWTTabController implements IMessageEditorTab {
 		tokenPosition = ITokenPosition.findTokenPositionImplementation(content, isRequest,helpers);
 		jwtTM.setJWT(tokenPosition.getToken());
 	
-		CustomJWTToken a = new CustomJWTToken(jwtTM.getJWT());
+		CustomJWToken a = new CustomJWToken(jwtTM.getJWT());
 		jwtTM.setJWTJSON(ReadableTokenFormat.getReadableFormat(a));
 		
 		JWTTabModel current = new JWTTabModel(jwtTM.getKey(), content);
@@ -156,7 +156,7 @@ public class JWTTabController implements IMessageEditorTab {
 
 
 	public String getCurrentAlgorithm() {
-		return new CustomJWTToken(jwtTM.getJWT()).getAlgorithm();
+		return new CustomJWToken(jwtTM.getJWT()).getAlgorithm();
 	}
 
 

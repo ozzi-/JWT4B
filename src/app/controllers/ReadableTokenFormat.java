@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import app.helpers.CustomJWTToken;
+import app.helpers.CustomJWToken;
 
 public class ReadableTokenFormat {
 	private static final String newline = System.getProperty("line.separator");
@@ -14,7 +14,7 @@ public class ReadableTokenFormat {
 	private static final String titlePayload = newline + newline + "Payload = ";
 	private static final String titleSignature = newline + newline + "Signature = ";
 	
-	public static String getReadableFormat(CustomJWTToken token) { 
+	public static String getReadableFormat(CustomJWToken token) { 
 
 		StringBuilder result = new StringBuilder();
 
@@ -29,7 +29,7 @@ public class ReadableTokenFormat {
 		return result.toString();
 	}
 	
-	public static CustomJWTToken getTokenFromReadableFormat(String token) throws InvalidTokenFormat {
+	public static CustomJWToken getTokenFromReadableFormat(String token) throws InvalidTokenFormat {
 		if(!token.startsWith(titleHeaders)) { 
 			throw new InvalidTokenFormat("Cannot parse token");
 		}
@@ -54,7 +54,7 @@ public class ReadableTokenFormat {
 		String payload = splitted2[0];
 		String signature = splitted2[1];
 		
-		return new CustomJWTToken(header, payload, signature);
+		return new CustomJWToken(header, payload, signature);
 	}
 
 	private static String jsonBeautify(String input) {

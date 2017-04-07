@@ -15,7 +15,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import app.algorithm.AlgorithmLinker;
 import app.helpers.ConsoleOut;
-import app.helpers.CustomJWTToken;
+import app.helpers.CustomJWToken;
 import app.helpers.Settings;
 import burp.ITab;
 import gui.JWTSuiteTab;
@@ -92,7 +92,7 @@ public class JWTSuiteTabController extends Observable implements ITab {
 	private String getCurrentAlgorithm() {
 		String str = "";
 		try{
-			str = new CustomJWTToken(jwtSTM.getJwtInput()).getAlgorithm();
+			str = new CustomJWToken(jwtSTM.getJwtInput()).getAlgorithm();
 		}catch(Exception e){
 			
 		}
@@ -105,7 +105,7 @@ public class JWTSuiteTabController extends Observable implements ITab {
 		jwts = jwts.replaceAll("\\s", "");
 		jwtSTM.setJwtInput(jwts);
 		try {
-			CustomJWTToken jwt = new CustomJWTToken(jwts);
+			CustomJWToken jwt = new CustomJWToken(jwts);
 			jwtSTM.setJwtJSON(ReadableTokenFormat.getReadableFormat(jwt));
 		} catch (Exception e) {
 			// TODO handle invalid tokens in GUI

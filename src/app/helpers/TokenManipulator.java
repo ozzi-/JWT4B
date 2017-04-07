@@ -16,7 +16,7 @@ public class TokenManipulator {
 	 * @return the edited token string
 	 */
 	public static String setAlgorithmToNone(String token) { 
-		CustomJWTToken origToken = new CustomJWTToken(token);
+		CustomJWToken origToken = new CustomJWToken(token);
 		
 		JsonNode header = origToken.getHeaderJsonNode();
 		
@@ -37,7 +37,7 @@ public class TokenManipulator {
 	 * @return the edited token string
 	 */
 	public static String changeAlgorithm(String token, String algorithm, Boolean recalculateSignature, String signatureKey) {
-		CustomJWTToken origToken = new CustomJWTToken(token);
+		CustomJWToken origToken = new CustomJWToken(token);
 		
 		JsonNode header = origToken.getHeaderJsonNode();
 

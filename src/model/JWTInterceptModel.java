@@ -8,6 +8,8 @@ public class JWTInterceptModel{
 	private String jwt;
 	private Color jwtSignatureColor;
 	private String jwtJSON;
+	private String signature;
+	private String originalSignature;
 	
 	public String getJWTInput() {
 		return jwtInput;
@@ -40,4 +42,17 @@ public class JWTInterceptModel{
 	public String getJWT() {
 		return this.jwt;
 	}
+	public String getSignature() {
+		return this.signature;
+	}
+	public void setSignature(String signature) {
+		this.signature=signature;
+		if(this.signature != null && !this.signature.isEmpty()){
+			this.originalSignature=signature;
+		}
+	}
+	public String getOriginalSignature() {
+		return originalSignature;
+	}
+
 }

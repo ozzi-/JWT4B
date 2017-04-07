@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * The JWTDecoder class cannot be extended because it is final
  */
 
-public class CustomJWTToken extends JWT {
+public class CustomJWToken extends JWT {
 
 	private String headerJson;
 	private String payloadJson;
@@ -34,7 +34,7 @@ public class CustomJWTToken extends JWT {
 	private byte[] signature;
 	private String token;
 
-	public CustomJWTToken(String token) {
+	public CustomJWToken(String token) {
 		this.token = token;
 		final String[] parts = splitToken(token);
 		final JWTParser converter = new JWTParser();
@@ -51,7 +51,7 @@ public class CustomJWTToken extends JWT {
 
 	}
 
-	public CustomJWTToken(String headerJson, String payloadJson, String signature) {
+	public CustomJWToken(String headerJson, String payloadJson, String signature) {
 		this.headerJson = headerJson;
 		this.payloadJson = payloadJson;
 		this.signature = Base64.decodeBase64(signature);

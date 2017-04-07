@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import app.helpers.CustomJWTToken;
+import app.helpers.CustomJWToken;
 
 public class TestCustomJWTDecoder {
 	@Test
 	public void testIfTokenCanbeDecoded() {
-		CustomJWTToken reConstructedToken = new CustomJWTToken(TestTokens.hs256_token);
+		CustomJWToken reConstructedToken = new CustomJWToken(TestTokens.hs256_token);
 		assertEquals(TestTokens.hs256_token, reConstructedToken.getToken());
 	}
 }
