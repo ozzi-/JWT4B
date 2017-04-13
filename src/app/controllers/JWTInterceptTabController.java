@@ -106,7 +106,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		} else if (keepOriginalSignature){
 			jwtIM.setSignature(jwtIM.getOriginalSignature());
 		}
-		
+		jwtST.getJWTfromArea();
 		String newMessage = new String(this.message);
 		//a = newMessage.split("\\r?\\n"));
 		

@@ -32,7 +32,7 @@ public class JWTInterceptTab extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JWTInterceptModel jwtIM;
-	private RSyntaxTextArea textArea;
+	private RSyntaxTextArea jwtArea;
 	private JRadioButton rdbtnRecalculateSignature;
 	private JRadioButton rdbtnRandomKey;
 	private JRadioButton rdbtnOriginalSignature;
@@ -56,27 +56,27 @@ public class JWTInterceptTab extends JPanel {
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
-		textArea = new RSyntaxTextArea ();
-		SyntaxScheme scheme = textArea.getSyntaxScheme();
+		jwtArea = new RSyntaxTextArea ();
+		SyntaxScheme scheme = jwtArea.getSyntaxScheme();
 		Style style = new Style();
 		style.foreground = new Color(222,133,10);
 		scheme.setStyle(Token.LITERAL_STRING_DOUBLE_QUOTE, style);
-		textArea.revalidate();
-		textArea.setHighlightCurrentLine(false);
-		textArea.setCurrentLineHighlightColor(Color.WHITE);
-		textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
-		textArea.setEditable(true);
-		textArea.setPopupMenu(new JPopupMenu()); 
-		RTextScrollPane sp = new RTextScrollPane(textArea);
+		jwtArea.revalidate();
+		jwtArea.setHighlightCurrentLine(false);
+		jwtArea.setCurrentLineHighlightColor(Color.WHITE);
+		jwtArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
+		jwtArea.setEditable(true);
+		jwtArea.setPopupMenu(new JPopupMenu()); 
+		RTextScrollPane sp = new RTextScrollPane(jwtArea);
 		sp.setLineNumbersEnabled(false);
 		
-		GridBagConstraints gbc_textArea = new GridBagConstraints();
-		gbc_textArea.gridheight = 5;
-		gbc_textArea.insets = new Insets(0, 0, 5, 5);
-		gbc_textArea.fill = GridBagConstraints.BOTH;
-		gbc_textArea.gridx = 0;
-		gbc_textArea.gridy = 0;
-		add(textArea, gbc_textArea);
+		GridBagConstraints gbc_jwtArea = new GridBagConstraints();
+		gbc_jwtArea.gridheight = 5;
+		gbc_jwtArea.insets = new Insets(0, 0, 5, 5);
+		gbc_jwtArea.fill = GridBagConstraints.BOTH;
+		gbc_jwtArea.gridx = 0;
+		gbc_jwtArea.gridy = 0;
+		add(jwtArea, gbc_jwtArea);
 		
 		rdbtnRecalculateSignature = new JRadioButton("Recalculate signature");
 		rdbtnRecalculateSignature.setSelected(true);
@@ -142,14 +142,19 @@ public class JWTInterceptTab extends JPanel {
 	public void updateSetView() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				if(!textArea.getText().equals(jwtIM.getJWTJSON())){
-					textArea.setText(jwtIM.getJWTJSON());
+				if(!jwtArea.getText().equals(jwtIM.getJWTJSON())){
+					jwtArea.setText(jwtIM.getJWTJSON());
 				}
 			}
 		});
 	}
 	
+	
+	public String getJWTfromArea(){
+		return jwtArea.getText();
+	}
+	
 	public String getSelectedData() {
-		return textArea.getSelectedText();
+		return jwtArea.getSelectedText();
 	}
 }
