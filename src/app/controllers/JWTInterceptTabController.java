@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import app.controllers.ReadableTokenFormat.InvalidTokenFormat;
 import app.helpers.ConsoleOut;
 import app.helpers.CustomJWToken;
 import app.helpers.Settings;
@@ -106,9 +107,20 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		} else if (keepOriginalSignature){
 			jwtIM.setSignature(jwtIM.getOriginalSignature());
 		}
-		jwtST.getJWTfromArea();
+		
+		CustomJWToken token = null;
+		try {
+			token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
+			ConsoleOut.output(token.getPayloadJson());
+
+		} catch (InvalidTokenFormat e) {
+			ConsoleOut.output(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		
 		String newMessage = new String(this.message);
-		//a = newMessage.split("\\r?\\n"));
+		String[] a = newMessage.split("\\r?\\n");
 		
 		ConsoleOut.output(newMessage);
 		
