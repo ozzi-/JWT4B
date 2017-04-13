@@ -53,7 +53,7 @@ public class TokenManipulator {
 		
 		if (recalculateSignature) {
 			origToken.setHeaderJsonNode(header);
-			origToken.setSignature(algorithmObject);
+			origToken.calculateAndSetSignature(algorithmObject);
 		}
 		return origToken.getToken();
 	}

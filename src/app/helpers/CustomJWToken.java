@@ -75,7 +75,7 @@ public class CustomJWToken extends JWT {
 		}
 	}
 	
-	public void setSignature(Algorithm algorithm){ 
+	public void calculateAndSetSignature(Algorithm algorithm){ 
 		 byte[] contentBytes = String.format("%s.%s", b64(getHeaderJson()), b64(getPayloadJson())).getBytes(StandardCharsets.UTF_8);
 		 signature = algorithm.sign(contentBytes);
 	}

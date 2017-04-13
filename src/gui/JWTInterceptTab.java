@@ -27,6 +27,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import app.helpers.ConsoleOut;
 import model.JWTInterceptModel;
 import javax.swing.JTextPane;
+import javax.swing.JTextField;
 
 public class JWTInterceptTab extends JPanel {
 
@@ -36,6 +37,8 @@ public class JWTInterceptTab extends JPanel {
 	private JRadioButton rdbtnRecalculateSignature;
 	private JRadioButton rdbtnRandomKey;
 	private JRadioButton rdbtnOriginalSignature;
+	private JTextField keyField;
+	private JLabel lblSecretKey;
 
 	public JWTInterceptTab(JWTInterceptModel jwtIM) {
 		this.jwtIM = jwtIM;
@@ -125,6 +128,23 @@ public class JWTInterceptTab extends JPanel {
 		gbc_lblTodoAutomated.gridy = 4;
 		add(lblTodoAutomated, gbc_lblTodoAutomated);
 		
+		lblSecretKey = new JLabel("Secret / Key for Signature recalculation:");
+		GridBagConstraints gbc_lblSecretKey = new GridBagConstraints();
+		gbc_lblSecretKey.insets = new Insets(0, 0, 5, 5);
+		gbc_lblSecretKey.anchor = GridBagConstraints.EAST;
+		gbc_lblSecretKey.gridx = 0;
+		gbc_lblSecretKey.gridy = 6;
+		add(lblSecretKey, gbc_lblSecretKey);
+		
+		keyField = new JTextField();
+		GridBagConstraints gbc_keyField = new GridBagConstraints();
+		gbc_keyField.insets = new Insets(0, 0, 5, 0);
+		gbc_keyField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_keyField.gridx = 1;
+		gbc_keyField.gridy = 6;
+		add(keyField, gbc_keyField);
+		keyField.setColumns(10);
+		
 	}
 	
 	public JRadioButton getRdbtnRecalculateSignature() {
@@ -145,6 +165,7 @@ public class JWTInterceptTab extends JPanel {
 				if(!jwtArea.getText().equals(jwtIM.getJWTJSON())){
 					jwtArea.setText(jwtIM.getJWTJSON());
 				}
+				jwtIM.setJWTKey(keyField.getText());
 			}
 		});
 	}

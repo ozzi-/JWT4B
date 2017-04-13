@@ -3,10 +3,14 @@ package app.controllers;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.auth0.jwt.algorithms.Algorithm;
+
+import app.algorithm.AlgorithmLinker;
 import app.controllers.ReadableTokenFormat.InvalidTokenFormat;
 import app.helpers.ConsoleOut;
 import app.helpers.CustomJWToken;
@@ -100,25 +104,34 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	@Override
 	public byte[] getMessage() {
 		
+		CustomJWToken token = null;
+		try {
+			token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
+
+		} catch (InvalidTokenFormat e) {
+			// TODO give user feedback, that he broke the token
+			ConsoleOut.output(e.getMessage());
+			return null; // returning null is interpreted same as sending original message
+		}
+		
 		if  (recalculateSignature) {
-			// TODO recalculate the signature if jwt was changed
+			Algorithm algo;
+			try {
+				ConsoleOut.output("Recalculating Signature with Secret - "+jwtIM.getJWTKey());
+				algo = AlgorithmLinker.getAlgorithm(token.getAlgorithm(),jwtIM.getJWTKey());
+				token.calculateAndSetSignature(algo);
+			} catch (IllegalArgumentException | UnsupportedEncodingException e) {
+				ConsoleOut.output(e.getStackTrace().toString());
+			}
 		} else if (randomKey) {
 			// TODO Vetsch ;)
 		} else if (keepOriginalSignature){
 			jwtIM.setSignature(jwtIM.getOriginalSignature());
 		}
 		
-		CustomJWToken token = null;
-		try {
-			token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
-			this.message = this.tokenPosition.replaceToken(token.getToken());
-			return this.message;
-		} catch (InvalidTokenFormat e) {
-			// TODO give user feedback, that he broke the token
-			ConsoleOut.output(e.getMessage());
-			e.printStackTrace();
-		}
-		return null;		
+		this.message = this.tokenPosition.replaceToken(token.getToken());
+		return this.message;
+			
 	}
 
 	@Override
