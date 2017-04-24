@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -15,7 +16,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentListener;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.Style;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
+import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.algorithm.AlgorithmType;
@@ -30,7 +34,6 @@ public class JWTViewTab extends JPanel{
 	private JLabel outputLabel;
 	private JLabel keyLabel;
 	private JButton verificationIndicator;
-	private JLabel verificationLabel;
 	private JWTTabModel jwtTM;
 
 	public JWTViewTab(JWTTabModel jwtTM) {
@@ -68,14 +71,9 @@ public class JWTViewTab extends JPanel{
 		add(keyField, gbc_inputField1);
 		keyField.setColumns(10);
 		
-		verificationLabel = new JLabel("");
-		GridBagConstraints gbc_validIndicatorLabel = new GridBagConstraints();
-		gbc_validIndicatorLabel.insets = new Insets(0, 0, 5, 5);
-		gbc_validIndicatorLabel.gridx = 1;
-		gbc_validIndicatorLabel.gridy = 3;
-		add(verificationLabel, gbc_validIndicatorLabel);
-		
-		verificationIndicator = new JButton("                           ");
+		verificationIndicator = new JButton("");
+		Dimension preferredSize = new Dimension(400, 30);
+		verificationIndicator.setPreferredSize(preferredSize);
 		GridBagConstraints gbc_validIndicator = new GridBagConstraints();
 		gbc_validIndicator.insets = new Insets(0, 0, 5, 5);
 		gbc_validIndicator.gridx = 2;
@@ -90,6 +88,11 @@ public class JWTViewTab extends JPanel{
 		add(outputLabel, gbc_outputLabel);
 
 		outputField = new RSyntaxTextArea();
+		SyntaxScheme scheme = outputField.getSyntaxScheme();
+		Style style = new Style();
+		style.foreground = new Color(222,133,10);
+		scheme.setStyle(Token.LITERAL_STRING_DOUBLE_QUOTE, style);
+		outputField.revalidate();
 		outputField.setHighlightCurrentLine(false);
 		outputField.setCurrentLineHighlightColor(Color.WHITE);
 		outputField.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
@@ -106,65 +109,11 @@ public class JWTViewTab extends JPanel{
 		add(sp, gbc_outputfield);
 	}
 	
-	public void updateToken() {
-		//JWT token = jwtTabController.getJwtToken();
-		//if (token == null) {
-		//	outputField.setText(null);
-		//} else {
-		//	outputField.setText(jwtTabController.getFormatedToken());
-		//}
-	}
-	
-	public void updateAlgorithm(){
-		//String algorithmType = AlgorithmLinker.getTypeOf(jwtTabController.getCurrentAlgorithm());
-		String algorithmType ="TODO";
-		if(algorithmType.equals(AlgorithmType.symmetric)){
-			keyLabel.setText("Secret");
-			keyField.setEnabled(true);
-		}
-		if(algorithmType.equals(AlgorithmType.asymmetric)){
-			keyLabel.setText("Public Key");
-			keyField.setEnabled(true);
-		}
-		if(algorithmType.equals(AlgorithmType.none)){
-			keyLabel.setText("");
-			keyField.setEnabled(false);
-			keyField.setEnabled(false);
-		}
-	}
-
-
-//			int updateType = (int) arg; 
-//			switch (updateType) {
-//			case NotifyTypes.gui_algorithm:
-//				updateAlgorithm();
-//				break;
-//			case NotifyTypes.gui_signaturecheck:
-//				updateSignatureStatus();
-//				break;
-//			case NotifyTypes.gui_token:
-//				updateToken();
-//				setCaret();
-//				break;
-//			case NotifyTypes.all:
-//				updateAlgorithm();
-//				updateSignatureStatus();
-//				updateToken();
-//				setCaret();
-//			default:
-//				break;
-//			}
 
 	public JTextArea getOutputfield() {
 		return outputField;
 	}
-	
-	private void updateSignatureStatus() {
-		//Color color = jwtTabController.getVerificationStatusColor();
-		//validIndicatorLabel.setText("Signature "+jwtTabController.getVerificationResult());
-		//validIndicator.setBackground(color);	
-	}
-	
+		
 	public String getKeyValue() {
 		return keyField.getText();
 	}
@@ -174,7 +123,7 @@ public class JWTViewTab extends JPanel{
 	}
 
 	public void setVerificationResult(String value) {
-		verificationLabel.setText(value);
+		verificationIndicator.setText(value);
 	}
 
 	public void setVerificationResultColor(Color verificationResultColor) {
@@ -189,7 +138,7 @@ public class JWTViewTab extends JPanel{
 		return getOutputfield().getSelectedText();
 	}
 
-	public void updateSetView() {
+	public void updateSetView(String algorithmType) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				if(!jwtTM.getJWTJSON().equals(outputField.getText())){
@@ -204,12 +153,25 @@ public class JWTViewTab extends JPanel{
 				if(!jwtTM.getVerificationColor().equals(verificationIndicator.getBackground())){
 					verificationIndicator.setBackground(jwtTM.getVerificationColor());
 				}
-				if(!jwtTM.getVerificationLabel().equals(verificationLabel.getText())){
-					verificationLabel.setText(jwtTM.getVerificationLabel());
+				if(!jwtTM.getVerificationLabel().equals(verificationIndicator.getText())){
+					verificationIndicator.setText(jwtTM.getVerificationLabel());
 				}
 				if(outputField.getText().equals("")){
 					jwtTM.setVerificationColor(Settings.colorUndefined);
 					verificationIndicator.setBackground(Settings.colorUndefined);
+				}
+				if(algorithmType.equals(AlgorithmType.symmetric)){
+					keyLabel.setText("Secret");
+					keyField.setEnabled(true);
+				}
+				if(algorithmType.equals(AlgorithmType.asymmetric)){
+					keyLabel.setText("Public Key");
+					keyField.setEnabled(true);
+				}
+				if(algorithmType.equals(AlgorithmType.none)){
+					keyLabel.setText("");
+					keyField.setEnabled(false);
+					keyField.setEnabled(false);
 				}
 				setCaret();
 			}

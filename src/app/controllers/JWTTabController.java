@@ -107,7 +107,8 @@ public class JWTTabController implements IMessageEditorTab {
 			jwtTM.setVerificationColor(Settings.colorUndefined);
 			jwtTM.setVerificationResult("");
 		}
-		jwtVT.updateSetView();
+		String algoType = AlgorithmLinker.getTypeOf(getCurrentAlgorithm());
+		jwtVT.updateSetView(algoType);
 	}
 
 	@Override
@@ -122,23 +123,24 @@ public class JWTTabController implements IMessageEditorTab {
 
 	public void checkKey(String key) {
 		String curAlgo = getCurrentAlgorithm();
+		String algoType = AlgorithmLinker.getTypeOf(getCurrentAlgorithm());
 		try {
 			JWTVerifier verifier = JWT.require(AlgorithmLinker.getAlgorithm(curAlgo, key)).build();
 			DecodedJWT test = verifier.verify(jwtTM.getJWT());
 			jwtTM.setVerificationLabel(Strings.verificationValid);
 			jwtTM.setVerificationColor(Settings.colorValid);
 			test.getAlgorithm();
-			jwtVT.updateSetView();
+			jwtVT.updateSetView(algoType);
 		} catch (JWTVerificationException e) {
 			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
 			jwtTM.setVerificationLabel(Strings.verificationWrongKey);
 			jwtTM.setVerificationColor(Settings.colorInvalid);
-			jwtVT.updateSetView();
+			jwtVT.updateSetView(algoType);
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
 			jwtTM.setVerificationLabel(Strings.verificationInvalidKey);
 			jwtTM.setVerificationColor(Settings.colorProblemInvalid);
-			jwtVT.updateSetView();
+			jwtVT.updateSetView(algoType);
 		}
 		JWTTabModel current = new JWTTabModel(key, content);
 		int containsIndex = modelStateList.indexOf(current);

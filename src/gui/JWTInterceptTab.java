@@ -4,16 +4,16 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
-import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -24,10 +24,8 @@ import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
-import app.helpers.ConsoleOut;
+import app.helpers.Strings;
 import model.JWTInterceptModel;
-import javax.swing.JTextPane;
-import javax.swing.JTextField;
 
 public class JWTInterceptTab extends JPanel {
 
@@ -39,13 +37,16 @@ public class JWTInterceptTab extends JPanel {
 	private JRadioButton rdbtnOriginalSignature;
 	private JTextField keyField;
 	private JLabel lblSecretKey;
+	private JSeparator separator;
+	private JRadioButton rdbtnDontModifySignature;
 
 	public JWTInterceptTab(JWTInterceptModel jwtIM) {
 		this.jwtIM = jwtIM;
 		drawGui();
 	}
 	
-	public void registerActionListeners(ActionListener randomKeyListener, ActionListener originalSignatureListener, ActionListener recalculateSignatureListener){
+	public void registerActionListeners(ActionListener dontMofiy, ActionListener randomKeyListener, ActionListener originalSignatureListener, ActionListener recalculateSignatureListener){
+		rdbtnDontModifySignature.addActionListener(dontMofiy);
 		rdbtnRecalculateSignature.addActionListener(randomKeyListener);
 		rdbtnOriginalSignature.addActionListener(originalSignatureListener);
 		rdbtnRandomKey.addActionListener(recalculateSignatureListener);
@@ -54,9 +55,9 @@ public class JWTInterceptTab extends JPanel {
 	private void drawGui() {	
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0};
-		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gridBagLayout.columnWeights = new double[]{1.0, 1.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
 		jwtArea = new RSyntaxTextArea ();
@@ -74,70 +75,79 @@ public class JWTInterceptTab extends JPanel {
 		sp.setLineNumbersEnabled(false);
 		
 		GridBagConstraints gbc_jwtArea = new GridBagConstraints();
-		gbc_jwtArea.gridheight = 5;
+		gbc_jwtArea.gridheight = 7;
 		gbc_jwtArea.insets = new Insets(0, 0, 5, 5);
 		gbc_jwtArea.fill = GridBagConstraints.BOTH;
 		gbc_jwtArea.gridx = 0;
 		gbc_jwtArea.gridy = 0;
 		add(jwtArea, gbc_jwtArea);
 		
+		rdbtnDontModifySignature = new JRadioButton("Don't automatically modify signature");
+		rdbtnDontModifySignature.setToolTipText(Strings.dontModifyToolTip);
+		rdbtnDontModifySignature.setSelected(true);
+		rdbtnDontModifySignature.setHorizontalAlignment(SwingConstants.LEFT);
+		GridBagConstraints gbc_rdbtnDontModifySignature = new GridBagConstraints();
+		gbc_rdbtnDontModifySignature.anchor = GridBagConstraints.WEST;
+		gbc_rdbtnDontModifySignature.insets = new Insets(0, 0, 5, 0);
+		gbc_rdbtnDontModifySignature.gridx = 1;
+		gbc_rdbtnDontModifySignature.gridy = 0;
+		add(rdbtnDontModifySignature, gbc_rdbtnDontModifySignature);
+		
 		rdbtnRecalculateSignature = new JRadioButton("Recalculate signature");
-		rdbtnRecalculateSignature.setSelected(true);
+		rdbtnRecalculateSignature.setToolTipText(Strings.recalculateSignatureToolTip);
 		rdbtnRecalculateSignature.setHorizontalAlignment(SwingConstants.LEFT);
 		GridBagConstraints gbc_rdbtnRecalculateSignature = new GridBagConstraints();
 		gbc_rdbtnRecalculateSignature.anchor = GridBagConstraints.WEST;
 		gbc_rdbtnRecalculateSignature.insets = new Insets(0, 0, 5, 0);
 		gbc_rdbtnRecalculateSignature.gridx = 1;
-		gbc_rdbtnRecalculateSignature.gridy = 0;
+		gbc_rdbtnRecalculateSignature.gridy = 1;
 		add(rdbtnRecalculateSignature, gbc_rdbtnRecalculateSignature);
 		
 		rdbtnOriginalSignature = new JRadioButton("Keep original signature");
+		rdbtnOriginalSignature.setToolTipText(Strings.originalSignatureToolTip);
 		rdbtnOriginalSignature.setHorizontalAlignment(SwingConstants.LEFT);
 		GridBagConstraints gbc_rdbtnNewRadioButton_1 = new GridBagConstraints();
 		gbc_rdbtnNewRadioButton_1.insets = new Insets(0, 0, 5, 0);
 		gbc_rdbtnNewRadioButton_1.anchor = GridBagConstraints.WEST;
 		gbc_rdbtnNewRadioButton_1.gridx = 1;
-		gbc_rdbtnNewRadioButton_1.gridy = 1;
+		gbc_rdbtnNewRadioButton_1.gridy = 2;
 		add(rdbtnOriginalSignature, gbc_rdbtnNewRadioButton_1);
 		
 		rdbtnRandomKey = new JRadioButton("Sign with random key pair");
+		rdbtnRandomKey.setToolTipText(Strings.randomKeyToolTip);
 		rdbtnRandomKey.setHorizontalAlignment(SwingConstants.LEFT);
 		GridBagConstraints gbc_rdbtnNewRadioButton = new GridBagConstraints();
 		gbc_rdbtnNewRadioButton.anchor = GridBagConstraints.WEST;
 		gbc_rdbtnNewRadioButton.insets = new Insets(0, 0, 5, 0);
 		gbc_rdbtnNewRadioButton.gridx = 1;
-		gbc_rdbtnNewRadioButton.gridy = 2;
+		gbc_rdbtnNewRadioButton.gridy = 3;
 		add(rdbtnRandomKey, gbc_rdbtnNewRadioButton);
 		
 		ButtonGroup btgrp = new ButtonGroup();
+		btgrp.add(rdbtnDontModifySignature);
 		btgrp.add(rdbtnOriginalSignature);
 		btgrp.add(rdbtnRandomKey);
 		btgrp.add(rdbtnRecalculateSignature);
 		
-		JSeparator separator = new JSeparator();
+		separator = new JSeparator();
 		GridBagConstraints gbc_separator = new GridBagConstraints();
 		gbc_separator.insets = new Insets(0, 0, 5, 0);
 		gbc_separator.gridx = 1;
-		gbc_separator.gridy = 3;
+		gbc_separator.gridy = 4;
 		add(separator, gbc_separator);
 		
-		JLabel lblTodoAutomated = new JLabel("Todo : Automated Attacks");
-		GridBagConstraints gbc_lblTodoAutomated = new GridBagConstraints();
-		gbc_lblTodoAutomated.insets = new Insets(0, 0, 5, 0);
-		gbc_lblTodoAutomated.gridx = 1;
-		gbc_lblTodoAutomated.gridy = 4;
-		add(lblTodoAutomated, gbc_lblTodoAutomated);
-		
-		lblSecretKey = new JLabel("Secret / Key for Signature recalculation:");
+		lblSecretKey = new JLabel(Strings.interceptRecalculationKey);
 		GridBagConstraints gbc_lblSecretKey = new GridBagConstraints();
-		gbc_lblSecretKey.insets = new Insets(0, 0, 5, 5);
-		gbc_lblSecretKey.anchor = GridBagConstraints.EAST;
-		gbc_lblSecretKey.gridx = 0;
-		gbc_lblSecretKey.gridy = 6;
+		gbc_lblSecretKey.insets = new Insets(0, 0, 5, 0);
+		gbc_lblSecretKey.anchor = GridBagConstraints.SOUTHWEST;
+		gbc_lblSecretKey.gridx = 1;
+		gbc_lblSecretKey.gridy = 5;
 		add(lblSecretKey, gbc_lblSecretKey);
 		
 		keyField = new JTextField();
+		keyField.setEnabled(false);
 		GridBagConstraints gbc_keyField = new GridBagConstraints();
+		gbc_keyField.anchor = GridBagConstraints.NORTH;
 		gbc_keyField.insets = new Insets(0, 0, 5, 0);
 		gbc_keyField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_keyField.gridx = 1;
@@ -145,6 +155,10 @@ public class JWTInterceptTab extends JPanel {
 		add(keyField, gbc_keyField);
 		keyField.setColumns(10);
 		
+	}
+	
+	public AbstractButton getRdbtnDontModify() {
+		return rdbtnDontModifySignature;
 	}
 	
 	public JRadioButton getRdbtnRecalculateSignature() {
@@ -170,6 +184,9 @@ public class JWTInterceptTab extends JPanel {
 		});
 	}
 	
+	public void setKeyFieldState(boolean state){
+		keyField.setEnabled(state);
+	}
 	
 	public String getJWTfromArea(){
 		return jwtArea.getText();
@@ -178,4 +195,10 @@ public class JWTInterceptTab extends JPanel {
 	public String getSelectedData() {
 		return jwtArea.getSelectedText();
 	}
+
+	public void setKeyFieldValue(String string) {
+		keyField.setText(string);
+	}
+
+
 }

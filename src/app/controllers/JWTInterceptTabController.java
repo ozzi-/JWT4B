@@ -4,9 +4,6 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 
 import com.auth0.jwt.algorithms.Algorithm;
 
@@ -19,8 +16,6 @@ import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
-import burp.IRequestInfo;
-import burp.IResponseInfo;
 import gui.JWTInterceptTab;
 import model.JWTInterceptModel;
 
@@ -32,6 +27,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	private byte[] content;
 	private byte[] message;
 	private ITokenPosition tokenPosition;
+	private boolean dontModify;
 	private boolean randomKey;
 	private boolean keepOriginalSignature;
 	private boolean recalculateSignature;
@@ -42,32 +38,41 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		this.jwtST = jwtST;
 		this.helpers = callbacks.getHelpers();
 
+		ActionListener dontModifyListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioButtonChanged(true,false, false, false);
+			}
+		};
+		
 		ActionListener randomKeyListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(true, false, false);
+				radioButtonChanged(false, true, false, false);
 			}
 		};
 		ActionListener originalSignatureListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(false, true, false);
+				radioButtonChanged(false, false, true, false);
 			}
 		};
 		ActionListener recalculateSignatureListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(false, false, true);
+				radioButtonChanged(false, false, false, true);
 			}
 		};
 
-		jwtST.registerActionListeners(randomKeyListener, originalSignatureListener, recalculateSignatureListener);
+		jwtST.registerActionListeners(dontModifyListener, randomKeyListener, originalSignatureListener, recalculateSignatureListener);
 	}
 
-	private void radioButtonChanged(boolean cRK, boolean cOS, boolean cRS) {
+	private void radioButtonChanged(boolean cDM, boolean cRK, boolean cOS, boolean cRS) {
+		dontModify = jwtST.getRdbtnDontModify().isSelected();
 		randomKey = jwtST.getRdbtnRandomKey().isSelected();
 		keepOriginalSignature = jwtST.getRdbtnOriginalSignature().isSelected();
 		recalculateSignature = jwtST.getRdbtnRecalculateSignature().isSelected();
+		jwtST.setKeyFieldState(!keepOriginalSignature && !dontModify);
 	}
 
 	@Override
@@ -103,7 +108,6 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
 	@Override
 	public byte[] getMessage() {
-		
 		CustomJWToken token = null;
 		try {
 			token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
@@ -131,7 +135,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		
 		this.message = this.tokenPosition.replaceToken(token.getToken());
 		return this.message;
-			
+
 	}
 
 	@Override
