@@ -4,7 +4,10 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.List;
 
+import burp.*;
 import com.auth0.jwt.algorithms.Algorithm;
 
 import app.algorithm.AlgorithmLinker;
@@ -13,9 +16,6 @@ import app.helpers.ConsoleOut;
 import app.helpers.CustomJWToken;
 import app.helpers.Settings;
 import app.tokenposition.ITokenPosition;
-import burp.IBurpExtenderCallbacks;
-import burp.IExtensionHelpers;
-import burp.IMessageEditorTab;
 import gui.JWTInterceptTab;
 import model.JWTInterceptModel;
 
@@ -150,6 +150,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 				ConsoleOut.output("Recalculating Signature with Secret - "+jwtIM.getJWTKey());
 				algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(),jwtIM.getJWTKey());
 				token.calculateAndSetSignature(algo);
+				this.tokenPosition.addHeader("JWT4B: This Header is just to log the key");
 			} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 				ConsoleOut.output(e.getStackTrace().toString());
 			}
