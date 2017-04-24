@@ -77,24 +77,28 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		jwtST.setKeyFieldState(!keepOriginalSignature && !dontModify);
 
 		if(randomKey) {
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-
-					CustomJWToken token = null;
-					try {
-						token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
-						ConsoleOut.output("Generating Random Key for Signature Calculation");
-						String randomKey = AlgorithmLinker.getRandomKey(token.getAlgorithm());
-						ConsoleOut.output("RandomKey generated: " + randomKey);
-						jwtIM.setJWTKey(randomKey);
-						jwtST.updateSetView();
-					} catch (InvalidTokenFormat invalidTokenFormat) {
-						invalidTokenFormat.printStackTrace();
-					}
-				}
-			});
+			generateRandomKey();
 		}
+	}
+
+	private void generateRandomKey() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+
+				CustomJWToken token = null;
+				try {
+					token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
+					ConsoleOut.output("Generating Random Key for Signature Calculation");
+					String randomKey = AlgorithmLinker.getRandomKey(token.getAlgorithm());
+					ConsoleOut.output("RandomKey generated: " + randomKey);
+					jwtIM.setJWTKey(randomKey);
+					jwtST.updateSetView();
+				} catch (InvalidTokenFormat invalidTokenFormat) {
+					invalidTokenFormat.printStackTrace();
+				}
+			}
+		});
 	}
 
 	@Override
