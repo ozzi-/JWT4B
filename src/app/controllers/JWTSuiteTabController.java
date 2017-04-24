@@ -17,6 +17,7 @@ import app.algorithm.AlgorithmLinker;
 import app.helpers.ConsoleOut;
 import app.helpers.CustomJWToken;
 import app.helpers.Settings;
+import app.helpers.Strings;
 import burp.ITab;
 import gui.JWTSuiteTab;
 import model.JWTSuiteTabModel;
@@ -129,18 +130,17 @@ public class JWTSuiteTabController extends Observable implements ITab {
 			JWTVerifier verifier = JWT.require(AlgorithmLinker.getVerifierAlgorithm(curAlgo, key)).build();
 			DecodedJWT test = verifier.verify(jwtSTM.getJwtInput());
 			jwtSTM.setJwtSignatureColor(Settings.colorValid);
-			// TODO Strings.verificationValid;
+			jwtSTM.setVerificationLabel(Strings.verificationValid);
 			test.getAlgorithm();
 		} catch (JWTVerificationException e) {
 			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
 			jwtSTM.setJwtSignatureColor(Settings.colorInvalid);
-			// Strings.verificationWrongKey;
+			jwtSTM.setVerificationLabel(Strings.verificationWrongKey);
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
 			jwtSTM.setJwtSignatureColor(Settings.colorProblemInvalid);
-			// Strings.verificationInvalidKey;
+			jwtSTM.setVerificationLabel(Strings.verificationInvalidKey);
 		}
-		
 		jwtST.updateSetView();
 	}
 

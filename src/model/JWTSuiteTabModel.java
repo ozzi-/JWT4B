@@ -7,6 +7,7 @@ public class JWTSuiteTabModel {
 	private String jwtKey;
 	private Color jwtSignatureColor;
 	private String jwtJSON;
+	private String verificationLabel;
 	
 	public String getJwtInput() {
 		return jwtInput;
@@ -31,5 +32,11 @@ public class JWTSuiteTabModel {
 	}
 	public void setJwtJSON(String jwtJSON) {
 		this.jwtJSON = jwtJSON;
+	}
+	public void setVerificationLabel(String label) {
+		this.verificationLabel = label;
+	}
+	public String getVerificationLabel() {
+		return this.verificationLabel;
 	}
 }

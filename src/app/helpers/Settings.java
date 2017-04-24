@@ -1,6 +1,7 @@
 package app.helpers;
 
 import java.awt.Color;
+import java.awt.GraphicsConfiguration;
 
 import javax.swing.JButton;
 
