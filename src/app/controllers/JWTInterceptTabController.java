@@ -4,9 +4,16 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.List;
 
+<<<<<<< HEAD
 import javax.swing.SwingUtilities;
 
+=======
+import app.helpers.PublicKeyBroker;
+import burp.*;
+>>>>>>> f6823bfbf54fc90b151606a347b0d94ffce7a00d
 import com.auth0.jwt.algorithms.Algorithm;
 
 import app.algorithm.AlgorithmLinker;
@@ -15,9 +22,6 @@ import app.helpers.ConsoleOut;
 import app.helpers.CustomJWToken;
 import app.helpers.Settings;
 import app.tokenposition.ITokenPosition;
-import burp.IBurpExtenderCallbacks;
-import burp.IExtensionHelpers;
-import burp.IMessageEditorTab;
 import gui.JWTInterceptTab;
 import model.JWTInterceptModel;
 
@@ -79,24 +83,28 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			jwtIM.setJWTKey("");
 		}
 		if(randomKey) {
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-
-					CustomJWToken token = null;
-					try {
-						token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
-						ConsoleOut.output("Generating Random Key for Signature Calculation");
-						String randomKey = AlgorithmLinker.getRandomKey(token.getAlgorithm());
-						ConsoleOut.output("RandomKey generated: " + randomKey);
-						jwtIM.setJWTKey(randomKey);
-						jwtST.updateSetView(false);
-					} catch (InvalidTokenFormat invalidTokenFormat) {
-						invalidTokenFormat.printStackTrace();
-					}
-				}
-			});
+			generateRandomKey();
 		}
+	}
+
+	private void generateRandomKey() {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+
+				CustomJWToken token = null;
+				try {
+					token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
+					ConsoleOut.output("Generating Random Key for Signature Calculation");
+					String randomKey = AlgorithmLinker.getRandomKey(token.getAlgorithm());
+					ConsoleOut.output("RandomKey generated: " + randomKey);
+					jwtIM.setJWTKey(randomKey);
+					jwtST.updateSetView(false);
+				} catch (InvalidTokenFormat invalidTokenFormat) {
+					invalidTokenFormat.printStackTrace();
+				}
+			}
+		});
 	}
 
 	@Override
@@ -148,6 +156,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 				ConsoleOut.output("Recalculating Signature with Secret - "+jwtIM.getJWTKey());
 				algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(),jwtIM.getJWTKey());
 				token.calculateAndSetSignature(algo);
+				addLogHeadersToRequest();
 			} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 				ConsoleOut.output(e.getStackTrace().toString());
 			}
@@ -158,6 +167,15 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		this.message = this.tokenPosition.replaceToken(token.getToken());
 		return this.message;
 
+	}
+
+	private void addLogHeadersToRequest() {
+		this.tokenPosition.addHeader("JWT4B: This Header is just to log the key");
+		this.tokenPosition.addHeader("JWT4B-SIGNER-KEY: " + jwtIM.getJWTKey());
+		if(PublicKeyBroker.publicKey != null) {
+			this.tokenPosition.addHeader("JWT4B-SIGNER-PUBLIC-KEY: " + PublicKeyBroker.publicKey);
+			PublicKeyBroker.publicKey = null;
+		}
 	}
 
 	@Override

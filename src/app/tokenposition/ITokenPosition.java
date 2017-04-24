@@ -71,4 +71,20 @@ public abstract class ITokenPosition {
 	protected IExtensionHelpers getHelpers() { 
 		return helpers;
 	}
+
+	public void addHeader(String header) {
+		List<String> headers;
+		int offset;
+		if (isRequest) {
+			IRequestInfo requestInfo = helpers.analyzeRequest(message);
+			headers = requestInfo.getHeaders();
+			offset = requestInfo.getBodyOffset();
+		} else {
+			IResponseInfo responseInfo = helpers.analyzeResponse(message);
+			headers = responseInfo.getHeaders();
+			offset = responseInfo.getBodyOffset();
+		}
+		headers.add(header);
+		this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));
+	}
 }
