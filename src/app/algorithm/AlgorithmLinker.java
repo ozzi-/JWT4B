@@ -1,14 +1,14 @@
 package app.algorithm;
 
 import java.io.UnsupportedEncodingException;
-import java.security.KeyFactory;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Base64;
-
+import org.apache.commons.lang.RandomStringUtils;
 import com.auth0.jwt.algorithms.Algorithm;
 
 import app.helpers.ConsoleOut;
@@ -38,6 +38,19 @@ public class AlgorithmLinker {
 
 	private static final app.algorithm.AlgorithmWrapper[] supportedAlgorithms = { 
 			none, HS256, HS384, HS512, RS256, RS384, RS512, ES256, ES384, ES512 };
+
+
+	private static final AlgorithmWrapper[] supportedPSKAlgorithms = {
+		 HS256, HS384, HS512
+	};
+
+	private static final AlgorithmWrapper[] supportedRSAAlgorithms = {
+		 RS256, RS384, RS512
+	};
+
+	private static final AlgorithmWrapper[] supportedECAlgorithms = {
+		 ES256, ES384, ES512
+	};
 
 	private static PublicKey generatePublicKeyFromString(String key, String algorithm) {
 		PublicKey publicKey = null;
@@ -95,6 +108,44 @@ public class AlgorithmLinker {
 		}
 
 		return Algorithm.none();
+	}
+
+	public static boolean isPresharedKeyAlgorithm(String algorithm) {
+		return Arrays.asList(supportedPSKAlgorithms).contains(algorithm);
+	}
+
+	public static boolean isRSAKeyAlgorithm(String algorithm) {
+		return Arrays.asList(supportedRSAAlgorithms).contains(algorithm);
+	}
+
+	public static boolean isECKeyAlgorithm(String algorithm) {
+		return Arrays.asList(supportedECAlgorithms).contains(algorithm);
+	}
+
+	public static String getRandomKey(String algorithm){
+		if(isPresharedKeyAlgorithm(algorithm) ) {
+			return RandomStringUtils.randomAlphanumeric(6);
+		}
+
+		if(isRSAKeyAlgorithm(algorithm)) {
+			try {
+				KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
+				return Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()).toString();
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+
+			}
+		}
+
+		if (isECKeyAlgorithm(algorithm)) {
+			try {
+				KeyPair keyPair = KeyPairGenerator.getInstance("EC").generateKeyPair();
+				return Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()).toString();
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			}
+		}
+		return "";
 	}
 
 	/**

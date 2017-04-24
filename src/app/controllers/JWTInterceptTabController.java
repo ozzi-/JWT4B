@@ -128,7 +128,9 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 				ConsoleOut.output(e.getStackTrace().toString());
 			}
 		} else if (randomKey) {
-			// TODO Vetsch ;)
+			ConsoleOut.output("Generating Random Key for Signature Calculation");
+			String randomKey = AlgorithmLinker.getRandomKey(token.getAlgorithm());
+			jwtIM.setJWTKey(randomKey);
 		} else if (keepOriginalSignature){
 			jwtIM.setSignature(jwtIM.getOriginalSignature());
 		}
