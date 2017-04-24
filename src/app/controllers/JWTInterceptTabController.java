@@ -4,24 +4,21 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.List;
 
-<<<<<<< HEAD
 import javax.swing.SwingUtilities;
 
-=======
-import app.helpers.PublicKeyBroker;
-import burp.*;
->>>>>>> f6823bfbf54fc90b151606a347b0d94ffce7a00d
 import com.auth0.jwt.algorithms.Algorithm;
 
 import app.algorithm.AlgorithmLinker;
 import app.controllers.ReadableTokenFormat.InvalidTokenFormat;
 import app.helpers.ConsoleOut;
 import app.helpers.CustomJWToken;
+import app.helpers.PublicKeyBroker;
 import app.helpers.Settings;
 import app.tokenposition.ITokenPosition;
+import burp.IBurpExtenderCallbacks;
+import burp.IExtensionHelpers;
+import burp.IMessageEditorTab;
 import gui.JWTInterceptTab;
 import model.JWTInterceptModel;
 
