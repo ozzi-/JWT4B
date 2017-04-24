@@ -7,6 +7,8 @@ import java.security.interfaces.RSAKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+
+import app.helpers.PublicKeyBroker;
 import org.apache.commons.lang.RandomStringUtils;
 import com.auth0.jwt.algorithms.Algorithm;
 
@@ -152,6 +154,7 @@ public class AlgorithmLinker {
 		if(algorithmType.equals(AlgorithmType.asymmetric) && algorithm.substring(0,2).equals("RS")) {
 			try {
 				KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
+				PublicKeyBroker.publicKey = Base64.toBase64String(keyPair.getPublic().getEncoded());
 				return Base64.toBase64String((keyPair.getPrivate().getEncoded()));
 			} catch (NoSuchAlgorithmException e) {
 				e.printStackTrace();

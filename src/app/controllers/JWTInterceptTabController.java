@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 
+import app.helpers.PublicKeyBroker;
 import burp.*;
 import com.auth0.jwt.algorithms.Algorithm;
 
@@ -150,8 +151,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 				ConsoleOut.output("Recalculating Signature with Secret - "+jwtIM.getJWTKey());
 				algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(),jwtIM.getJWTKey());
 				token.calculateAndSetSignature(algo);
-				this.tokenPosition.addHeader("JWT4B: This Header is just to log the key");
-				this.tokenPosition.addHeader("JWT4B-SIGNER-KEY: " + jwtIM.getJWTKey());
+				addLogHeadersToRequest();
 			} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 				ConsoleOut.output(e.getStackTrace().toString());
 			}
@@ -162,6 +162,15 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		this.message = this.tokenPosition.replaceToken(token.getToken());
 		return this.message;
 
+	}
+
+	private void addLogHeadersToRequest() {
+		this.tokenPosition.addHeader("JWT4B: This Header is just to log the key");
+		this.tokenPosition.addHeader("JWT4B-SIGNER-KEY: " + jwtIM.getJWTKey());
+		if(PublicKeyBroker.publicKey != null) {
+			this.tokenPosition.addHeader("JWT4B-SIGNER-PUBLIC-KEY: " + PublicKeyBroker.publicKey);
+			PublicKeyBroker.publicKey = null;
+		}
 	}
 
 	@Override
