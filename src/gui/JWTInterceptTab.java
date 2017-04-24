@@ -83,7 +83,7 @@ public class JWTInterceptTab extends JPanel {
 		gbc_jwtArea.gridy = 1;
 		add(sp, gbc_jwtArea);
 		
-		rdbtnDontModifySignature = new JRadioButton("Don't automatically modify signature");
+		rdbtnDontModifySignature = new JRadioButton(Strings.dontModify);
 		rdbtnDontModifySignature.setToolTipText(Strings.dontModifyToolTip);
 		rdbtnDontModifySignature.setSelected(true);
 		rdbtnDontModifySignature.setHorizontalAlignment(SwingConstants.LEFT);
@@ -94,7 +94,7 @@ public class JWTInterceptTab extends JPanel {
 		gbc_rdbtnDontModifySignature.gridy = 1;
 		add(rdbtnDontModifySignature, gbc_rdbtnDontModifySignature);
 		
-		rdbtnRecalculateSignature = new JRadioButton("Recalculate signature");
+		rdbtnRecalculateSignature = new JRadioButton(Strings.recalculateSignature);
 		rdbtnRecalculateSignature.setToolTipText(Strings.recalculateSignatureToolTip);
 		rdbtnRecalculateSignature.setHorizontalAlignment(SwingConstants.LEFT);
 		GridBagConstraints gbc_rdbtnRecalculateSignature = new GridBagConstraints();
@@ -104,8 +104,8 @@ public class JWTInterceptTab extends JPanel {
 		gbc_rdbtnRecalculateSignature.gridy = 2;
 		add(rdbtnRecalculateSignature, gbc_rdbtnRecalculateSignature);
 		
-		rdbtnOriginalSignature = new JRadioButton("Keep original signature");
-		rdbtnOriginalSignature.setToolTipText(Strings.originalSignatureToolTip);
+		rdbtnOriginalSignature = new JRadioButton(Strings.keepOriginalSignature);
+		rdbtnOriginalSignature.setToolTipText(Strings.keepOriginalSignatureToolTip);
 		rdbtnOriginalSignature.setHorizontalAlignment(SwingConstants.LEFT);
 		GridBagConstraints gbc_rdbtnNewRadioButton_1 = new GridBagConstraints();
 		gbc_rdbtnNewRadioButton_1.insets = new Insets(0, 0, 5, 5);
@@ -114,7 +114,7 @@ public class JWTInterceptTab extends JPanel {
 		gbc_rdbtnNewRadioButton_1.gridy = 3;
 		add(rdbtnOriginalSignature, gbc_rdbtnNewRadioButton_1);
 		
-		rdbtnRandomKey = new JRadioButton("Sign with random key pair");
+		rdbtnRandomKey = new JRadioButton(Strings.randomKey);
 		rdbtnRandomKey.setToolTipText(Strings.randomKeyToolTip);
 		rdbtnRandomKey.setHorizontalAlignment(SwingConstants.LEFT);
 		GridBagConstraints gbc_rdbtnNewRadioButton = new GridBagConstraints();
@@ -206,6 +206,4 @@ public class JWTInterceptTab extends JPanel {
 	public void setKeyFieldValue(String string) {
 		keyField.setText(string);
 	}
-
-
 }

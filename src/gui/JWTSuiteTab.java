@@ -145,7 +145,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_jwtInputField.gridy = 2;
 		add(jwtInputField, gbc_jwtInputField);
 		
-		lblEnterSecret = new JLabel("Enter Secret / Key");
+		lblEnterSecret = new JLabel(Strings.enterSecretKey);
 		lblEnterSecret.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblEnterSecret = new GridBagConstraints();
 		gbc_lblEnterSecret.anchor = GridBagConstraints.WEST;

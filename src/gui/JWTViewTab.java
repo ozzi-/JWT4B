@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -23,9 +24,7 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.algorithm.AlgorithmType;
-import app.helpers.Settings;
 import model.JWTTabModel;
-import java.awt.Font;
 
 public class JWTViewTab extends JPanel{
 
@@ -143,6 +142,7 @@ public class JWTViewTab extends JPanel{
 		return getOutputfield().getSelectedText();
 	}
 
+	
 	public void updateSetView(String algorithmType) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -160,10 +160,6 @@ public class JWTViewTab extends JPanel{
 				}
 				if(!jwtTM.getVerificationLabel().equals(verificationIndicator.getText())){
 					verificationIndicator.setText(jwtTM.getVerificationLabel());
-				}
-				if(outputField.getText().equals("")){
-					jwtTM.setVerificationColor(Settings.colorUndefined);
-					verificationIndicator.setBackground(Settings.colorUndefined);
 				}
 				if(algorithmType.equals(AlgorithmType.symmetric)){
 					keyLabel.setText("Secret");

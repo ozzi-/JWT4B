@@ -2,14 +2,12 @@ package model;
 
 import java.awt.Color;
 
-import app.helpers.Settings;
-
 public class JWTTabModel {
 	private String key="";
 	private String keyLabel="";
 	private int hashCode;
 	private String verificationLabel="";
-	private Color verificationColor=Settings.colorUndefined;
+	private Color verificationColor;
 	private String jwt;
 	private String jwtJSON;
 

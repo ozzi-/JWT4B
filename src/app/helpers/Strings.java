@@ -19,9 +19,14 @@ public class Strings {
 
 	public static final String interceptRecalculationKey = "Secret / Key for Signature recalculation:";
 
+	public static final String dontModify = "Do not automatically modify signature";
+	public static final String keepOriginalSignature ="Keep original signature";
+	public static final String randomKey = "Sign with random key pair";
+	public static final String enterSecretKey="Enter Secret / Key";
+
 	public static final String dontModifyToolTip ="The signature will be taken straight out of the editable field to the left";
 	public static final String recalculateSignatureToolTip = "<html>The signature will be recalculated depending<br> on the content and algorithm set</html>";
-	public static final String originalSignatureToolTip = "The signature originally sent will be preserved and sent unchanged";
+	public static final String keepOriginalSignatureToolTip = "The signature originally sent will be preserved and sent unchanged";
 	public static final String randomKeyToolTip = "<html>The signature will be recalculated depending<br>on the content and algorithm set<br>by a random signature / key</html>";
 
 	public static final String creditTitle ="JWT4B - About";
@@ -36,4 +41,6 @@ public class Strings {
 			+ "<li>Compass Security AG, for providing development time - https://compass-security.com</li>"
 			+ "</ul>"
 			+ "</html>";
+
+
 }
