@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.UnsupportedEncodingException;
 
+import javax.swing.SwingUtilities;
+
 import com.auth0.jwt.algorithms.Algorithm;
 
 import app.algorithm.AlgorithmLinker;
@@ -18,8 +20,6 @@ import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
 import gui.JWTInterceptTab;
 import model.JWTInterceptModel;
-
-import javax.swing.*;
 
 public class JWTInterceptTabController implements IMessageEditorTab {
 
@@ -74,8 +74,10 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		randomKey = jwtST.getRdbtnRandomKey().isSelected();
 		keepOriginalSignature = jwtST.getRdbtnOriginalSignature().isSelected();
 		recalculateSignature = jwtST.getRdbtnRecalculateSignature().isSelected();
-		jwtST.setKeyFieldState(!keepOriginalSignature && !dontModify);
-
+		jwtST.setKeyFieldState(!keepOriginalSignature && !dontModify); // TODO move to model
+		if( keepOriginalSignature || dontModify){
+			jwtIM.setJWTKey("");
+		}
 		if(randomKey) {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
@@ -88,7 +90,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 						String randomKey = AlgorithmLinker.getRandomKey(token.getAlgorithm());
 						ConsoleOut.output("RandomKey generated: " + randomKey);
 						jwtIM.setJWTKey(randomKey);
-						jwtST.updateSetView();
+						jwtST.updateSetView(false);
 					} catch (InvalidTokenFormat invalidTokenFormat) {
 						invalidTokenFormat.printStackTrace();
 					}
@@ -125,7 +127,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		jwtIM.setJWTJSON(ReadableTokenFormat.getReadableFormat(cJWT));
 		jwtIM.setSignature(cJWT.getSignature());
 
-		jwtST.updateSetView();
+		jwtST.updateSetView(true);
 	}
 
 	@Override
@@ -160,7 +162,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
 	@Override
 	public boolean isModified() {
-		// TODO set true when model changed
+		// TODO set true when model changed ?
 		return false;
 	}
 

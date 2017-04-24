@@ -25,6 +25,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import app.algorithm.AlgorithmType;
 import app.helpers.Settings;
 import model.JWTTabModel;
+import java.awt.Font;
 
 public class JWTViewTab extends JPanel{
 
@@ -48,26 +49,28 @@ public class JWTViewTab extends JPanel{
 	
 	private void drawPanel() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] { 0, 79, 447, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.columnWidths = new int[] { 10, 447, 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 10, 10, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
-
-		keyLabel = new JLabel("");
-		GridBagConstraints gbc_inputLabel1 = new GridBagConstraints();
-		gbc_inputLabel1.insets = new Insets(0, 0, 5, 5);
-		gbc_inputLabel1.anchor = GridBagConstraints.EAST;
-		gbc_inputLabel1.gridx = 1;
-		gbc_inputLabel1.gridy = 1;
-		add(keyLabel, gbc_inputLabel1);
+		
+				keyLabel = new JLabel(" ");
+				keyLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+				GridBagConstraints gbc_inputLabel1 = new GridBagConstraints();
+				gbc_inputLabel1.fill = GridBagConstraints.VERTICAL;
+				gbc_inputLabel1.insets = new Insets(0, 0, 5, 5);
+				gbc_inputLabel1.anchor = GridBagConstraints.WEST;
+				gbc_inputLabel1.gridx = 1;
+				gbc_inputLabel1.gridy = 1;
+				add(keyLabel, gbc_inputLabel1);
 
 		keyField = new JTextField();
 		GridBagConstraints gbc_inputField1 = new GridBagConstraints();
 		gbc_inputField1.insets = new Insets(0, 0, 5, 5);
 		gbc_inputField1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_inputField1.gridx = 2;
-		gbc_inputField1.gridy = 1;
+		gbc_inputField1.gridx = 1;
+		gbc_inputField1.gridy = 2;
 		add(keyField, gbc_inputField1);
 		keyField.setColumns(10);
 		
@@ -76,16 +79,9 @@ public class JWTViewTab extends JPanel{
 		verificationIndicator.setPreferredSize(preferredSize);
 		GridBagConstraints gbc_validIndicator = new GridBagConstraints();
 		gbc_validIndicator.insets = new Insets(0, 0, 5, 5);
-		gbc_validIndicator.gridx = 2;
-		gbc_validIndicator.gridy = 3;
+		gbc_validIndicator.gridx = 1;
+		gbc_validIndicator.gridy = 4;
 		add(verificationIndicator, gbc_validIndicator);
-
-		outputLabel = new JLabel("JWT");
-		GridBagConstraints gbc_outputLabel = new GridBagConstraints();
-		gbc_outputLabel.insets = new Insets(0, 0, 5, 5);
-		gbc_outputLabel.gridx = 1;
-		gbc_outputLabel.gridy = 5;
-		add(outputLabel, gbc_outputLabel);
 
 		outputField = new RSyntaxTextArea();
 		SyntaxScheme scheme = outputField.getSyntaxScheme();
@@ -98,14 +94,23 @@ public class JWTViewTab extends JPanel{
 		outputField.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
 		outputField.setEditable(false);
 		outputField.setPopupMenu(new JPopupMenu()); // no context menu on right-click
+		
+				outputLabel = new JLabel("JWT");
+				outputLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+				GridBagConstraints gbc_outputLabel = new GridBagConstraints();
+				gbc_outputLabel.anchor = GridBagConstraints.WEST;
+				gbc_outputLabel.insets = new Insets(0, 0, 5, 5);
+				gbc_outputLabel.gridx = 1;
+				gbc_outputLabel.gridy = 5;
+				add(outputLabel, gbc_outputLabel);
 		RTextScrollPane sp = new RTextScrollPane(outputField);
 		sp.setLineNumbersEnabled(false);
 		
 		GridBagConstraints gbc_outputfield = new GridBagConstraints();
 		gbc_outputfield.insets = new Insets(0, 0, 5, 5);
 		gbc_outputfield.fill = GridBagConstraints.BOTH;
-		gbc_outputfield.gridx = 2;
-		gbc_outputfield.gridy = 5;
+		gbc_outputfield.gridx = 1;
+		gbc_outputfield.gridy = 6;
 		add(sp, gbc_outputfield);
 	}
 	

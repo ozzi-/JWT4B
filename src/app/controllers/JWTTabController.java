@@ -24,7 +24,6 @@ import burp.IMessageEditorTab;
 import gui.JWTViewTab;
 import model.JWTTabModel;
 
-// TODO verificationResult differing default grey. Result Label improvements.
 public class JWTTabController implements IMessageEditorTab {
 
 	private IExtensionHelpers helpers;

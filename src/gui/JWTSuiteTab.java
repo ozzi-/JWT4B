@@ -80,9 +80,9 @@ public class JWTSuiteTab extends JPanel {
 	private void drawGui() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 10, 0, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 30, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 		
 		JLabel lblPasteJwtToken = new JLabel(Strings.enterJWT);
@@ -91,7 +91,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lblPasteJwtToken.anchor = GridBagConstraints.SOUTHWEST;
 		gbc_lblPasteJwtToken.insets = new Insets(0, 0, 5, 5);
 		gbc_lblPasteJwtToken.gridx = 1;
-		gbc_lblPasteJwtToken.gridy = 0;
+		gbc_lblPasteJwtToken.gridy = 1;
 		add(lblPasteJwtToken, gbc_lblPasteJwtToken);
 		
 		creditButton = new JButton("?");
@@ -129,7 +129,7 @@ public class JWTSuiteTab extends JPanel {
 		GridBagConstraints gbc_creditButton = new GridBagConstraints();
 		gbc_creditButton.insets = new Insets(0, 0, 5, 0);
 		gbc_creditButton.gridx = 2;
-		gbc_creditButton.gridy = 0;
+		gbc_creditButton.gridy = 1;
 		add(creditButton, gbc_creditButton);
 		
 
@@ -142,7 +142,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_jwtInputField.insets = new Insets(0, 0, 5, 5);
 		gbc_jwtInputField.fill = GridBagConstraints.BOTH;
 		gbc_jwtInputField.gridx = 1;
-		gbc_jwtInputField.gridy = 1;
+		gbc_jwtInputField.gridy = 2;
 		add(jwtInputField, gbc_jwtInputField);
 		
 		lblEnterSecret = new JLabel("Enter Secret / Key");
@@ -151,7 +151,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lblEnterSecret.anchor = GridBagConstraints.WEST;
 		gbc_lblEnterSecret.insets = new Insets(0, 0, 5, 5);
 		gbc_lblEnterSecret.gridx = 1;
-		gbc_lblEnterSecret.gridy = 2;
+		gbc_lblEnterSecret.gridy = 3;
 		add(lblEnterSecret, gbc_lblEnterSecret);
 
 		jwtKeyField = new JTextField();
@@ -159,7 +159,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_jwtKeyField.insets = new Insets(0, 0, 5, 5);
 		gbc_jwtKeyField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_jwtKeyField.gridx = 1;
-		gbc_jwtKeyField.gridy = 3;
+		gbc_jwtKeyField.gridy = 4;
 		add(jwtKeyField, gbc_jwtKeyField);
 		jwtKeyField.setColumns(10);
 
@@ -170,14 +170,14 @@ public class JWTSuiteTab extends JPanel {
 		GridBagConstraints gbc_jwtSignatureButton = new GridBagConstraints();
 		gbc_jwtSignatureButton.insets = new Insets(0, 0, 5, 5);
 		gbc_jwtSignatureButton.gridx = 1;
-		gbc_jwtSignatureButton.gridy = 5;
+		gbc_jwtSignatureButton.gridy = 6;
 		add(jwtSignatureButton, gbc_jwtSignatureButton);
 
 		GridBagConstraints gbc_jwtOuputField = new GridBagConstraints();
 		gbc_jwtOuputField.insets = new Insets(0, 0, 5, 5);
 		gbc_jwtOuputField.fill = GridBagConstraints.BOTH;
 		gbc_jwtOuputField.gridx = 1;
-		gbc_jwtOuputField.gridy = 7;
+		gbc_jwtOuputField.gridy = 8;
 
 		jwtOuputField = new RSyntaxTextArea();
 		SyntaxScheme scheme = jwtOuputField.getSyntaxScheme();
@@ -200,7 +200,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lblDecodedJwt.anchor = GridBagConstraints.WEST;
 		gbc_lblDecodedJwt.insets = new Insets(0, 0, 5, 5);
 		gbc_lblDecodedJwt.gridx = 1;
-		gbc_lblDecodedJwt.gridy = 6;
+		gbc_lblDecodedJwt.gridy = 7;
 		add(lblDecodedJwt, gbc_lblDecodedJwt);
 
 		add(jwtOuputField, gbc_jwtOuputField);

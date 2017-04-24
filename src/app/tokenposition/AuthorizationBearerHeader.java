@@ -5,7 +5,7 @@ import java.util.List;
 
 public class AuthorizationBearerHeader extends ITokenPosition {
 
-	private static List<String> jwtKeywords = Arrays.asList("Authorization: Bearer", "Todo other");
+	private static List<String> jwtKeywords = Arrays.asList("Authorization: Bearer");
 	private String selectedKeyword;
 	private Integer headerIndex;
 
