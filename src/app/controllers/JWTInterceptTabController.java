@@ -151,6 +151,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 				algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(),jwtIM.getJWTKey());
 				token.calculateAndSetSignature(algo);
 				this.tokenPosition.addHeader("JWT4B: This Header is just to log the key");
+				this.tokenPosition.addHeader("JWT4B-SIGNER-KEY: " + jwtIM.getJWTKey());
 			} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 				ConsoleOut.output(e.getStackTrace().toString());
 			}
