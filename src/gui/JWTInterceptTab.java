@@ -165,7 +165,7 @@ public class JWTInterceptTab extends JPanel {
 				if(!jwtArea.getText().equals(jwtIM.getJWTJSON())){
 					jwtArea.setText(jwtIM.getJWTJSON());
 				}
-				jwtIM.setJWTKey(keyField.getText());
+				keyField.setText(jwtIM.getJWTKey());
 			}
 		});
 	}

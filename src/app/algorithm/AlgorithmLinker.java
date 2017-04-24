@@ -5,13 +5,13 @@ import java.security.*;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
 import java.security.spec.EncodedKeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Arrays;
-import java.util.Base64;
 import org.apache.commons.lang.RandomStringUtils;
 import com.auth0.jwt.algorithms.Algorithm;
 
 import app.helpers.ConsoleOut;
+import org.bouncycastle.util.encoders.Base64;
 
 public class AlgorithmLinker {
 
@@ -57,7 +57,7 @@ public class AlgorithmLinker {
 		if(key.length()>1){
 			key = key.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "")
 					.replaceAll("\\s+", "").replaceAll("\\r+", "").replaceAll("\\n+", "");
-			byte[] keyByteArray = Base64.getDecoder().decode(key);
+			byte[] keyByteArray = Base64.decode(key);
 			try {
 				KeyFactory kf = KeyFactory.getInstance(algorithm);
 				EncodedKeySpec keySpec = new X509EncodedKeySpec(keyByteArray);
@@ -69,6 +69,22 @@ public class AlgorithmLinker {
 		return publicKey;
 	}
 
+	private static PrivateKey generatePrivateKeyFromString(String key, String algorithm) {
+		PrivateKey privateKey = null;
+		if(key.length()>1){
+			key = key.replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "")
+				 .replaceAll("\\s+", "").replaceAll("\\r+", "").replaceAll("\\n+", "");
+			byte[] keyByteArray = Base64.decode(key);
+			try {
+				KeyFactory kf = KeyFactory.getInstance(algorithm);
+				EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyByteArray);
+				privateKey = kf.generatePrivate(keySpec);
+			} catch (Exception e) {
+				ConsoleOut.output(e.getMessage());
+			}
+		}
+		return privateKey;
+	}
 	/**
 	 * @param algo
 	 * @param key - either the secret or the private key
@@ -77,7 +93,15 @@ public class AlgorithmLinker {
 	 * @throws IllegalArgumentException
 	 * @throws UnsupportedEncodingException
 	 */
-	public static Algorithm getAlgorithm(String algo, String key)
+	public static Algorithm getVerifierAlgorithm(String algo, String key) throws UnsupportedEncodingException {
+		return getAlgorithm(algo, key, false);
+	}
+
+	public static Algorithm getSignerAlgorithm(String algo, String key) throws UnsupportedEncodingException {
+		return getAlgorithm(algo, key, true);
+	}
+
+	private static Algorithm getAlgorithm(String algo, String key, boolean IsKeyASignerKey)
 			throws IllegalArgumentException, UnsupportedEncodingException {
 		if (algo.equals(HS256.getAlgorithm())) {
 			return Algorithm.HMAC256(key);
@@ -89,58 +113,55 @@ public class AlgorithmLinker {
 			return Algorithm.HMAC512(key);
 		}
 		if (algo.equals(ES256.getAlgorithm())) {
-			return Algorithm.ECDSA256((ECKey) generatePublicKeyFromString(key, "EC"));
+			return Algorithm.ECDSA256((ECKey) getKeyInstance(key, "EC", IsKeyASignerKey));
 		}
 		if (algo.equals(ES384.getAlgorithm())) {
-			return Algorithm.ECDSA384((ECKey) generatePublicKeyFromString(key, "EC"));
+			return Algorithm.ECDSA384((ECKey) getKeyInstance(key, "EC", IsKeyASignerKey));
 		}
 		if (algo.equals(ES512.getAlgorithm())) {
-			return Algorithm.ECDSA512((ECKey) generatePublicKeyFromString(key, "EC"));
+			return Algorithm.ECDSA512((ECKey) getKeyInstance(key, "EC",IsKeyASignerKey));
 		}
 		if (algo.equals(RS256.getAlgorithm())) {
-			return Algorithm.RSA256((RSAKey) generatePublicKeyFromString(key, "RSA"));
+			return Algorithm.RSA256((RSAKey) getKeyInstance(key, "RSA", IsKeyASignerKey));
 		}
 		if (algo.equals(RS384.getAlgorithm())) {
-			return Algorithm.RSA384((RSAKey) generatePublicKeyFromString(key, "RSA"));
+			return Algorithm.RSA384((RSAKey) getKeyInstance(key, "RSA", IsKeyASignerKey));
 		}
 		if (algo.equals(RS512.getAlgorithm())) {
-			return Algorithm.RSA512((RSAKey) generatePublicKeyFromString(key, "RSA"));
+			return Algorithm.RSA512((RSAKey) getKeyInstance(key, "RSA", IsKeyASignerKey));
 		}
 
 		return Algorithm.none();
 	}
 
-	public static boolean isPresharedKeyAlgorithm(String algorithm) {
-		return Arrays.asList(supportedPSKAlgorithms).contains(algorithm);
-	}
-
-	public static boolean isRSAKeyAlgorithm(String algorithm) {
-		return Arrays.asList(supportedRSAAlgorithms).contains(algorithm);
-	}
-
-	public static boolean isECKeyAlgorithm(String algorithm) {
-		return Arrays.asList(supportedECAlgorithms).contains(algorithm);
+	private static Key getKeyInstance(String key, String algorithm, boolean isPrivate) {
+		if(isPrivate) {
+			return generatePrivateKeyFromString(key, algorithm);
+		} else {
+			return generatePublicKeyFromString(key, algorithm);
+		}
 	}
 
 	public static String getRandomKey(String algorithm){
-		if(isPresharedKeyAlgorithm(algorithm) ) {
+		String algorithmType = AlgorithmLinker.getTypeOf(algorithm);
+
+		if(algorithmType.equals(AlgorithmType.symmetric)) {
 			return RandomStringUtils.randomAlphanumeric(6);
 		}
 
-		if(isRSAKeyAlgorithm(algorithm)) {
+		if(algorithmType.equals(AlgorithmType.asymmetric) && algorithm.substring(0,2).equals("RS")) {
 			try {
 				KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
-				return Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()).toString();
+				return Base64.toBase64String((keyPair.getPrivate().getEncoded()));
 			} catch (NoSuchAlgorithmException e) {
 				e.printStackTrace();
-
 			}
 		}
 
-		if (isECKeyAlgorithm(algorithm)) {
+		if (algorithmType.equals(AlgorithmType.asymmetric) && algorithm.substring(0,2).equals("ES")) {
 			try {
 				KeyPair keyPair = KeyPairGenerator.getInstance("EC").generateKeyPair();
-				return Base64.getEncoder().encode(keyPair.getPrivate().getEncoded()).toString();
+				return Base64.toBase64String(keyPair.getPrivate().getEncoded());
 			} catch (NoSuchAlgorithmException e) {
 				e.printStackTrace();
 			}

@@ -4,9 +4,6 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 
 import com.auth0.jwt.algorithms.Algorithm;
 
@@ -19,10 +16,10 @@ import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
-import burp.IRequestInfo;
-import burp.IResponseInfo;
 import gui.JWTInterceptTab;
 import model.JWTInterceptModel;
+
+import javax.swing.*;
 
 public class JWTInterceptTabController implements IMessageEditorTab {
 
@@ -68,6 +65,26 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		randomKey = jwtST.getRdbtnRandomKey().isSelected();
 		keepOriginalSignature = jwtST.getRdbtnOriginalSignature().isSelected();
 		recalculateSignature = jwtST.getRdbtnRecalculateSignature().isSelected();
+
+		if(randomKey) {
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+
+					CustomJWToken token = null;
+					try {
+						token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
+						ConsoleOut.output("Generating Random Key for Signature Calculation");
+						String randomKey = AlgorithmLinker.getRandomKey(token.getAlgorithm());
+						ConsoleOut.output("RandomKey generated: " + randomKey);
+						jwtIM.setJWTKey(randomKey);
+						jwtST.updateSetView();
+					} catch (InvalidTokenFormat invalidTokenFormat) {
+						invalidTokenFormat.printStackTrace();
+					}
+				}
+			});
+		}
 	}
 
 	@Override
@@ -114,19 +131,15 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			return null; // returning null is interpreted same as sending original message
 		}
 		
-		if  (recalculateSignature) {
+		if  (recalculateSignature || randomKey) {
 			Algorithm algo;
 			try {
 				ConsoleOut.output("Recalculating Signature with Secret - "+jwtIM.getJWTKey());
-				algo = AlgorithmLinker.getAlgorithm(token.getAlgorithm(),jwtIM.getJWTKey());
+				algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(),jwtIM.getJWTKey());
 				token.calculateAndSetSignature(algo);
 			} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 				ConsoleOut.output(e.getStackTrace().toString());
 			}
-		} else if (randomKey) {
-			ConsoleOut.output("Generating Random Key for Signature Calculation");
-			String randomKey = AlgorithmLinker.getRandomKey(token.getAlgorithm());
-			jwtIM.setJWTKey(randomKey);
 		} else if (keepOriginalSignature){
 			jwtIM.setSignature(jwtIM.getOriginalSignature());
 		}

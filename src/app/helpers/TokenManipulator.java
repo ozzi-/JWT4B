@@ -43,7 +43,7 @@ public class TokenManipulator {
 
 		Algorithm algorithmObject;
 		try {
-			algorithmObject = AlgorithmLinker.getAlgorithm(algorithm, signatureKey);
+			algorithmObject = AlgorithmLinker.getVerifierAlgorithm(algorithm, signatureKey);
 		} catch (UnsupportedEncodingException e) {
 			ConsoleOut.output("Changing the tokens algorithm failed ("+e.getMessage()+")");
 			return null;

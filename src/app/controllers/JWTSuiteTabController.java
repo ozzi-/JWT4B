@@ -126,7 +126,7 @@ public class JWTSuiteTabController extends Observable implements ITab {
 		jwtSTM.setJwtKey(key);
 		String curAlgo = getCurrentAlgorithm();
 		try {
-			JWTVerifier verifier = JWT.require(AlgorithmLinker.getAlgorithm(curAlgo, key)).build();
+			JWTVerifier verifier = JWT.require(AlgorithmLinker.getVerifierAlgorithm(curAlgo, key)).build();
 			DecodedJWT test = verifier.verify(jwtSTM.getJwtInput());
 			jwtSTM.setJwtSignatureColor(Settings.colorValid);
 			// TODO Strings.verificationValid;
