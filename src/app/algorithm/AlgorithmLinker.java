@@ -57,7 +57,7 @@ public class AlgorithmLinker {
 		if(key.length()>1){
 			key = key.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "")
 					.replaceAll("\\s+", "").replaceAll("\\r+", "").replaceAll("\\n+", "");
-			byte[] keyByteArray = Base64.decode(key);
+			byte[] keyByteArray = java.util.Base64.getDecoder().decode(key);
 			try {
 				KeyFactory kf = KeyFactory.getInstance(algorithm);
 				EncodedKeySpec keySpec = new X509EncodedKeySpec(keyByteArray);

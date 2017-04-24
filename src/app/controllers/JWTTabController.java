@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -52,7 +53,12 @@ public class JWTTabController implements IMessageEditorTab {
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
 				jwtTM.setKey(jwtVT.getKeyValue());
-				checkKey(jwtTM.getKey());				
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						checkKey(jwtTM.getKey());
+					}
+				});
 			}
 			
 			@Override
