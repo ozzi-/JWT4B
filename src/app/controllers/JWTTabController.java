@@ -4,7 +4,6 @@ import java.awt.Component;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
-import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -52,12 +51,7 @@ public class JWTTabController implements IMessageEditorTab {
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
 				jwtTM.setKey(jwtVT.getKeyValue());
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						checkKey(jwtTM.getKey());
-					}
-				});
+				checkKey(jwtTM.getKey());
 			}
 			
 			@Override
@@ -89,28 +83,27 @@ public class JWTTabController implements IMessageEditorTab {
 	@Override
 	public void setMessage(byte[] content, boolean isRequest) {
 		this.message = content;
-
+		
 		tokenPosition = ITokenPosition.findTokenPositionImplementation(content, isRequest,helpers);
 		jwtTM.setJWT(tokenPosition.getToken());
-	
-		CustomJWToken a = new CustomJWToken(jwtTM.getJWT());
-		jwtTM.setJWTJSON(ReadableTokenFormat.getReadableFormat(a));
+		jwtTM.setJWTJSON(ReadableTokenFormat.getReadableFormat(new CustomJWToken(jwtTM.getJWT())));
 		
 		JWTTabModel current = new JWTTabModel(jwtTM.getKey(), content);
 		int containsIndex = modelStateList.indexOf(current);
 
-		// we know this request, load the last
+		// we know this request, load it
 		if (containsIndex != -1) {
-			jwtTM.setKey(modelStateList.get(containsIndex).getKey());
-			jwtTM.setVerificationLabel(modelStateList.get(containsIndex).getVerificationLabel());
-			jwtTM.setVerificationColor(modelStateList.get(containsIndex).getVerificationColor());
+			JWTTabModel knownModel = modelStateList.get(containsIndex);
+			jwtTM.setKey(knownModel.getKey());
+			jwtTM.setVerificationColor(knownModel.getVerificationColor());
+			jwtTM.setVerificationLabel(knownModel.getVerificationLabel());
 			// we haven't seen this request yet, add it and set the view to
 			// default
 		} else {
 			modelStateList.add(current);
-			//typedTab.setKeyValue("");
 			jwtTM.setVerificationColor(Settings.colorUndefined);
 			jwtTM.setVerificationResult("");
+			jwtTM.setKey("");
 		}
 		String algoType = AlgorithmLinker.getTypeOf(getCurrentAlgorithm());
 		jwtVT.updateSetView(algoType);
@@ -150,9 +143,10 @@ public class JWTTabController implements IMessageEditorTab {
 		JWTTabModel current = new JWTTabModel(key, content);
 		int containsIndex = modelStateList.indexOf(current);
 		if (containsIndex != -1) { // we know this request, update the viewstate
-			modelStateList.get(containsIndex).setKeyValueAndHash(key, current.getHashCode());
-			modelStateList.get(containsIndex).setVerificationResult(jwtTM.getVerificationLabel());
-			modelStateList.get(containsIndex).setVerificationColor(jwtTM.getVerificationColor());
+			JWTTabModel knownState = modelStateList.get(containsIndex);
+			knownState.setKeyValueAndHash(key, current.getHashCode());
+			knownState.setVerificationResult(jwtTM.getVerificationLabel());
+			knownState.setVerificationColor(jwtTM.getVerificationColor());
 		}
 	}
 

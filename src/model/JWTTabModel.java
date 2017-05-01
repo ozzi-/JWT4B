@@ -2,6 +2,8 @@ package model;
 
 import java.awt.Color;
 
+import app.helpers.Settings;
+
 public class JWTTabModel {
 	private String key="";
 	private String keyLabel="";
@@ -17,6 +19,7 @@ public class JWTTabModel {
 	public JWTTabModel(String keyValue, byte[] content) {
 		this.key = keyValue;
 		this.hashCode = new String(content).hashCode();
+		this.verificationColor = Settings.colorUndefined;
 	}
 
 	@Override
@@ -54,7 +57,7 @@ public class JWTTabModel {
 	}
 
 	public String getVerificationLabel() {
-		return verificationLabel;
+		return key.equals("")?"":verificationLabel;
 	}
 
 	public void setVerificationLabel(String verificationLabel) {
@@ -62,7 +65,7 @@ public class JWTTabModel {
 	}
 
 	public Color getVerificationColor() {
-		return verificationColor;
+		return key.equals("")?Settings.colorUndefined:verificationColor;
 	}
 
 	public void setVerificationColor(Color verificationColor) {

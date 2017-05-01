@@ -1,19 +1,26 @@
 package app.algorithm;
 
 import java.io.UnsupportedEncodingException;
-import java.security.*;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-import app.helpers.PublicKeyBroker;
 import org.apache.commons.lang.RandomStringUtils;
+import org.bouncycastle.util.encoders.Base64;
+
 import com.auth0.jwt.algorithms.Algorithm;
 
 import app.helpers.ConsoleOut;
-import org.bouncycastle.util.encoders.Base64;
+import app.helpers.PublicKeyBroker;
 
 public class AlgorithmLinker {
 
