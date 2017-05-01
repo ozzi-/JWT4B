@@ -60,7 +60,7 @@ public class ReadableTokenFormat {
 	private static String jsonBeautify(String input) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-
+		
 		JsonNode tree;
 		String output;
 		try {

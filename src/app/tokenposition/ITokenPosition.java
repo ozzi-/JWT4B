@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
+import app.helpers.ConsoleOut;
 import burp.IExtensionHelpers;
 import burp.IRequestInfo;
 import burp.IResponseInfo;
@@ -72,7 +73,7 @@ public abstract class ITokenPosition {
 		return helpers;
 	}
 
-	public void addHeader(String header) {
+	public void addHeaderIfNotThereAlready(String header) {
 		List<String> headers;
 		int offset;
 		if (isRequest) {
@@ -84,7 +85,10 @@ public abstract class ITokenPosition {
 			headers = responseInfo.getHeaders();
 			offset = responseInfo.getBodyOffset();
 		}
-		headers.add(header);
-		this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));
+		if(!headers.contains("JWT4B")){
+			headers.add(header);
+			this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));
+		}else{
+		}
 	}
 }

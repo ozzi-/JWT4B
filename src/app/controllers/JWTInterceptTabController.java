@@ -140,11 +140,10 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		CustomJWToken token = null;
 		try {
 			token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
-
 		} catch (InvalidTokenFormat e) {
 			// TODO give user feedback, that he broke the token
 			ConsoleOut.output(e.getMessage());
-			return null; // returning null is interpreted same as sending original message
+			return null; // returning null is interpreted (by burp extender) the same as sending original message
 		}
 		
 		if  (recalculateSignature || randomKey) {
@@ -170,10 +169,10 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	}
 
 	private void addLogHeadersToRequest() {
-		this.tokenPosition.addHeader("JWT4B: This Header is just to log the key");
-		this.tokenPosition.addHeader("JWT4B-SIGNER-KEY: " + jwtIM.getJWTKey());
+		this.tokenPosition.addHeaderIfNotThereAlready("JWT4B: The following headers are added automatically, in order to log the keys");
+		this.tokenPosition.addHeaderIfNotThereAlready("JWT4B-SIGNER-KEY: " + jwtIM.getJWTKey());
 		if(PublicKeyBroker.publicKey != null) {
-			this.tokenPosition.addHeader("JWT4B-SIGNER-PUBLIC-KEY: " + PublicKeyBroker.publicKey);
+			this.tokenPosition.addHeaderIfNotThereAlready("JWT4B-SIGNER-PUBLIC-KEY: " + PublicKeyBroker.publicKey);
 			PublicKeyBroker.publicKey = null;
 		}
 	}
