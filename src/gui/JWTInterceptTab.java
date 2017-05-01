@@ -203,6 +203,10 @@ public class JWTInterceptTab extends JPanel {
 		return jwtArea.getSelectedText();
 	}
 
+	public String getKeyFieldValue() {
+		return keyField.getText();
+	}
+	
 	public void setKeyFieldValue(String string) {
 		keyField.setText(string);
 	}

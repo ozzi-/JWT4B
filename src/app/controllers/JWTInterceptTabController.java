@@ -75,14 +75,14 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		randomKey = jwtST.getRdbtnRandomKey().isSelected();
 		keepOriginalSignature = jwtST.getRdbtnOriginalSignature().isSelected();
 		recalculateSignature = jwtST.getRdbtnRecalculateSignature().isSelected();
-		jwtST.setKeyFieldState(!keepOriginalSignature && !dontModify); // TODO move to model
-		if( keepOriginalSignature || dontModify){
+		jwtST.setKeyFieldState(!keepOriginalSignature && !dontModify &&!randomKey);
+		if(keepOriginalSignature || dontModify){
 			jwtIM.setJWTKey("");
 		}
 		if(randomKey) {
 			generateRandomKey();
 		}
-	}
+	} 
 
 	private void generateRandomKey() {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -148,6 +148,9 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		}
 		
 		if  (recalculateSignature || randomKey) {
+			if(recalculateSignature){
+				jwtIM.setJWTKey(jwtST.getKeyFieldValue());
+			}
 			Algorithm algo;
 			try {
 				ConsoleOut.output("Recalculating Signature with Secret - "+jwtIM.getJWTKey());
