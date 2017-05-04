@@ -115,9 +115,21 @@ public class CustomJWToken extends JWT {
 		}
 	}
 
+	private String jsonMinify(String json){
+	    ObjectMapper objectMapper = new ObjectMapper();
+	    JsonNode jsonNode = null;
+		try {
+			jsonNode = objectMapper.readValue(json, JsonNode.class);
+			return (jsonNode.toString());
+		} catch (IOException e) {
+			ConsoleOut.output("Could not minify json: "+e.getMessage());
+		}
+		return json;
+	}
+	
 	@Override
 	public String getToken() {
-		String content = String.format("%s.%s", b64(getHeaderJson()), b64(getPayloadJson()));
+		String content = String.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify((getPayloadJson()))));
 
 		String signatureEncoded = Base64.encodeBase64URLSafeString(this.signature);
 
