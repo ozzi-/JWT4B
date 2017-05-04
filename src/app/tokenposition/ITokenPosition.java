@@ -1,6 +1,7 @@
 package app.tokenposition;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,6 +28,9 @@ public abstract class ITokenPosition {
 	}
 	
 	protected List<String> getHeaders() { 
+		if(message==null){
+			return new ArrayList<String>();
+		}
 		if (isRequest) {
 			IRequestInfo requestInfo = helpers.analyzeRequest(message);
 			return requestInfo.getHeaders();
@@ -85,10 +89,7 @@ public abstract class ITokenPosition {
 			headers = responseInfo.getHeaders();
 			offset = responseInfo.getBodyOffset();
 		}
-		if(!headers.contains("JWT4B")){
-			headers.add(header);
-			this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));
-		}else{
-		}
+		headers.add(header);
+		this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));
 	}
 }

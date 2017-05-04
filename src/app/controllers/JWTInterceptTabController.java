@@ -143,7 +143,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		} catch (InvalidTokenFormat e) {
 			// TODO give user feedback, that he broke the token
 			ConsoleOut.output(e.getMessage());
-			return null; // returning null is interpreted (by burp extender) the same as sending original message
+			return this.message;	
 		}
 		
 		if  (recalculateSignature || randomKey) {

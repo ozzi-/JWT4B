@@ -109,8 +109,7 @@ public class JWTSuiteTabController extends Observable implements ITab {
 			CustomJWToken jwt = new CustomJWToken(jwts);
 			jwtSTM.setJwtJSON(ReadableTokenFormat.getReadableFormat(jwt));
 		} catch (Exception e) {
-			// TODO handle invalid tokens in GUI
-			ConsoleOut.output("JWT Context Action"+e.getMessage());
+			ConsoleOut.output("JWT Context Action: "+e.getMessage());
 		}
 		if(fromContextMenu){
 			// Reset View and Select
