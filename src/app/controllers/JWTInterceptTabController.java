@@ -126,13 +126,18 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		this.isRequest = isRequest;
 
 		tokenPosition = ITokenPosition.findTokenPositionImplementation(content, isRequest, helpers);
-		jwtIM.setJWT(tokenPosition.getToken());
+		if(tokenPosition==null){
+			jwtST.updateSetView(true);
 
-		CustomJWToken cJWT = new CustomJWToken(jwtIM.getJWT());
-		jwtIM.setJWTJSON(ReadableTokenFormat.getReadableFormat(cJWT));
-		jwtIM.setSignature(cJWT.getSignature());
+		}else{
+			jwtIM.setJWT(tokenPosition.getToken());		
+			CustomJWToken cJWT = new CustomJWToken(jwtIM.getJWT());
+			jwtIM.setJWTJSON(ReadableTokenFormat.getReadableFormat(cJWT));
+			jwtIM.setSignature(cJWT.getSignature());
+			jwtST.updateSetView(true);
 
-		jwtST.updateSetView(true);
+		}
+
 	}
 
 	@Override
