@@ -1,6 +1,5 @@
 package app.tokenposition;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,8 +50,8 @@ public abstract class ITokenPosition {
 				if (impl.positionFound()) {
 					return impl;
 				}
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException | SecurityException e) {
+			} catch (Exception e) {
+				ConsoleOut.output(e.getMessage());
 				return null;
 			}
 		}
@@ -77,7 +76,7 @@ public abstract class ITokenPosition {
 		return helpers;
 	}
 
-	public void addHeaderIfNotThereAlready(String header) {
+	public void addHeader(String header) {
 		List<String> headers;
 		int offset;
 		if (isRequest) {

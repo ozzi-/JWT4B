@@ -27,14 +27,12 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	private JWTInterceptModel jwtIM;
 	private JWTInterceptTab jwtST;
 	private IExtensionHelpers helpers;
-	private byte[] content;
 	private byte[] message;
 	private ITokenPosition tokenPosition;
 	private boolean dontModify;
 	private boolean randomKey;
 	private boolean keepOriginalSignature;
 	private boolean recalculateSignature;
-	private boolean isRequest;
 
 	public JWTInterceptTabController(IBurpExtenderCallbacks callbacks, JWTInterceptModel jwIM, JWTInterceptTab jwtST) {
 		this.jwtIM = jwIM;
@@ -47,7 +45,6 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 				radioButtonChanged(true,false, false, false);
 			}
 		};
-		
 		ActionListener randomKeyListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -105,37 +102,23 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	}
 
 	@Override
-	public String getTabCaption() {
-		return Settings.tabname;
-	}
-
-	@Override
-	public Component getUiComponent() {
-		return jwtST;
-	}
-
-	@Override
 	public boolean isEnabled(byte[] content, boolean isRequest) {
-		this.content = content;
 		return ITokenPosition.findTokenPositionImplementation(content, isRequest, helpers) != null;
 	}
 
 	@Override
 	public void setMessage(byte[] content, boolean isRequest) {
 		this.message = content;
-		this.isRequest = isRequest;
 
 		tokenPosition = ITokenPosition.findTokenPositionImplementation(content, isRequest, helpers);
 		if(tokenPosition==null){
 			jwtST.updateSetView(true);
-
 		}else{
 			jwtIM.setJWT(tokenPosition.getToken());		
 			CustomJWToken cJWT = new CustomJWToken(jwtIM.getJWT());
 			jwtIM.setJWTJSON(ReadableTokenFormat.getReadableFormat(cJWT));
 			jwtIM.setSignature(cJWT.getSignature());
 			jwtST.updateSetView(true);
-
 		}
 
 	}
@@ -174,12 +157,22 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	}
 
 	private void addLogHeadersToRequest() {
-		this.tokenPosition.addHeaderIfNotThereAlready("JWT4B: The following headers are added automatically, in order to log the keys");
-		this.tokenPosition.addHeaderIfNotThereAlready("JWT4B-SIGNER-KEY: " + jwtIM.getJWTKey());
+		this.tokenPosition.addHeader("JWT4B: The following headers are added automatically, in order to log the keys");
+		this.tokenPosition.addHeader("JWT4B-SIGNER-KEY: " + jwtIM.getJWTKey());
 		if(PublicKeyBroker.publicKey != null) {
-			this.tokenPosition.addHeaderIfNotThereAlready("JWT4B-SIGNER-PUBLIC-KEY: " + PublicKeyBroker.publicKey);
+			this.tokenPosition.addHeader("JWT4B-SIGNER-PUBLIC-KEY: " + PublicKeyBroker.publicKey);
 			PublicKeyBroker.publicKey = null;
 		}
+	}
+	
+	@Override
+	public String getTabCaption() {
+		return Settings.tabname;
+	}
+
+	@Override
+	public Component getUiComponent() {
+		return jwtST;
 	}
 
 	@Override

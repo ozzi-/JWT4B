@@ -43,8 +43,7 @@ public class JWTSuiteTabController extends Observable implements ITab {
 				contextActionJWT(jwtSTM.getJwtInput(),false);
 			}
 			@Override
-			public void changedUpdate(DocumentEvent e) {
-			}
+			public void changedUpdate(DocumentEvent e) {}
 		};
 		DocumentListener jwtDocKeyListener = new DocumentListener() {
 			@Override
@@ -58,21 +57,10 @@ public class JWTSuiteTabController extends Observable implements ITab {
 				contextActionKey(jwtSTM.getJwtKey());
 			}
 			@Override
-			public void changedUpdate(DocumentEvent e) {
-			}
+			public void changedUpdate(DocumentEvent e) {}
 		};
 
 		jwtST.registerDocumentListener(jwtDocInputListener, jwtDocKeyListener);
-	}
-
-	@Override
-	public String getTabCaption() {
-		return Settings.tabname;
-	}
-
-	@Override
-	public Component getUiComponent() {
-		return jwtST;
 	}
 
 	// This method was copied from
@@ -88,16 +76,6 @@ public class JWTSuiteTabController extends Observable implements ITab {
 			if (tabPane.getTitleAt(i).equals(this.getTabCaption()))
 				tabPane.setSelectedIndex(i);
 		}
-	}
-
-	private String getCurrentAlgorithm() {
-		String str = "";
-		try{
-			str = new CustomJWToken(jwtSTM.getJwtInput()).getAlgorithm();
-		}catch(Exception e){
-			
-		}
-		return str;
 	}
 
 	public void contextActionJWT(String jwts,boolean fromContextMenu) {
@@ -124,8 +102,8 @@ public class JWTSuiteTabController extends Observable implements ITab {
 
 	public void contextActionKey(String key) {
 		jwtSTM.setJwtKey(key);
-		String curAlgo = getCurrentAlgorithm();
 		try {
+			String curAlgo = new CustomJWToken(jwtSTM.getJwtInput()).getAlgorithm();
 			JWTVerifier verifier = JWT.require(AlgorithmLinker.getVerifierAlgorithm(curAlgo, key)).build();
 			DecodedJWT test = verifier.verify(jwtSTM.getJwtInput());
 			jwtSTM.setJwtSignatureColor(Settings.colorValid);
@@ -142,5 +120,14 @@ public class JWTSuiteTabController extends Observable implements ITab {
 		}
 		jwtST.updateSetView();
 	}
+	
+	@Override
+	public String getTabCaption() {
+		return Settings.tabname;
+	}
 
+	@Override
+	public Component getUiComponent() {
+		return jwtST;
+	}
 }

@@ -12,10 +12,7 @@ import org.apache.commons.codec.binary.StringUtils;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.Header;
-import com.auth0.jwt.interfaces.Payload;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,26 +26,17 @@ public class CustomJWToken extends JWT {
 
 	private String headerJson;
 	private String payloadJson;
-	private Header header;
-	private Payload payload;
 	private byte[] signature;
-	private String token;
 
 	public CustomJWToken(String token) {
-		this.token = token;
 		final String[] parts = splitToken(token);
-		final JWTParser converter = new JWTParser();
-
 		try {
 			headerJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[0]));
 			payloadJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[1]));
 		} catch (NullPointerException e) {
 			ConsoleOut.output("The UTF-8 Charset isn't initialized ("+e.getMessage()+")");
 		}
-		header = converter.parseHeader(headerJson);
-		payload = converter.parsePayload(payloadJson);
 		signature = Base64.decodeBase64(parts[2]);
-
 	}
 
 	public CustomJWToken(String headerJson, String payloadJson, String signature) {
@@ -87,14 +75,6 @@ public class CustomJWToken extends JWT {
 		} catch (IOException e) {
 			return null;
 		}
-	}
-
-	public void setHeaderJson(String headerJson) {
-		this.headerJson = headerJson;
-	}
-
-	public void setPayloadJson(String payloadJson) {
-		this.payloadJson = payloadJson;
 	}
 
 	public void setHeaderJsonNode(JsonNode headerPayloadJson) {
@@ -138,6 +118,30 @@ public class CustomJWToken extends JWT {
 
 	private String b64(String input) { 
 		return Base64.encodeBase64URLSafeString(input.getBytes(StandardCharsets.UTF_8));
+	}
+	
+	// Method copied from:
+	// https://github.com/auth0/java-jwt/blob/9148ca20adf679721591e1d012b7c6b8c4913d75/lib/src/main/java/com/auth0/jwt/TokenUtils.java#L14
+	// Cannot be reused, it's visibility is protected.
+	static String[] splitToken(String token) throws JWTDecodeException {
+		String[] parts = token.split("\\.");
+		if (parts.length == 2 && token.endsWith(".")) {
+			// Tokens with alg='none' have empty String as Signature.
+			parts = new String[] { parts[0], parts[1], "" };
+		}
+		if (parts.length != 3) {
+			throw new JWTDecodeException(
+					String.format("The token was expected to have 3 parts, but got %s.", parts.length));
+		}
+		return parts;
+	}
+	
+	public void setHeaderJson(String headerJson) {
+		this.headerJson = headerJson;
+	}
+
+	public void setPayloadJson(String payloadJson) {
+		this.payloadJson = payloadJson;
 	}
 	
 	@Override
@@ -217,21 +221,5 @@ public class CustomJWToken extends JWT {
 	
 	public void setSignature(String signature) { 
 		this.signature = Base64.decodeBase64(signature);
-	}
-
-	// Method copied from:
-	// https://github.com/auth0/java-jwt/blob/9148ca20adf679721591e1d012b7c6b8c4913d75/lib/src/main/java/com/auth0/jwt/TokenUtils.java#L14
-	// Cannot be reused, it's visibility is protected.
-	static String[] splitToken(String token) throws JWTDecodeException {
-		String[] parts = token.split("\\.");
-		if (parts.length == 2 && token.endsWith(".")) {
-			// Tokens with alg='none' have empty String as Signature.
-			parts = new String[] { parts[0], parts[1], "" };
-		}
-		if (parts.length != 3) {
-			throw new JWTDecodeException(
-					String.format("The token was expected to have 3 parts, but got %s.", parts.length));
-		}
-		return parts;
 	}
 }

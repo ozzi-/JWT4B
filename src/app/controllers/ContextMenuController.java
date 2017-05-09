@@ -53,7 +53,6 @@ public class ContextMenuController implements Observer, IContextMenuFactory{
 	@Override
 	public void update(Observable o, Object arg) {
 		// Menu Item Listener was clicked, notify the Suite Tab Controller
-		ConsoleOut.output(selectedText);
 		jstC.contextActionJWT(selectedText,true);
 	}
 
