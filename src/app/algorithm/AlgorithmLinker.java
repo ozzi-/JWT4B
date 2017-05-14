@@ -24,42 +24,29 @@ import app.helpers.PublicKeyBroker;
 
 public class AlgorithmLinker {
 
-	public static final app.algorithm.AlgorithmWrapper none = new app.algorithm.AlgorithmWrapper("none",
-			AlgorithmType.none);
-	public static final app.algorithm.AlgorithmWrapper HS256 = new app.algorithm.AlgorithmWrapper("HS256",
-			AlgorithmType.symmetric);
-	public static final app.algorithm.AlgorithmWrapper HS384 = new app.algorithm.AlgorithmWrapper("HS384",
-			AlgorithmType.symmetric);
-	public static final app.algorithm.AlgorithmWrapper HS512 = new app.algorithm.AlgorithmWrapper("HS512",
-			AlgorithmType.symmetric);
-	public static final app.algorithm.AlgorithmWrapper RS256 = new app.algorithm.AlgorithmWrapper("RS256",
-			AlgorithmType.asymmetric);
-	public static final app.algorithm.AlgorithmWrapper RS384 = new app.algorithm.AlgorithmWrapper("RS384",
-			AlgorithmType.asymmetric);
-	public static final app.algorithm.AlgorithmWrapper RS512 = new app.algorithm.AlgorithmWrapper("RS512",
-			AlgorithmType.asymmetric);
-	public static final app.algorithm.AlgorithmWrapper ES256 = new app.algorithm.AlgorithmWrapper("ES256",
-			AlgorithmType.asymmetric);
-	public static final app.algorithm.AlgorithmWrapper ES384 = new app.algorithm.AlgorithmWrapper("ES384",
-			AlgorithmType.asymmetric);
-	public static final app.algorithm.AlgorithmWrapper ES512 = new app.algorithm.AlgorithmWrapper("ES512",
-			AlgorithmType.asymmetric);
+	public static final app.algorithm.AlgorithmWrapper none = 
+			new app.algorithm.AlgorithmWrapper("none",AlgorithmType.none);
+	public static final app.algorithm.AlgorithmWrapper HS256 = 
+			new app.algorithm.AlgorithmWrapper("HS256",AlgorithmType.symmetric);
+	public static final app.algorithm.AlgorithmWrapper HS384 =
+			new app.algorithm.AlgorithmWrapper("HS384",AlgorithmType.symmetric);
+	public static final app.algorithm.AlgorithmWrapper HS512 = 
+			new app.algorithm.AlgorithmWrapper("HS512",AlgorithmType.symmetric);
+	public static final app.algorithm.AlgorithmWrapper RS256 = 
+			new app.algorithm.AlgorithmWrapper("RS256",AlgorithmType.asymmetric);
+	public static final app.algorithm.AlgorithmWrapper RS384 = 
+			new app.algorithm.AlgorithmWrapper("RS384",AlgorithmType.asymmetric);
+	public static final app.algorithm.AlgorithmWrapper RS512 = 
+			new app.algorithm.AlgorithmWrapper("RS512",AlgorithmType.asymmetric);
+	public static final app.algorithm.AlgorithmWrapper ES256 = 
+			new app.algorithm.AlgorithmWrapper("ES256",AlgorithmType.asymmetric);
+	public static final app.algorithm.AlgorithmWrapper ES384 = 
+			new app.algorithm.AlgorithmWrapper("ES384",AlgorithmType.asymmetric);
+	public static final app.algorithm.AlgorithmWrapper ES512 = 
+			new app.algorithm.AlgorithmWrapper("ES512",AlgorithmType.asymmetric);
 
 	private static final app.algorithm.AlgorithmWrapper[] supportedAlgorithms = { 
 			none, HS256, HS384, HS512, RS256, RS384, RS512, ES256, ES384, ES512 };
-
-
-	private static final AlgorithmWrapper[] supportedPSKAlgorithms = {
-		 HS256, HS384, HS512
-	};
-
-	private static final AlgorithmWrapper[] supportedRSAAlgorithms = {
-		 RS256, RS384, RS512
-	};
-
-	private static final AlgorithmWrapper[] supportedECAlgorithms = {
-		 ES256, ES384, ES512
-	};
 
 	private static PublicKey generatePublicKeyFromString(String key, String algorithm) {
 		PublicKey publicKey = null;
@@ -144,44 +131,37 @@ public class AlgorithmLinker {
 	}
 
 	private static Key getKeyInstance(String key, String algorithm, boolean isPrivate) {
-		if(isPrivate) {
-			return generatePrivateKeyFromString(key, algorithm);
-		} else {
-			return generatePublicKeyFromString(key, algorithm);
-		}
+		return isPrivate? generatePrivateKeyFromString(key, algorithm) : generatePublicKeyFromString(key, algorithm);
 	}
 
 	public static String getRandomKey(String algorithm){
 		String algorithmType = AlgorithmLinker.getTypeOf(algorithm);
-
+		
 		if(algorithmType.equals(AlgorithmType.symmetric)) {
 			return RandomStringUtils.randomAlphanumeric(6);
 		}
-
 		if(algorithmType.equals(AlgorithmType.asymmetric) && algorithm.substring(0,2).equals("RS")) {
 			try {
 				KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
 				PublicKeyBroker.publicKey = Base64.toBase64String(keyPair.getPublic().getEncoded());
 				return Base64.toBase64String((keyPair.getPrivate().getEncoded()));
 			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
+				ConsoleOut.output(e.getMessage());
 			}
 		}
-
 		if (algorithmType.equals(AlgorithmType.asymmetric) && algorithm.substring(0,2).equals("ES")) {
 			try {
 				KeyPair keyPair = KeyPairGenerator.getInstance("EC").generateKeyPair();
 				return Base64.toBase64String(keyPair.getPrivate().getEncoded());
 			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
+				ConsoleOut.output(e.getMessage());
 			}
 		}
-		return "";
+		throw new RuntimeException("Cannot get random key of provided algorithm as it does not seem valid HS, RS or ES");
 	}
 
 	/**
-	 * @return gets the type (asymmetric, symmetric, none) of the
-	 *         provided @param algo
+	 * @return gets the type (asym, sym, none) of the provided @param algo
 	 */
 	public static String getTypeOf(String algorithm) {
 		for (app.algorithm.AlgorithmWrapper supportedAlgorithm : supportedAlgorithms) {

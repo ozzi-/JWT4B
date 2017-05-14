@@ -20,11 +20,13 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 		this.callbacks = callbacks;
 		callbacks.setExtensionName(Settings.extensionName);
 		callbacks.registerMessageEditorTabFactory(this);
+		
 		// Suite Tab
 		JWTSuiteTabModel jwtSTM =  new JWTSuiteTabModel();
 		JWTSuiteTab jwtST = new JWTSuiteTab(jwtSTM);
 		JWTSuiteTabController jstC = new JWTSuiteTabController(jwtSTM, jwtST);
 		callbacks.addSuiteTab(jstC);
+		
 		// Context Menu
 		ContextMenuController cmC = new ContextMenuController(jstC);
 		callbacks.registerContextMenuFactory(cmC);

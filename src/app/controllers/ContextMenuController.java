@@ -32,7 +32,7 @@ public class ContextMenuController implements Observer, IContextMenuFactory{
 		byte iContext = invocation.getInvocationContext();
 		if (selection != null) { // only if user currently is in an input field
 			IHttpRequestResponse ihrr = invocation.getSelectedMessages()[0];
-
+			// TODO https://github.com/mvetsch/JWT4B/issues/10 -> this issue needs to be fixed here
 			if (iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_REQUEST
 					|| iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_REQUEST) {
 				selectedText=new String(ihrr.getRequest()).substring(selection[0], selection[1]);
@@ -53,7 +53,6 @@ public class ContextMenuController implements Observer, IContextMenuFactory{
 	@Override
 	public void update(Observable o, Object arg) {
 		// Menu Item Listener was clicked, notify the Suite Tab Controller
-		ConsoleOut.output(selectedText);
 		jstC.contextActionJWT(selectedText,true);
 	}
 

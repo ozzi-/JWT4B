@@ -41,19 +41,16 @@ public class JWTTabController implements IMessageEditorTab {
 		this.jwtVT  = jwtVT;
 		
 		DocumentListener documentListener = new DocumentListener() {
-			
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
 				jwtTM.setKey(jwtVT.getKeyValue());
 				checkKey(jwtTM.getKey());
 			}
-
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
 				jwtTM.setKey(jwtVT.getKeyValue());
 				checkKey(jwtTM.getKey());
-			}
-			
+			}	
 			@Override
 			public void changedUpdate(DocumentEvent arg0) {
 				jwtTM.setKey(jwtVT.getKeyValue());
@@ -64,16 +61,6 @@ public class JWTTabController implements IMessageEditorTab {
 		jwtVT.registerDocumentListener(documentListener);
 	}
 	
-	@Override
-	public String getTabCaption() {
-		return Settings.tabname;
-	}
-
-	@Override
-	public Component getUiComponent() {
-		return this.jwtVT;
-	}
-
 	@Override
 	public boolean isEnabled(byte[] content, boolean isRequest) {
 		this.content = content;
@@ -155,6 +142,15 @@ public class JWTTabController implements IMessageEditorTab {
 		return jwtVT.getSelectedData().getBytes();
 	}
 
+	@Override
+	public String getTabCaption() {
+		return Settings.tabname;
+	}
+
+	@Override
+	public Component getUiComponent() {
+		return this.jwtVT;
+	}
 
 	public String getCurrentAlgorithm() {
 		return new CustomJWToken(jwtTM.getJWT()).getAlgorithm();
