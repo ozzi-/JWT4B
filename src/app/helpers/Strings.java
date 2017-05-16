@@ -42,5 +42,8 @@ public class Strings {
 			+ "</ul>"
 			+ "</html>";
 
+	public static final String JWTHeaderPrefix = "JWT4B: ";
+	public static final String JWTHeaderInfo = JWTHeaderPrefix+"The following headers are added automatically, in order to log the keys";
+
 
 }
