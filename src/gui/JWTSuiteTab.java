@@ -203,7 +203,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lblDecodedJwt.gridy = 7;
 		add(lblDecodedJwt, gbc_lblDecodedJwt);
 
-		add(jwtOuputField, gbc_jwtOuputField);
+		add(sp, gbc_jwtOuputField);
 
 	}
 	
