@@ -19,10 +19,10 @@ import app.helpers.ConsoleOut;
 import app.helpers.CustomJWToken;
 import app.helpers.Settings;
 import app.helpers.Strings;
-import app.helpers.TimeClaim;
 import burp.ITab;
 import gui.JWTSuiteTab;
 import model.JWTSuiteTabModel;
+import model.TimeClaim;
 
 public class JWTSuiteTabController extends Observable implements ITab {
 

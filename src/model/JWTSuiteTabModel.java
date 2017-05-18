@@ -3,8 +3,6 @@ package model;
 import java.awt.Color;
 import java.util.List;
 
-import app.helpers.TimeClaim;
-
 public class JWTSuiteTabModel {
 	private String jwtInput;
 	private String jwtKey;

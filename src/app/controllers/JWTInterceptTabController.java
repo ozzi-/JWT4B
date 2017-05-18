@@ -126,13 +126,13 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
 	@Override
 	public byte[] getMessage() {
+		jwtIM.setProblemDetail("");
 		radioButtonChanged(true,false,false,false);
 		CustomJWToken token = null;
 		try {
 			token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
 		} catch (InvalidTokenFormat e) {
-			// TODO give user feedback, that he broke the token
-			ConsoleOut.output(e.getMessage());
+			jwtIM.setProblemDetail(e.getMessage());
 			return this.message;	
 		}
 		

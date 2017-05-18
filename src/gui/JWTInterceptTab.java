@@ -39,6 +39,7 @@ public class JWTInterceptTab extends JPanel {
 	private JLabel lblSecretKey;
 	private JSeparator separator;
 	private JRadioButton rdbtnDontModifySignature;
+	private JLabel lblProblem;
 
 	public JWTInterceptTab(JWTInterceptModel jwtIM) {
 		this.jwtIM = jwtIM;
@@ -156,6 +157,13 @@ public class JWTInterceptTab extends JPanel {
 		add(keyField, gbc_keyField);
 		keyField.setColumns(10);
 		
+		lblProblem = new JLabel("");
+		GridBagConstraints gbc_lblProblem = new GridBagConstraints();
+		gbc_lblProblem.insets = new Insets(0, 0, 5, 5);
+		gbc_lblProblem.gridx = 1;
+		gbc_lblProblem.gridy = 8;
+		add(lblProblem, gbc_lblProblem);
+		
 	}
 	
 	public AbstractButton getRdbtnDontModify() {
@@ -187,6 +195,7 @@ public class JWTInterceptTab extends JPanel {
 					keyField.setEnabled(false);
 				}
 				jwtArea.setCaretPosition(0);
+				lblProblem.setText(jwtIM.getProblemDetail());
 			}
 		});
 	}

@@ -22,6 +22,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import model.TimeClaim;
+
 /* 
  * This Class is implemented separately to get raw access to the content of the Tokens. 
  * The JWTDecoder class cannot be extended because it is final

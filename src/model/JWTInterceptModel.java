@@ -10,6 +10,7 @@ public class JWTInterceptModel{
 	private String jwtJSON;
 	private String signature;
 	private String originalSignature;
+	private String problemDetail;
 	
 	public String getJWTInput() {
 		return jwtInput;
@@ -53,6 +54,12 @@ public class JWTInterceptModel{
 	}
 	public String getOriginalSignature() {
 		return originalSignature;
+	}
+	public String getProblemDetail() {
+		return problemDetail;
+	}
+	public void setProblemDetail(String problemDetail) {
+		this.problemDetail = problemDetail;
 	}
 
 }

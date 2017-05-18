@@ -1,4 +1,4 @@
-package app.helpers;
+package model;
 
 public class TimeClaim {
 	private String date;
