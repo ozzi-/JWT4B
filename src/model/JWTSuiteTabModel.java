@@ -12,6 +12,7 @@ public class JWTSuiteTabModel {
 	private String jwtJSON;
 	private String verificationLabel;
 	private List<TimeClaim> tcl;
+	private String verificationResult;
 	
 	public String getJwtInput() {
 		return jwtInput;
@@ -40,6 +41,9 @@ public class JWTSuiteTabModel {
 	public void setVerificationLabel(String label) {
 		this.verificationLabel = label;
 	}
+	public void setVerificationResult(String result) {
+		this.verificationResult = result;
+	}
 	public String getVerificationLabel() {
 		return this.verificationLabel;
 	}
@@ -54,5 +58,8 @@ public class JWTSuiteTabModel {
 					" - "+timeClaim.getDate()+"<br>";
 		}
 		return timeClaimString+"</html>";
+	}
+	public String getVerificationResult() {
+		return this.verificationResult;
 	}
 }

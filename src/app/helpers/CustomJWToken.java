@@ -249,7 +249,12 @@ public class CustomJWToken extends JWT {
 
 	@Override
 	public String getAlgorithm() {
-		return getHeaderJsonNode().get("alg").asText();
+		String algorithm ="";
+		try {
+			algorithm = getHeaderJsonNode().get("alg").asText();			
+		} catch (Exception e) {
+		}
+		return algorithm;
 	}
 
 	@Override

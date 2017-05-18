@@ -30,7 +30,6 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.helpers.Strings;
 import model.JWTSuiteTabModel;
-import javax.swing.SwingConstants;
 
 public class JWTSuiteTab extends JPanel {
 
@@ -43,6 +42,7 @@ public class JWTSuiteTab extends JPanel {
 	private JWTSuiteTabModel jwtSTM;
 	private JButton creditButton;
 	private JTextPane lbRegisteredClaims;
+	private JLabel lblExtendedVerificationInfo;
 
 	public JWTSuiteTab(JWTSuiteTabModel jwtSTM) {
 		drawGui();
@@ -71,6 +71,7 @@ public class JWTSuiteTab extends JPanel {
 					jwtSTM.setJwtSignatureColor(new JButton().getBackground());
 					jwtSignatureButton.setBackground(jwtSTM.getJwtSignatureColor());
 				}
+				lblExtendedVerificationInfo.setText(jwtSTM.getVerificationResult());
 				lbRegisteredClaims.setText(jwtSTM.getTimeClaimsAsText());
 			}
 		});
@@ -84,9 +85,9 @@ public class JWTSuiteTab extends JPanel {
 	private void drawGui() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 10, 0, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 		
 		JLabel lblPasteJwtToken = new JLabel(Strings.enterJWT);
@@ -181,7 +182,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_jwtOuputField.insets = new Insets(0, 0, 5, 5);
 		gbc_jwtOuputField.fill = GridBagConstraints.BOTH;
 		gbc_jwtOuputField.gridx = 1;
-		gbc_jwtOuputField.gridy = 8;
+		gbc_jwtOuputField.gridy = 9;
 
 		jwtOuputField = new RSyntaxTextArea();
 		SyntaxScheme scheme = jwtOuputField.getSyntaxScheme();
@@ -198,13 +199,20 @@ public class JWTSuiteTab extends JPanel {
 		RTextScrollPane sp = new RTextScrollPane(jwtOuputField);
 		sp.setLineNumbersEnabled(false);
 		
+		lblExtendedVerificationInfo = new JLabel("");
+		GridBagConstraints gbc_lblExtendedVerificationInfo = new GridBagConstraints();
+		gbc_lblExtendedVerificationInfo.insets = new Insets(0, 0, 5, 5);
+		gbc_lblExtendedVerificationInfo.gridx = 1;
+		gbc_lblExtendedVerificationInfo.gridy = 7;
+		add(lblExtendedVerificationInfo, gbc_lblExtendedVerificationInfo);
+		
 		JLabel lblDecodedJwt = new JLabel(Strings.decodedJWT);
 		lblDecodedJwt.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblDecodedJwt = new GridBagConstraints();
 		gbc_lblDecodedJwt.anchor = GridBagConstraints.WEST;
 		gbc_lblDecodedJwt.insets = new Insets(0, 0, 5, 5);
 		gbc_lblDecodedJwt.gridx = 1;
-		gbc_lblDecodedJwt.gridy = 7;
+		gbc_lblDecodedJwt.gridy = 8;
 		add(lblDecodedJwt, gbc_lblDecodedJwt);
 
 		add(sp, gbc_jwtOuputField);
@@ -216,7 +224,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lbRegisteredClaims.fill = GridBagConstraints.BOTH;
 		gbc_lbRegisteredClaims.insets = new Insets(0, 0, 5, 5);
 		gbc_lbRegisteredClaims.gridx = 1;
-		gbc_lbRegisteredClaims.gridy = 10;
+		gbc_lbRegisteredClaims.gridy = 11;
 		add(lbRegisteredClaims, gbc_lbRegisteredClaims);
 		
 	}

@@ -106,6 +106,7 @@ public class JWTSuiteTabController extends Observable implements ITab {
 
 	public void contextActionKey(String key) {
 		jwtSTM.setJwtKey(key);
+		jwtSTM.setVerificationResult("");
 		try {
 			String curAlgo = new CustomJWToken(jwtSTM.getJwtInput()).getAlgorithm();
 			JWTVerifier verifier = JWT.require(AlgorithmLinker.getVerifierAlgorithm(curAlgo, key)).build();
@@ -115,11 +116,13 @@ public class JWTSuiteTabController extends Observable implements ITab {
 			test.getAlgorithm();
 		} catch (JWTVerificationException e) {
 			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
+			jwtSTM.setVerificationResult(e.getMessage());
 			jwtSTM.setJwtSignatureColor(Settings.colorInvalid);
 			jwtSTM.setVerificationLabel(Strings.verificationWrongKey);
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
 			jwtSTM.setJwtSignatureColor(Settings.colorProblemInvalid);
+			jwtSTM.setVerificationResult(e.getMessage());
 			jwtSTM.setVerificationLabel(Strings.verificationInvalidKey);
 		}
 		jwtST.updateSetView();
