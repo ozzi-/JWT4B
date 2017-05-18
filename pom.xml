@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>JWT4B</groupId>
 	<artifactId>JWT4B</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
 			<groupId>com.auth0</groupId>
@@ -30,6 +30,11 @@
             <groupId>com.eclipsesource.minimal-json</groupId>
             <artifactId>minimal-json</artifactId>
             <version>0.9.4</version>
+        </dependency>
+        <dependency>
+            <groupId>net.portswigger.burp.extender</groupId>
+            <artifactId>burp-extender-api</artifactId>
+            <version>1.7.13</version>
         </dependency>
 	</dependencies>
 	<build>

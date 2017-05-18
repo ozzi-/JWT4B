@@ -1,7 +1,7 @@
 package app.helpers;
 
 public class Strings {
-	public static final String contextMenuString = "Send selected text to JWT4B Tab to decode";
+	public static final String contextMenuString = "Send selected text to JSON Web Tokens Tab to decode";
 
 	public static final String tokenStateOriginal = "Original";
 	public static final String tokenStateUpdated = "Token updated";
@@ -29,9 +29,9 @@ public class Strings {
 	public static final String keepOriginalSignatureToolTip = "The signature originally sent will be preserved and sent unchanged";
 	public static final String randomKeyToolTip = "<html>The signature will be recalculated depending<br>on the content and algorithm set<br>by a random signature / key</html>";
 
-	public static final String creditTitle ="JWT4B - About";
+	public static final String creditTitle ="JSON Web Tokens - About";
 
-	public static final String creditText ="<html><h2>About JWT4B</h2>JWT4B is developed by Oussama Zgheb and Matthias Vetsch.<br>"
+	public static final String creditText ="<html><h2>About JSON Web Tokens</h2>JSON Web Tokens is developed by Oussama Zgheb and Matthias Vetsch.<br>"
 			+ "All self-written code, excluding the BURP Extender classes, java-jwt library,<br>Apache Commons Lang and the RSyntaxTextArea library uses the"
 			+ " GPL3 licence<br>https://www.gnu.org/licenses/gpl-3.0.html.<br><br>"
 			+ "Credits:"
