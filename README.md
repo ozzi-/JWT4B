@@ -9,7 +9,7 @@ JSON Web Tokens (JWT) support for the Burp Interception Proxy. JWT4B will let yo
 ![Screenshot - Suite Tab View](https://i.imgur.com/71KiJJ2.png)
 
 # Acknowledgments
-The most work was done during the [Hack-Labs] (https://blog.compass-security.com/2017/01/wrap-up-hack-lab-1-2017/) offered by [Compass Security] (https://compass-security.com) to its employees.
+The most work was done during the [Hack-Labs](https://blog.compass-security.com/2017/01/wrap-up-hack-lab-1-2017/) offered by [Compass Security](https://compass-security.com) to its employees.
 
 ## Building your own version (with Eclipse)
 1. Clone codebase and create new Eclipse Java Project
