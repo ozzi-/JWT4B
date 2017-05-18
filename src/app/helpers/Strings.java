@@ -15,7 +15,7 @@ public class Strings {
 	
 	public static final String verificationValid = "Signature verified";
 	public static final String verificationInvalidKey = "Invalid key";
-	public static final String verificationWrongKey = "Invalid Signature / wrong key";
+	public static final String verificationWrongKey = "Invalid Signature / wrong key / claim failed";
 
 	public static final String interceptRecalculationKey = "Secret / Key for Signature recalculation:";
 

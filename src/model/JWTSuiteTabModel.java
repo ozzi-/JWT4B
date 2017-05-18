@@ -1,6 +1,9 @@
 package model;
 
 import java.awt.Color;
+import java.util.List;
+
+import app.helpers.TimeClaim;
 
 public class JWTSuiteTabModel {
 	private String jwtInput;
@@ -8,6 +11,7 @@ public class JWTSuiteTabModel {
 	private Color jwtSignatureColor;
 	private String jwtJSON;
 	private String verificationLabel;
+	private List<TimeClaim> tcl;
 	
 	public String getJwtInput() {
 		return jwtInput;
@@ -38,5 +42,17 @@ public class JWTSuiteTabModel {
 	}
 	public String getVerificationLabel() {
 		return this.verificationLabel;
+	}
+	public void setTimeClaims(List<TimeClaim> tcl) {
+		this.tcl=tcl;
+	}
+	public String getTimeClaimsAsText(){
+		String timeClaimString = "<html>";
+		for (TimeClaim timeClaim : tcl) {
+			timeClaimString+="<b>"+timeClaim.getClaimName()+
+					(timeClaim.canBeValid()?"</b> check "+(timeClaim.isValid()?"<span style=\"color: green\">passed</span>":"<span style=\"color: red\">failed</span>"):"</b>")+
+					" - "+timeClaim.getDate()+"<br>";
+		}
+		return timeClaimString+"</html>";
 	}
 }

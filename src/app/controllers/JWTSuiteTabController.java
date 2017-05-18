@@ -2,6 +2,7 @@ package app.controllers;
 
 import java.awt.Component;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Observable;
 
 import javax.swing.JTabbedPane;
@@ -18,6 +19,7 @@ import app.helpers.ConsoleOut;
 import app.helpers.CustomJWToken;
 import app.helpers.Settings;
 import app.helpers.Strings;
+import app.helpers.TimeClaim;
 import burp.ITab;
 import gui.JWTSuiteTab;
 import model.JWTSuiteTabModel;
@@ -85,6 +87,8 @@ public class JWTSuiteTabController extends Observable implements ITab {
 		jwtSTM.setJwtInput(jwts);
 		try {
 			CustomJWToken jwt = new CustomJWToken(jwts);
+			List<TimeClaim> tcl = jwt.getTimeClaimList();
+			jwtSTM.setTimeClaims(tcl);
 			jwtSTM.setJwtJSON(ReadableTokenFormat.getReadableFormat(jwt));
 		} catch (Exception e) {
 			ConsoleOut.output("JWT Context Action: "+e.getMessage());

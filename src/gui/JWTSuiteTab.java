@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentListener;
 
@@ -29,6 +30,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.helpers.Strings;
 import model.JWTSuiteTabModel;
+import javax.swing.SwingConstants;
 
 public class JWTSuiteTab extends JPanel {
 
@@ -40,6 +42,7 @@ public class JWTSuiteTab extends JPanel {
 	private JLabel lblEnterSecret;
 	private JWTSuiteTabModel jwtSTM;
 	private JButton creditButton;
+	private JTextPane lbRegisteredClaims;
 
 	public JWTSuiteTab(JWTSuiteTabModel jwtSTM) {
 		drawGui();
@@ -68,6 +71,7 @@ public class JWTSuiteTab extends JPanel {
 					jwtSTM.setJwtSignatureColor(new JButton().getBackground());
 					jwtSignatureButton.setBackground(jwtSTM.getJwtSignatureColor());
 				}
+				lbRegisteredClaims.setText(jwtSTM.getTimeClaimsAsText());
 			}
 		});
 	}
@@ -80,9 +84,9 @@ public class JWTSuiteTab extends JPanel {
 	private void drawGui() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 10, 0, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 		
 		JLabel lblPasteJwtToken = new JLabel(Strings.enterJWT);
@@ -205,6 +209,16 @@ public class JWTSuiteTab extends JPanel {
 
 		add(sp, gbc_jwtOuputField);
 
+		lbRegisteredClaims = new JTextPane();
+		lbRegisteredClaims.setContentType("text/html");
+		lbRegisteredClaims.setEditable(false);
+		GridBagConstraints gbc_lbRegisteredClaims = new GridBagConstraints();
+		gbc_lbRegisteredClaims.fill = GridBagConstraints.BOTH;
+		gbc_lbRegisteredClaims.insets = new Insets(0, 0, 5, 5);
+		gbc_lbRegisteredClaims.gridx = 1;
+		gbc_lbRegisteredClaims.gridy = 10;
+		add(lbRegisteredClaims, gbc_lbRegisteredClaims);
+		
 	}
 	
 	public String getJWTInput(){
