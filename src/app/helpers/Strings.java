@@ -15,7 +15,7 @@ public class Strings {
 	
 	public static final String verificationValid = "Signature verified";
 	public static final String verificationInvalidKey = "Invalid key";
-	public static final String verificationWrongKey = "Invalid Signature / wrong key";
+	public static final String verificationWrongKey = "Invalid Signature / wrong key / claim failed";
 
 	public static final String interceptRecalculationKey = "Secret / Key for Signature recalculation:";
 
@@ -41,6 +41,9 @@ public class Strings {
 			+ "<li>Compass Security AG, for providing development time - https://compass-security.com</li>"
 			+ "</ul>"
 			+ "</html>";
+
+	public static final String JWTHeaderPrefix = "JWT4B: ";
+	public static final String JWTHeaderInfo = JWTHeaderPrefix+"The following headers are added automatically, in order to log the keys";
 
 
 }

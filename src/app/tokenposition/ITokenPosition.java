@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import app.helpers.ConsoleOut;
+import app.helpers.Strings;
 import burp.IExtensionHelpers;
 import burp.IRequestInfo;
 import burp.IResponseInfo;
@@ -76,7 +77,7 @@ public abstract class ITokenPosition {
 		return helpers;
 	}
 
-	public void addHeader(String header) {
+	public void addHeader(String headerToAdd) {
 		List<String> headers;
 		int offset;
 		if (isRequest) {
@@ -88,7 +89,32 @@ public abstract class ITokenPosition {
 			headers = responseInfo.getHeaders();
 			offset = responseInfo.getBodyOffset();
 		}
-		headers.add(header);
+		headers.add(headerToAdd);
 		this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));
 	}
+	public void cleanJWTHeaders() {
+		List<String> headers;
+		List<String> toOverwriteHeaders = new ArrayList<String>();
+		int offset;
+		
+		if (isRequest) {
+			IRequestInfo requestInfo = helpers.analyzeRequest(message);
+			headers = requestInfo.getHeaders();
+			offset = requestInfo.getBodyOffset();
+		} else {
+			IResponseInfo responseInfo = helpers.analyzeResponse(message);
+			headers = responseInfo.getHeaders();
+			offset = responseInfo.getBodyOffset();
+		}
+		
+		for (String header : headers) {
+			if(header.startsWith(Strings.JWTHeaderPrefix)){
+				toOverwriteHeaders.add(header);
+			}
+		}
+		headers.removeAll(toOverwriteHeaders);
+		
+		this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));		
+	}
+
 }

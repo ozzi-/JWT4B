@@ -2,6 +2,7 @@ package app.controllers;
 
 import java.awt.Component;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Observable;
 
 import javax.swing.JTabbedPane;
@@ -21,6 +22,7 @@ import app.helpers.Strings;
 import burp.ITab;
 import gui.JWTSuiteTab;
 import model.JWTSuiteTabModel;
+import model.TimeClaim;
 
 public class JWTSuiteTabController extends Observable implements ITab {
 
@@ -85,6 +87,8 @@ public class JWTSuiteTabController extends Observable implements ITab {
 		jwtSTM.setJwtInput(jwts);
 		try {
 			CustomJWToken jwt = new CustomJWToken(jwts);
+			List<TimeClaim> tcl = jwt.getTimeClaimList();
+			jwtSTM.setTimeClaims(tcl);
 			jwtSTM.setJwtJSON(ReadableTokenFormat.getReadableFormat(jwt));
 		} catch (Exception e) {
 			ConsoleOut.output("JWT Context Action: "+e.getMessage());
@@ -102,6 +106,7 @@ public class JWTSuiteTabController extends Observable implements ITab {
 
 	public void contextActionKey(String key) {
 		jwtSTM.setJwtKey(key);
+		jwtSTM.setVerificationResult("");
 		try {
 			String curAlgo = new CustomJWToken(jwtSTM.getJwtInput()).getAlgorithm();
 			JWTVerifier verifier = JWT.require(AlgorithmLinker.getVerifierAlgorithm(curAlgo, key)).build();
@@ -111,11 +116,13 @@ public class JWTSuiteTabController extends Observable implements ITab {
 			test.getAlgorithm();
 		} catch (JWTVerificationException e) {
 			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
+			jwtSTM.setVerificationResult(e.getMessage());
 			jwtSTM.setJwtSignatureColor(Settings.colorInvalid);
 			jwtSTM.setVerificationLabel(Strings.verificationWrongKey);
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
 			jwtSTM.setJwtSignatureColor(Settings.colorProblemInvalid);
+			jwtSTM.setVerificationResult(e.getMessage());
 			jwtSTM.setVerificationLabel(Strings.verificationInvalidKey);
 		}
 		jwtST.updateSetView();

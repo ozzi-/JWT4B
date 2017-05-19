@@ -1,6 +1,7 @@
 package model;
 
 import java.awt.Color;
+import java.util.List;
 
 public class JWTSuiteTabModel {
 	private String jwtInput;
@@ -8,6 +9,8 @@ public class JWTSuiteTabModel {
 	private Color jwtSignatureColor;
 	private String jwtJSON;
 	private String verificationLabel;
+	private List<TimeClaim> tcl;
+	private String verificationResult;
 	
 	public String getJwtInput() {
 		return jwtInput;
@@ -36,7 +39,25 @@ public class JWTSuiteTabModel {
 	public void setVerificationLabel(String label) {
 		this.verificationLabel = label;
 	}
+	public void setVerificationResult(String result) {
+		this.verificationResult = result;
+	}
 	public String getVerificationLabel() {
 		return this.verificationLabel;
+	}
+	public void setTimeClaims(List<TimeClaim> tcl) {
+		this.tcl=tcl;
+	}
+	public String getTimeClaimsAsText(){
+		String timeClaimString = "<html>";
+		for (TimeClaim timeClaim : tcl) {
+			timeClaimString+="<b>"+timeClaim.getClaimName()+
+					(timeClaim.canBeValid()?"</b> check "+(timeClaim.isValid()?"<span style=\"color: green\">passed</span>":"<span style=\"color: red\">failed</span>"):"</b>")+
+					" - "+timeClaim.getDate()+"<br>";
+		}
+		return timeClaimString+"</html>";
+	}
+	public String getVerificationResult() {
+		return this.verificationResult;
 	}
 }

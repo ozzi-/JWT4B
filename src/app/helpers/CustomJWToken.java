@@ -2,9 +2,11 @@ package app.helpers;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
@@ -13,9 +15,14 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Claim;
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import model.TimeClaim;
 
 /* 
  * This Class is implemented separately to get raw access to the content of the Tokens. 
@@ -23,21 +30,74 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 
 public class CustomJWToken extends JWT {
-
 	private String headerJson;
 	private String payloadJson;
 	private byte[] signature;
-
+	private List<TimeClaim> timeClaimList = new ArrayList<TimeClaim>();
+	
 	public CustomJWToken(String token) {
 		final String[] parts = splitToken(token);
 		try {
 			headerJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[0]));
 			payloadJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[1]));
+			checkRegisteredClaims(payloadJson);
 		} catch (NullPointerException e) {
 			ConsoleOut.output("The UTF-8 Charset isn't initialized ("+e.getMessage()+")");
 		}
 		signature = Base64.decodeBase64(parts[2]);
 	}
+
+	public List<TimeClaim> getTimeClaimList() {
+		return timeClaimList;
+	}
+
+	private void checkRegisteredClaims(String payloadJson) {
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+		JsonObject object;
+		try {
+			object = Json.parse(payloadJson).asObject();			
+		} catch (Exception e) {
+			ConsoleOut.output("Can't parse claims - "+e.getMessage());
+			return;
+		}
+		JsonValue exp = object.get("exp");
+		long curUT = System.currentTimeMillis() / 1000L;
+		if(exp!=null){
+			try{
+				long expUT = exp.asLong();
+				java.util.Date time=new java.util.Date((long)expUT*1000);
+				String expDate = time.toString();
+				boolean expValid = expUT>curUT;
+				timeClaimList.add(new TimeClaim("[exp] Expired", expDate, expUT, expValid));
+			}catch (Exception e) {
+				ConsoleOut.output("Could not parse claim - "+e.getMessage());
+			}
+		}
+		JsonValue nbf = object.get("nbf");
+		if(nbf!=null){
+			try{
+				long nbfUT = nbf.asLong();
+				java.util.Date time=new java.util.Date((long)nbfUT*1000);
+				String nbfDate = time.toString();
+				boolean nbfValid = nbfUT<=curUT;
+				timeClaimList.add(new TimeClaim("[nbf] Not before", nbfDate, nbfUT, nbfValid));
+			}catch (Exception e) {
+				ConsoleOut.output("Could not parse claim - "+e.getMessage());
+			}
+		}
+		JsonValue iat = object.get("iat");
+		if(iat!=null){
+			try{
+				long iatUT = iat.asLong();
+				java.util.Date time=new java.util.Date((long)iatUT*1000);
+				String iatDate = time.toString();
+				timeClaimList.add(new TimeClaim("[iat] Issued at ", iatDate, iatUT));				
+			}catch (Exception e) {
+				ConsoleOut.output("Could not parse claim - "+e.getMessage());
+			}
+		}
+	}
+
 
 	public CustomJWToken(String headerJson, String payloadJson, String signature) {
 		this.headerJson = headerJson;
@@ -64,7 +124,7 @@ public class CustomJWToken extends JWT {
 	}
 	
 	public void calculateAndSetSignature(Algorithm algorithm){ 
-		 byte[] contentBytes = String.format("%s.%s", b64(getHeaderJson()), b64(getPayloadJson())).getBytes(StandardCharsets.UTF_8);
+		 byte[] contentBytes = String.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify(getPayloadJson()))).getBytes(StandardCharsets.UTF_8);
 		 signature = algorithm.sign(contentBytes);
 	}
 
@@ -191,7 +251,12 @@ public class CustomJWToken extends JWT {
 
 	@Override
 	public String getAlgorithm() {
-		return getHeaderJsonNode().get("alg").asText();
+		String algorithm ="";
+		try {
+			algorithm = getHeaderJsonNode().get("alg").asText();			
+		} catch (Exception e) {
+		}
+		return algorithm;
 	}
 
 	@Override

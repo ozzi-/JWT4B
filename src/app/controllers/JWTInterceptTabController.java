@@ -15,6 +15,7 @@ import app.helpers.ConsoleOut;
 import app.helpers.CustomJWToken;
 import app.helpers.PublicKeyBroker;
 import app.helpers.Settings;
+import app.helpers.Strings;
 import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
@@ -125,16 +126,17 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
 	@Override
 	public byte[] getMessage() {
+		jwtIM.setProblemDetail("");
+		radioButtonChanged(true,false,false,false);
 		CustomJWToken token = null;
 		try {
 			token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
 		} catch (InvalidTokenFormat e) {
-			// TODO give user feedback, that he broke the token
-			ConsoleOut.output(e.getMessage());
+			jwtIM.setProblemDetail(e.getMessage());
 			return this.message;	
 		}
 		
-		if  (recalculateSignature || randomKey) {
+		if  ((recalculateSignature || randomKey)) {
 			if(recalculateSignature){
 				jwtIM.setJWTKey(jwtST.getKeyFieldValue());
 			}
@@ -150,17 +152,17 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		} else if (keepOriginalSignature){
 			jwtIM.setSignature(jwtIM.getOriginalSignature());
 		}
-		
 		this.message = this.tokenPosition.replaceToken(token.getToken());
 		return this.message;
 
 	}
 
 	private void addLogHeadersToRequest() {
-		this.tokenPosition.addHeader("JWT4B: The following headers are added automatically, in order to log the keys");
-		this.tokenPosition.addHeader("JWT4B-SIGNER-KEY: " + jwtIM.getJWTKey());
+		this.tokenPosition.cleanJWTHeaders();
+		this.tokenPosition.addHeader(Strings.JWTHeaderInfo);
+		this.tokenPosition.addHeader(Strings.JWTHeaderPrefix+"SIGNER-KEY " + jwtIM.getJWTKey());
 		if(PublicKeyBroker.publicKey != null) {
-			this.tokenPosition.addHeader("JWT4B-SIGNER-PUBLIC-KEY: " + PublicKeyBroker.publicKey);
+			this.tokenPosition.addHeader(Strings.JWTHeaderPrefix+"SIGNER-PUBLIC-KEY " + PublicKeyBroker.publicKey);
 			PublicKeyBroker.publicKey = null;
 		}
 	}
