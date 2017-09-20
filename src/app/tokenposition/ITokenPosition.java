@@ -41,7 +41,7 @@ public abstract class ITokenPosition {
 	}
 	
 	public static ITokenPosition findTokenPositionImplementation(byte[] content, boolean isRequest, IExtensionHelpers helpers) {
-		List<Class<? extends ITokenPosition>> implementations = Arrays.asList(AuthorizationBearerHeader.class);
+		List<Class<? extends ITokenPosition>> implementations = Arrays.asList(AuthorizationBearerHeader.class, PostBody.class);
 
 		for (Class<? extends ITokenPosition> implClass : implementations) {
 			try {
@@ -52,7 +52,10 @@ public abstract class ITokenPosition {
 					return impl;
 				}
 			} catch (Exception e) {
-				ConsoleOut.output(e.getMessage());
+				// sometimes is enabled is called in order to build the views before an actual request / response passes through
+				if(!e.getMessage().equals("Request cannot be null") && !e.getMessage().equals("1")){ 
+					ConsoleOut.output(e.getMessage());
+				}
 				return null;
 			}
 		}

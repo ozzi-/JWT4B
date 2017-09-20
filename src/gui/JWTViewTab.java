@@ -143,7 +143,7 @@ public class JWTViewTab extends JPanel{
 	}
 
 	
-	public void updateSetView(String algorithmType) {
+	public void updateSetView(final String algorithmType) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				if(!jwtTM.getJWTJSON().equals(outputField.getText())){

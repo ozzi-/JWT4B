@@ -182,7 +182,7 @@ public class JWTInterceptTab extends JPanel {
 		return rdbtnOriginalSignature;
 	}
 
-	public void updateSetView(boolean reset) {
+	public void updateSetView(final boolean reset) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				if(!jwtArea.getText().equals(jwtIM.getJWTJSON())){
