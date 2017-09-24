@@ -25,12 +25,13 @@ public class Cookie extends ITokenPosition {
 	}
 
 	// finds the first jwt in the set-cookie or cookie header(s)
-	private String findJWTInHeaders(List<String> headers) {
+	public String findJWTInHeaders(List<String> headers) {
 		for (String header : headers) {
 			if(header.startsWith("Set-Cookie: ")) {
 				String cookie = header.replace("Set-Cookie: ", "");
 				if(cookie.length()>1 && cookie.contains("=")) {
 					String value = cookie.split(Pattern.quote("="))[1];
+					value=value.endsWith(";")?value.substring(0, value.length()-1):value;
 					if(TokenCheck.isValidJWT(value)) {
 						// TODO remove debug output
 						System.out.println("found in set cookie");
