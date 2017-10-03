@@ -1,6 +1,9 @@
 package burp;
 
+import java.io.PrintWriter;
+
 import app.controllers.ContextMenuController;
+import app.controllers.HighLightController;
 import app.controllers.JWTInterceptTabController;
 import app.controllers.JWTSuiteTabController;
 import app.controllers.JWTTabController;
@@ -18,9 +21,15 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 	@Override
 	public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
 		this.callbacks = callbacks;
+		PrintWriter stdout = new PrintWriter(callbacks.getStdout(), true);
+		stdout.println("JWT4B says hi!");
+		
 		callbacks.setExtensionName(Settings.extensionName);
 		callbacks.registerMessageEditorTabFactory(this);
 		
+		final HighLightController marker = new HighLightController(callbacks);
+        callbacks.registerHttpListener(marker);
+
 		// Suite Tab
 		JWTSuiteTabModel jwtSTM =  new JWTSuiteTabModel();
 		JWTSuiteTab jwtST = new JWTSuiteTab(jwtSTM);

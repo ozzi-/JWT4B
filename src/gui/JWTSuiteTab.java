@@ -9,9 +9,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -21,6 +19,8 @@ import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentListener;
 
+import model.JWTSuiteTabModel;
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Style;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -28,8 +28,8 @@ import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
+import app.helpers.JLabelLink;
 import app.helpers.Strings;
-import model.JWTSuiteTabModel;
 
 public class JWTSuiteTab extends JPanel {
 
@@ -45,39 +45,45 @@ public class JWTSuiteTab extends JPanel {
 	private JLabel lblExtendedVerificationInfo;
 
 	public JWTSuiteTab(JWTSuiteTabModel jwtSTM) {
-		drawGui();
+		drawGui(); 
 		this.jwtSTM = jwtSTM;
 	}
-	
-	public void updateSetView(){
+
+	public void updateSetView() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				if(!jwtInputField.getText().equals(jwtSTM.getJwtInput())){
-					jwtInputField.setText(jwtSTM.getJwtInput());					
+				if (!jwtInputField.getText().equals(jwtSTM.getJwtInput())) {
+					jwtInputField.setText(jwtSTM.getJwtInput());
 				}
-				if(!jwtSignatureButton.getText().equals(jwtSTM.getVerificationLabel())){
+				if (!jwtSignatureButton.getText().equals(
+						jwtSTM.getVerificationLabel())) {
 					jwtSignatureButton.setText(jwtSTM.getVerificationLabel());
 				}
-				if(!jwtOuputField.getText().equals(jwtSTM.getJwtJSON())){
-					jwtOuputField.setText(jwtSTM.getJwtJSON());					
+				if (!jwtOuputField.getText().equals(jwtSTM.getJwtJSON())) {
+					jwtOuputField.setText(jwtSTM.getJwtJSON());
 				}
-				if(!jwtKeyField.getText().equals(jwtSTM.getJwtKey())){
-					jwtKeyField.setText(jwtSTM.getJwtKey());					
+				if (!jwtKeyField.getText().equals(jwtSTM.getJwtKey())) {
+					jwtKeyField.setText(jwtSTM.getJwtKey());
 				}
-				if(!jwtSignatureButton.getBackground().equals(jwtSTM.getJwtSignatureColor())){
-					jwtSignatureButton.setBackground(jwtSTM.getJwtSignatureColor());					
+				if (!jwtSignatureButton.getBackground().equals(
+						jwtSTM.getJwtSignatureColor())) {
+					jwtSignatureButton.setBackground(jwtSTM
+							.getJwtSignatureColor());
 				}
-				if(jwtKeyField.getText().equals("")){
+				if (jwtKeyField.getText().equals("")) {
 					jwtSTM.setJwtSignatureColor(new JButton().getBackground());
-					jwtSignatureButton.setBackground(jwtSTM.getJwtSignatureColor());
+					jwtSignatureButton.setBackground(jwtSTM
+							.getJwtSignatureColor());
 				}
-				lblExtendedVerificationInfo.setText(jwtSTM.getVerificationResult());
+				lblExtendedVerificationInfo.setText(jwtSTM
+						.getVerificationResult());
 				lbRegisteredClaims.setText(jwtSTM.getTimeClaimsAsText());
 			}
 		});
 	}
 
-	public void registerDocumentListener(DocumentListener jwtInputListener,DocumentListener jwtKeyListener) {
+	public void registerDocumentListener(DocumentListener jwtInputListener,
+			DocumentListener jwtKeyListener) {
 		jwtInputField.getDocument().addDocumentListener(jwtInputListener);
 		jwtKeyField.getDocument().addDocumentListener(jwtKeyListener);
 	}
@@ -85,11 +91,14 @@ public class JWTSuiteTab extends JPanel {
 	private void drawGui() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 10, 0, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowHeights = new int[] { 10, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0 };
+		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0,
+				Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+				0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
-		
+
 		JLabel lblPasteJwtToken = new JLabel(Strings.enterJWT);
 		lblPasteJwtToken.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblPasteJwtToken = new GridBagConstraints();
@@ -98,37 +107,20 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lblPasteJwtToken.gridx = 1;
 		gbc_lblPasteJwtToken.gridy = 1;
 		add(lblPasteJwtToken, gbc_lblPasteJwtToken);
-		
-		creditButton = new JButton("?");
+
+		creditButton = new JButton("About");
 		creditButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				JFrame frame = new JFrame();
-				frame.setTitle(Strings.creditTitle);
-				frame.setVisible(true);
-				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-				frame.setBounds(0, 0, 550, 420);
-				frame.setLocationRelativeTo(null);
-				GridBagLayout gridBagLayout = new GridBagLayout();
-				gridBagLayout.columnWidths = new int[]{59, 534, 36, 0};
-				gridBagLayout.rowHeights = new int[]{0, 97, 0};
-				gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
-				gridBagLayout.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
-				frame.getContentPane().setLayout(gridBagLayout);
+				JLabelLink jLabelLink = new JLabelLink(Strings.creditTitle, 550, 450);
 				
-				JLabel lblNewLabel_1 = new JLabel(Strings.creditText);
-				GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
-				gbc_lblNewLabel_1.fill = GridBagConstraints.BOTH;
-				gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 5);
-				gbc_lblNewLabel_1.gridx = 1;
-				gbc_lblNewLabel_1.gridy = 0;
-				frame.getContentPane().add(lblNewLabel_1, gbc_lblNewLabel_1);
-				
-				JLabel lblNewLabel = new JLabel(new ImageIcon(this.getClass().getClassLoader().getResource("logo_sm.png")));
-				GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
-				gbc_lblNewLabel.insets = new Insets(0, 0, 0, 5);
-				gbc_lblNewLabel.gridx = 1;
-				gbc_lblNewLabel.gridy = 1;
-				frame.getContentPane().add(lblNewLabel, gbc_lblNewLabel);
+				jLabelLink.addText("<h2>About JWT4B</h2>JSON Web Tokens (also known as JWT4B) is developed by Oussama Zgheb and Matthias Vetsch.<br><br>JWT4B, excluding the libraries mentioned below and the Burp extender classes, uses the GPL 3 license.");
+				jLabelLink.addURL("* <a href=\"https://github.com/bobbylight/RSyntaxTextArea/blob/master/src/main/dist/RSyntaxTextArea.License.txt\">RSyntaxTextArea</a>");
+				jLabelLink.addURL("* <a href=\"https://github.com/auth0/java-jwt/blob/master/LICENSE\">Auth0 -java-jwt</a>");
+				jLabelLink.addURL("* <a href=\"https://www.apache.org/licenses/\">Apache Commons Lang</a>");
+				jLabelLink.addText("Thanks to Compass Security AG for providing development time for the initial version<br><br>");
+				jLabelLink.addURL("* <a href=\"https://github.com/mvetsch/JWT4B\">GitHub Repo</a>");
+				jLabelLink.addURL("* <a href=\"https://zgheb.com/\">Mantainer Website</a>");
+				jLabelLink.addRemoteImage("https://raw.githubusercontent.com/mvetsch/JWT4B/master/resources/logo_sm.png");
 			}
 		});
 		GridBagConstraints gbc_creditButton = new GridBagConstraints();
@@ -136,7 +128,6 @@ public class JWTSuiteTab extends JPanel {
 		gbc_creditButton.gridx = 2;
 		gbc_creditButton.gridy = 1;
 		add(creditButton, gbc_creditButton);
-		
 
 		jwtInputField = new JTextArea();
 		jwtInputField.setRows(2);
@@ -149,7 +140,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_jwtInputField.gridx = 1;
 		gbc_jwtInputField.gridy = 2;
 		add(jwtInputField, gbc_jwtInputField);
-		
+
 		lblEnterSecret = new JLabel(Strings.enterSecretKey);
 		lblEnterSecret.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblEnterSecret = new GridBagConstraints();
@@ -187,25 +178,26 @@ public class JWTSuiteTab extends JPanel {
 		jwtOuputField = new RSyntaxTextArea();
 		SyntaxScheme scheme = jwtOuputField.getSyntaxScheme();
 		Style style = new Style();
-		style.foreground = new Color(222,133,10);
+		style.foreground = new Color(222, 133, 10);
 		scheme.setStyle(Token.LITERAL_STRING_DOUBLE_QUOTE, style);
 		jwtOuputField.revalidate();
 		jwtOuputField.setHighlightCurrentLine(false);
 		jwtOuputField.setCurrentLineHighlightColor(Color.WHITE);
-		jwtOuputField.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
+		jwtOuputField
+				.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
 		jwtOuputField.setEditable(false);
 		// no context menu on right-click
-		jwtOuputField.setPopupMenu(new JPopupMenu()); 
+		jwtOuputField.setPopupMenu(new JPopupMenu());
 		RTextScrollPane sp = new RTextScrollPane(jwtOuputField);
 		sp.setLineNumbersEnabled(false);
-		
+
 		lblExtendedVerificationInfo = new JLabel("");
 		GridBagConstraints gbc_lblExtendedVerificationInfo = new GridBagConstraints();
 		gbc_lblExtendedVerificationInfo.insets = new Insets(0, 0, 5, 5);
 		gbc_lblExtendedVerificationInfo.gridx = 1;
 		gbc_lblExtendedVerificationInfo.gridy = 7;
 		add(lblExtendedVerificationInfo, gbc_lblExtendedVerificationInfo);
-		
+
 		JLabel lblDecodedJwt = new JLabel(Strings.decodedJWT);
 		lblDecodedJwt.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblDecodedJwt = new GridBagConstraints();
@@ -226,14 +218,14 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lbRegisteredClaims.gridx = 1;
 		gbc_lbRegisteredClaims.gridy = 11;
 		add(lbRegisteredClaims, gbc_lbRegisteredClaims);
-		
+
 	}
-	
-	public String getJWTInput(){
+
+	public String getJWTInput() {
 		return jwtInputField.getText();
 	}
-	
-	public String getKeyInput(){
+
+	public String getKeyInput() {
 		return jwtKeyField.getText();
 	}
 }

@@ -31,14 +31,14 @@ public class Strings {
 
 	public static final String creditTitle ="JSON Web Tokens - About";
 
-	public static final String creditText ="<html><h2>About JSON Web Tokens</h2>JSON Web Tokens is developed by Oussama Zgheb and Matthias Vetsch.<br>"
-			+ "All self-written code, excluding the BURP Extender classes, java-jwt library,<br>Apache Commons Lang and the RSyntaxTextArea library uses the"
+	public static final String creditText ="<html><h2>About JSON Web Tokens</h2>JSON Web Tokens is developed by Oussama Zgheb (zgheb.com) and Matthias Vetsch.<br><br>"
+			+ "All self-written code, excluding the BURP Extender classes, auth0 java-jwt library (MIT), Apache Commons Lang (apache license 2.0) and the RSyntaxTextArea library <br>(https://github.com/bobbylight/RSyntaxTextArea/blob/master/src/main/dist/<br>RSyntaxTextArea.License.txt) use the"
 			+ " GPL3 licence<br>https://www.gnu.org/licenses/gpl-3.0.html.<br><br>"
 			+ "Credits:"
 			+ "<ul>"
-			+ "<li>RSyntaxTextArea - https://github.com/bobbylight/RSyntaxTextArea</li>"
-			+ "<li>java-jwt - https://github.com/auth0/java-jwt</li>"
-			+ "<li>Compass Security AG, for providing development time - https://compass-security.com</li>"
+			+ "<li>RSyntaxTextArea &nbsp;- https://github.com/bobbylight/RSyntaxTextArea</li>"
+			+ "<li>java-jwt &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- https://github.com/auth0/java-jwt</li>"
+			+ "<li>Compass Security AG, for providing development time<br>https://compass-security.com</li>"
 			+ "</ul>"
 			+ "</html>";
 

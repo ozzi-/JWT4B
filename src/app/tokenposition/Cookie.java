@@ -11,15 +11,20 @@ public class Cookie extends ITokenPosition {
 
 	private boolean found;
 	private String token;
+	private List<String> headers;
+	
+	
+	public Cookie(List<String> headersP, String bodyP) {
+		headers=headersP;
+	}
 	
 	@Override
 	public boolean positionFound() {
-		List<String> headers = getHeaders();
 		String jwt = findJWTInHeaders(headers);
 		if(jwt!=null) {
 			found=true;
 			token=jwt;
-			return true;			
+			return true;
 		}
 		return false;
 	}
@@ -32,9 +37,10 @@ public class Cookie extends ITokenPosition {
 				if(cookie.length()>1 && cookie.contains("=")) {
 					String value = cookie.split(Pattern.quote("="))[1];
 					value=value.endsWith(";")?value.substring(0, value.length()-1):value;
+					TokenCheck.isValidJWT(value);
 					if(TokenCheck.isValidJWT(value)) {
-						// TODO remove debug output
-						System.out.println("found in set cookie");
+						found=true;
+						token=value;
 						return value;
 					}
 				}
@@ -51,8 +57,8 @@ public class Cookie extends ITokenPosition {
 					cookie = cookie.replace(";", "");
 					String value = cookie.split(Pattern.quote("="))[1];
 					if(TokenCheck.isValidJWT(value)) {
-						// TODO remove debug output
-						System.out.println("found in cookie");
+						found=true;
+						token=value;
 						return value;
 					}
 					from = index;
@@ -74,7 +80,25 @@ public class Cookie extends ITokenPosition {
 
 	@Override
 	public byte[] replaceToken(String newToken) {
-		// TODO implement replace
-		return null;
+		headers = replaceTokenInHeader(newToken, headers);
+		return getHelpers().buildHttpMessage(headers, getBody());		
+	}
+
+	public List<String> replaceTokenInHeader(String newToken, List<String> headers) {
+		int i=0;
+		Integer pos=null;
+		String replacedHeader="";
+		
+		for (String header : headers) {
+			if(header.contains(token)){
+				pos = i;
+				replacedHeader = header.replace(token, newToken);
+			}
+			i++;
+		}
+		if(pos != null){
+			headers.set(pos, replacedHeader);
+		}
+		return headers;
 	}
 }

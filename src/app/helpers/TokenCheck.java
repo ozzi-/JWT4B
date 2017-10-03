@@ -3,7 +3,6 @@ package app.helpers;
 import org.apache.commons.lang.StringUtils;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 public class TokenCheck {
@@ -16,7 +15,8 @@ public class TokenCheck {
 			DecodedJWT decoded = JWT.decode(jwt);
 			decoded.getAlgorithm();
 			return true;
-		} catch (JWTDecodeException exception) {
+		} catch (Exception exception) {
+			exception.printStackTrace();
 			return false;
 		}
 	}

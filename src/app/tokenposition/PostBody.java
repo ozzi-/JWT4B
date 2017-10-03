@@ -14,14 +14,19 @@ import app.helpers.TokenCheck;
 public class PostBody extends ITokenPosition {
 	private String token;
 	private boolean found = false;
-	// TODO maybe we could scan all parameters?
+	// TODO maybe we could / should scan all parameters?
 	private List<String> tokenKeyWords = Arrays.asList("id_token", "ID_TOKEN", "access_token", "token");
+	private String body;
 
+	
+	public PostBody(List<String> headersP, String bodyP){
+		body=bodyP;
+	}
+	
 	@Override
 	public boolean positionFound() {
 		if (isRequest) {
-			String body = new String(getBody());
-			KeyValuePair postJWT = getJWTFromPostBody(body);
+			KeyValuePair postJWT = getJWTFromPostBody();
 			if (postJWT != null) {
 				found = true;
 				token = postJWT.getValue();
@@ -30,8 +35,8 @@ public class PostBody extends ITokenPosition {
 		}
 		return false;
 	}
-
-	public KeyValuePair getJWTFromPostBody(String body) {
+	
+	public KeyValuePair getJWTFromPostBody() {
 		int from = 0;
 		int index = body.indexOf("&") == -1 ? body.length() : body.indexOf("&");
 		int parameterCount = StringUtils.countMatches(body, "&") + 1;
@@ -71,11 +76,15 @@ public class PostBody extends ITokenPosition {
 
 	@Override
 	public byte[] replaceToken(String newToken) {
-		String body = new String(getBody());
+		body = replaceTokenImpl(newToken,body);
+		return getHelpers().buildHttpMessage(getHeaders(), body.getBytes());
+	}
+
+	public String replaceTokenImpl(String newToken, String body) {
 		boolean replaced = false;
 		// we cannot use the location of parameter, as the body might have changed, thus
-		// we need to search for it again
-		KeyValuePair postJWT = getJWTFromPostBody(body);
+		// we need to search for it again 
+		KeyValuePair postJWT = getJWTFromPostBody();
 		for (String keyword : tokenKeyWords) {
 			if (keyword.equals(postJWT.getName())) {
 				String toReplace = postJWT.getNameAsParam() + postJWT.getValue();
@@ -86,7 +95,7 @@ public class PostBody extends ITokenPosition {
 		if (!replaced) {
 			ConsoleOut.output("Could not replace token in post body.");
 		}
-		return getHelpers().buildHttpMessage(getHeaders(), body.getBytes());
+		return body;	
 	}
 
 }

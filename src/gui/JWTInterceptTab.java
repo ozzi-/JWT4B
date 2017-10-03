@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -17,6 +18,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import model.JWTInterceptModel;
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Style;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -25,7 +28,6 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.helpers.Strings;
-import model.JWTInterceptModel;
 
 public class JWTInterceptTab extends JPanel {
 
@@ -40,24 +42,27 @@ public class JWTInterceptTab extends JPanel {
 	private JSeparator separator;
 	private JRadioButton rdbtnDontModifySignature;
 	private JLabel lblProblem;
+	private JComboBox<String> noneAttackComboBox;
+	private JLabel lblNewLabel;
 
 	public JWTInterceptTab(JWTInterceptModel jwtIM) {
 		this.jwtIM = jwtIM;
 		drawGui();
 	}
 	
-	public void registerActionListeners(ActionListener dontMofiy, ActionListener randomKeyListener, ActionListener originalSignatureListener, ActionListener recalculateSignatureListener){
+	public void registerActionListeners(ActionListener dontMofiy, ActionListener randomKeyListener, ActionListener originalSignatureListener, ActionListener recalculateSignatureListener, ActionListener algAttackListener){
 		rdbtnDontModifySignature.addActionListener(dontMofiy);
 		rdbtnRecalculateSignature.addActionListener(randomKeyListener);
 		rdbtnOriginalSignature.addActionListener(originalSignatureListener);
 		rdbtnRandomKey.addActionListener(recalculateSignatureListener);
+		noneAttackComboBox.addActionListener(algAttackListener);
 	}
 	
 	private void drawGui() {	
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{10, 0, 0, 20, 0};
 		gridBagLayout.rowHeights = new int[]{10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
@@ -164,6 +169,28 @@ public class JWTInterceptTab extends JPanel {
 		gbc_lblProblem.gridy = 8;
 		add(lblProblem, gbc_lblProblem);
 		
+		lblNewLabel = new JLabel("Alg None Attack:");
+		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+		gbc_lblNewLabel.anchor = GridBagConstraints.WEST;
+		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_lblNewLabel.gridx = 2;
+		gbc_lblNewLabel.gridy = 9;
+		add(lblNewLabel, gbc_lblNewLabel);
+		
+		noneAttackComboBox = new JComboBox<String>();
+		GridBagConstraints gbc_noneAttackComboBox = new GridBagConstraints();
+		gbc_noneAttackComboBox.insets = new Insets(0, 0, 5, 5);
+		gbc_noneAttackComboBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_noneAttackComboBox.gridx = 2;
+		gbc_noneAttackComboBox.gridy = 10;
+		add(noneAttackComboBox, gbc_noneAttackComboBox);
+		
+		noneAttackComboBox.addItem("  -");
+		noneAttackComboBox.addItem("Alg: none");
+		noneAttackComboBox.addItem("Alg: None");
+		noneAttackComboBox.addItem("Alg: nOnE");
+		noneAttackComboBox.addItem("Alg: NONE");
+		
 	}
 	
 	public AbstractButton getRdbtnDontModify() {
@@ -172,6 +199,10 @@ public class JWTInterceptTab extends JPanel {
 	
 	public JRadioButton getRdbtnRecalculateSignature() {
 		return rdbtnRecalculateSignature;
+	}
+	
+	public JComboBox<String> getNoneAttackComboBox() {
+		return noneAttackComboBox;
 	}
 
 	public JRadioButton getRdbtnRandomKey() {
