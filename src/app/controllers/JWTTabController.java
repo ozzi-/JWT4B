@@ -35,7 +35,7 @@ public class JWTTabController implements IMessageEditorTab {
 	private JWTTabModel jwtTM;
 	private JWTViewTab jwtVT;
 
-	public JWTTabController(IBurpExtenderCallbacks callbacks, JWTTabModel jwtTM, JWTViewTab jwtVT) {
+	public JWTTabController(IBurpExtenderCallbacks callbacks, final JWTTabModel jwtTM, final JWTViewTab jwtVT) {
 		this.helpers = callbacks.getHelpers();
 		this.jwtTM = jwtTM;
 		this.jwtVT  = jwtVT;

@@ -29,7 +29,7 @@ public class JWTSuiteTabController extends Observable implements ITab {
 	private JWTSuiteTabModel jwtSTM;
 	private JWTSuiteTab jwtST;
 
-	public JWTSuiteTabController(JWTSuiteTabModel jwtSTM, JWTSuiteTab jwtST) {
+	public JWTSuiteTabController(final JWTSuiteTabModel jwtSTM, final JWTSuiteTab jwtST) {
 		this.jwtSTM = jwtSTM;
 		this.jwtST = jwtST;
 

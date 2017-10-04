@@ -41,18 +41,34 @@ public abstract class ITokenPosition {
 	}
 	
 	public static ITokenPosition findTokenPositionImplementation(byte[] content, boolean isRequest, IExtensionHelpers helpers) {
-		List<Class<? extends ITokenPosition>> implementations = Arrays.asList(AuthorizationBearerHeader.class);
-
+		List<Class<? extends ITokenPosition>> implementations = Arrays.asList(AuthorizationBearerHeader.class, PostBody.class, Cookie.class);
 		for (Class<? extends ITokenPosition> implClass : implementations) {
 			try {
-				ITokenPosition impl = (ITokenPosition) implClass.getConstructors()[0].newInstance();
+				List<String> headers;
+				int bodyOffset;
+				if (isRequest) {
+					IRequestInfo requestInfo = helpers.analyzeRequest(content);
+					headers = requestInfo.getHeaders();
+					bodyOffset =requestInfo.getBodyOffset();
+				} else {
+					IResponseInfo responseInfo = helpers.analyzeResponse(content);
+					headers = responseInfo.getHeaders();
+					bodyOffset = responseInfo.getBodyOffset();
+
+				}
+				String body = new String(Arrays.copyOfRange(content, bodyOffset, content.length));
+				ITokenPosition impl = (ITokenPosition) implClass.getConstructors()[0].newInstance(headers,body);
+				
 				impl.setHelpers(helpers);
 				impl.setMessage(content, isRequest);
 				if (impl.positionFound()) {
 					return impl;
 				}
 			} catch (Exception e) {
-				ConsoleOut.output(e.getMessage());
+				// sometimes is enabled is called in order to build the views before an actual request / response passes through
+				if(!e.getMessage().equals("Request cannot be null") && !e.getMessage().equals("1")){ 
+					ConsoleOut.output(e.getMessage());
+				}
 				return null;
 			}
 		}
