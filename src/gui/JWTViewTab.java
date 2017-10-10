@@ -16,6 +16,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentListener;
 
+import model.JWTTabModel;
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Style;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -24,7 +26,6 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.algorithm.AlgorithmType;
-import model.JWTTabModel;
 
 public class JWTViewTab extends JPanel{
 
@@ -35,6 +36,7 @@ public class JWTViewTab extends JPanel{
 	private JLabel keyLabel;
 	private JButton verificationIndicator;
 	private JWTTabModel jwtTM;
+	private JLabel lblCookieFlags;
 
 	public JWTViewTab(JWTTabModel jwtTM) {
 		drawPanel();
@@ -49,20 +51,20 @@ public class JWTViewTab extends JPanel{
 	private void drawPanel() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 10, 447, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 10, 10, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 		
-				keyLabel = new JLabel(" ");
-				keyLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
-				GridBagConstraints gbc_inputLabel1 = new GridBagConstraints();
-				gbc_inputLabel1.fill = GridBagConstraints.VERTICAL;
-				gbc_inputLabel1.insets = new Insets(0, 0, 5, 5);
-				gbc_inputLabel1.anchor = GridBagConstraints.WEST;
-				gbc_inputLabel1.gridx = 1;
-				gbc_inputLabel1.gridy = 1;
-				add(keyLabel, gbc_inputLabel1);
+		keyLabel = new JLabel(" ");
+		keyLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+		GridBagConstraints gbc_inputLabel1 = new GridBagConstraints();
+		gbc_inputLabel1.fill = GridBagConstraints.VERTICAL;
+		gbc_inputLabel1.insets = new Insets(0, 0, 5, 5);
+		gbc_inputLabel1.anchor = GridBagConstraints.WEST;
+		gbc_inputLabel1.gridx = 1;
+		gbc_inputLabel1.gridy = 1;
+		add(keyLabel, gbc_inputLabel1);
 
 		keyField = new JTextField();
 		GridBagConstraints gbc_inputField1 = new GridBagConstraints();
@@ -94,14 +96,24 @@ public class JWTViewTab extends JPanel{
 		outputField.setEditable(false);
 		outputField.setPopupMenu(new JPopupMenu()); // no context menu on right-click
 		
-				outputLabel = new JLabel("JWT");
-				outputLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
-				GridBagConstraints gbc_outputLabel = new GridBagConstraints();
-				gbc_outputLabel.anchor = GridBagConstraints.WEST;
-				gbc_outputLabel.insets = new Insets(0, 0, 5, 5);
-				gbc_outputLabel.gridx = 1;
-				gbc_outputLabel.gridy = 5;
-				add(outputLabel, gbc_outputLabel);
+		outputLabel = new JLabel("JWT");
+		outputLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+		GridBagConstraints gbc_outputLabel = new GridBagConstraints();
+		gbc_outputLabel.anchor = GridBagConstraints.WEST;
+		gbc_outputLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_outputLabel.gridx = 1;
+		gbc_outputLabel.gridy = 5;
+		add(outputLabel, gbc_outputLabel);
+		
+		lblCookieFlags = new JLabel(" ");
+		lblCookieFlags.setFont(new Font("Tahoma", Font.BOLD, 12));
+		GridBagConstraints gbc_lblCookieFlags = new GridBagConstraints();
+		gbc_lblCookieFlags.anchor = GridBagConstraints.SOUTHWEST;
+		gbc_lblCookieFlags.insets = new Insets(0, 0, 5, 5);
+		gbc_lblCookieFlags.gridx = 1;
+		gbc_lblCookieFlags.gridy = 8;
+		add(lblCookieFlags, gbc_lblCookieFlags);
+		
 		RTextScrollPane sp = new RTextScrollPane(outputField);
 		sp.setLineNumbersEnabled(false);
 		
@@ -173,6 +185,12 @@ public class JWTViewTab extends JPanel{
 					keyLabel.setText("");
 					keyField.setEnabled(false);
 					keyField.setEnabled(false);
+				}
+				
+				if(jwtTM.getcFW().isCookie()){
+					lblCookieFlags.setText(jwtTM.getcFW().toHTMLString());
+				}else{
+					lblCookieFlags.setText("");
 				}
 				setCaret();
 			}

@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
+import app.helpers.CookieFlagWrapper;
 import app.helpers.TokenCheck;
 
 public class Cookie extends ITokenPosition {
@@ -12,7 +13,7 @@ public class Cookie extends ITokenPosition {
 	private boolean found;
 	private String token;
 	private List<String> headers;
-	
+	private CookieFlagWrapper cFW = null;
 	
 	public Cookie(List<String> headersP, String bodyP) {
 		headers=headersP;
@@ -31,12 +32,22 @@ public class Cookie extends ITokenPosition {
 
 	// finds the first jwt in the set-cookie or cookie header(s)
 	public String findJWTInHeaders(List<String> headers) {
+		// defaulting
+		cFW = new CookieFlagWrapper(false, false, false); 
+
 		for (String header : headers) {
 			if(header.startsWith("Set-Cookie: ")) {
 				String cookie = header.replace("Set-Cookie: ", "");
 				if(cookie.length()>1 && cookie.contains("=")) {
 					String value = cookie.split(Pattern.quote("="))[1];
-					value=value.endsWith(";")?value.substring(0, value.length()-1):value;
+					int flagMarker = value.indexOf(";");
+					if(flagMarker!=-1){
+						String flags = value.substring(flagMarker);
+						value=value.substring(0, flagMarker);
+						cFW = new CookieFlagWrapper(true, flags.contains("secure"), flags.contains("HttpOnly")); 
+					}else{
+						cFW = new CookieFlagWrapper(true, false, false);
+					}
 					TokenCheck.isValidJWT(value);
 					if(TokenCheck.isValidJWT(value)) {
 						found=true;
@@ -100,5 +111,9 @@ public class Cookie extends ITokenPosition {
 			headers.set(pos, replacedHeader);
 		}
 		return headers;
+	}
+
+	public CookieFlagWrapper getcFW(){
+		return cFW;
 	}
 }

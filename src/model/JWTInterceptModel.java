@@ -2,6 +2,8 @@ package model;
 
 import java.awt.Color;
 
+import app.helpers.CookieFlagWrapper;
+
 public class JWTInterceptModel{
 	private String jwtInput;
 	private String jwtKey;
@@ -11,6 +13,7 @@ public class JWTInterceptModel{
 	private String signature;
 	private String originalSignature;
 	private String problemDetail;
+	private CookieFlagWrapper cFW;
 	
 	public String getJWTInput() {
 		return jwtInput;
@@ -61,5 +64,10 @@ public class JWTInterceptModel{
 	public void setProblemDetail(String problemDetail) {
 		this.problemDetail = problemDetail;
 	}
-
+	public CookieFlagWrapper getcFW() {
+		return cFW;
+	}
+	public void setcFW(CookieFlagWrapper cFW) {
+		this.cFW = cFW;
+	}
 }

@@ -74,6 +74,7 @@ public class JWTTabController implements IMessageEditorTab {
 		tokenPosition = ITokenPosition.findTokenPositionImplementation(content, isRequest,helpers);
 		jwtTM.setJWT(tokenPosition.getToken());
 		jwtTM.setJWTJSON(ReadableTokenFormat.getReadableFormat(new CustomJWToken(jwtTM.getJWT())));
+		jwtTM.setcFW(tokenPosition.getcFW());
 		
 		JWTTabModel current = new JWTTabModel(jwtTM.getKey(), content);
 		int containsIndex = modelStateList.indexOf(current);

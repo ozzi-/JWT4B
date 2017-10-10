@@ -44,6 +44,7 @@ public class JWTInterceptTab extends JPanel {
 	private JLabel lblProblem;
 	private JComboBox<String> noneAttackComboBox;
 	private JLabel lblNewLabel;
+	private JLabel lblCookieFlags;
 
 	public JWTInterceptTab(JWTInterceptModel jwtIM) {
 		this.jwtIM = jwtIM;
@@ -177,6 +178,14 @@ public class JWTInterceptTab extends JPanel {
 		gbc_lblNewLabel.gridy = 9;
 		add(lblNewLabel, gbc_lblNewLabel);
 		
+		lblCookieFlags = new JLabel("");
+		GridBagConstraints gbc_lblCookieFlag = new GridBagConstraints();
+		gbc_lblCookieFlag.insets = new Insets(0, 0, 5, 5);
+		gbc_lblCookieFlag.anchor = GridBagConstraints.WEST;
+		gbc_lblCookieFlag.gridx = 1;
+		gbc_lblCookieFlag.gridy = 10;
+		add(lblCookieFlags, gbc_lblCookieFlag);
+		
 		noneAttackComboBox = new JComboBox<String>();
 		GridBagConstraints gbc_noneAttackComboBox = new GridBagConstraints();
 		gbc_noneAttackComboBox.insets = new Insets(0, 0, 5, 5);
@@ -227,6 +236,12 @@ public class JWTInterceptTab extends JPanel {
 				}
 				jwtArea.setCaretPosition(0);
 				lblProblem.setText(jwtIM.getProblemDetail());
+				
+				if(jwtIM.getcFW().isCookie()){
+					lblCookieFlags.setText(jwtIM.getcFW().toHTMLString());
+				}else{
+					lblCookieFlags.setText("");
+				}
 			}
 		});
 	}

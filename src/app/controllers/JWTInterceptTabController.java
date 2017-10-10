@@ -154,6 +154,9 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
 		tokenPosition = ITokenPosition.findTokenPositionImplementation(content,
 				isRequest, helpers);
+		jwtIM.setcFW(tokenPosition.getcFW());
+
+		
 		if (tokenPosition == null) {
 			jwtST.updateSetView(true);
 		} else {

@@ -2,6 +2,7 @@ package model;
 
 import java.awt.Color;
 
+import app.helpers.CookieFlagWrapper;
 import app.helpers.Settings;
 
 public class JWTTabModel {
@@ -12,6 +13,7 @@ public class JWTTabModel {
 	private Color verificationColor;
 	private String jwt;
 	private String jwtJSON;
+	private CookieFlagWrapper cFW;
 
 	public JWTTabModel(){
 	}
@@ -94,6 +96,14 @@ public class JWTTabModel {
 
 	public void setJWTJSON(String readableFormat) {
 		jwtJSON=readableFormat;
+	}
+
+	public void setcFW(CookieFlagWrapper cFW) {
+		this.cFW = cFW;
+	}
+	
+	public CookieFlagWrapper getcFW(){
+		return cFW;
 	}
 
 }
