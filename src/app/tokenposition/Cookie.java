@@ -65,7 +65,8 @@ public class Cookie extends ITokenPosition {
 				for (int i = 0; i < cookieCount; i++) {
 					String cookie = cookieHeader.substring(from, index);
 					cookie = cookie.replace(";", "");
-					String value = cookie.split(Pattern.quote("="))[1];
+					String[] cvp = cookie.split(Pattern.quote("="));
+					String value = cvp.length==2?cvp[1]:"";
 					if(TokenCheck.isValidJWT(value)) {
 						found=true;
 						token=value;
