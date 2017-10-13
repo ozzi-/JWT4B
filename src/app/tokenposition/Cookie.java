@@ -58,11 +58,10 @@ public class Cookie extends ITokenPosition {
 			}
 			if(header.startsWith("Cookie: ")) {
 				String cookieHeader = header.replace("Cookie: ","");
-				cookieHeader=cookieHeader.endsWith(";")?cookieHeader.substring(0, cookieHeader.length()-1):cookieHeader;
+				cookieHeader=cookieHeader.endsWith(";")?cookieHeader:cookieHeader+";";
 				int from = 0;
-				int index = cookieHeader.indexOf(";")==-1?cookieHeader.length():cookieHeader.indexOf(";");
-				int cookieCount = StringUtils.countMatches(cookieHeader, "=");
-
+				int index = cookieHeader.indexOf(";");
+				int cookieCount = StringUtils.countMatches(cookieHeader, ";");
 				for (int i = 0; i < cookieCount; i++) {
 					String cookie = cookieHeader.substring(from, index);
 					cookie = cookie.replace(";", "");
@@ -73,12 +72,11 @@ public class Cookie extends ITokenPosition {
 						return value;
 					}
 					from = index;
-					index = cookieHeader.indexOf("&", index + 1);
+					index = cookieHeader.indexOf(";", index + 1);
 					if(index == -1){
 						index = cookieHeader.length();
 					}
 				}
-					
 			}
 		}
 		return null;
