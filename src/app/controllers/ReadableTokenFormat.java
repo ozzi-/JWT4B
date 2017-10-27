@@ -1,6 +1,14 @@
 package app.controllers;
 
+import java.io.IOException;
+
 import app.helpers.CustomJWToken;
+import app.helpers.Lf2SpacesIndenter;
+
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class ReadableTokenFormat {
 	private static final String newline = System.getProperty("line.separator");
@@ -13,12 +21,13 @@ public class ReadableTokenFormat {
 		StringBuilder result = new StringBuilder();
 
 		result.append(titleHeaders);
-		result.append(token.getHeaderJson());
+		result.append(jsonBeautify(token.getHeaderJson()));
+
 		result.append(titlePayload);
-		result.append(token.getPayloadJson());
+		result.append(jsonBeautify(token.getPayloadJson()));
+
 		result.append(titleSignature);
 		result.append("\""+token.getSignature()+"\"");
-		
 		return result.toString();
 	}
 	
@@ -49,7 +58,29 @@ public class ReadableTokenFormat {
 		
 		return new CustomJWToken(header, payload, signature);
 	}
+   
+    private static class PrettyPrinter extends DefaultPrettyPrinter {
+		private static final long serialVersionUID = 1L;
+		public static final PrettyPrinter instance = new PrettyPrinter();
+        public PrettyPrinter() {
+            _arrayIndenter = Lf2SpacesIndenter.getInstance();
+        }
+    }
 
+	private static String jsonBeautify(String input) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+	    objectMapper.setDefaultPrettyPrinter(PrettyPrinter.instance);		
+		JsonNode tree;
+		String output;
+		try {
+			tree = objectMapper.readTree(input);
+			output = objectMapper.writeValueAsString(tree);
+		} catch (IOException e) {
+			return input;
+		}
+		return output;
+	}
 	
 	public static class InvalidTokenFormat extends Exception {
 		private static final long serialVersionUID = 1L;
@@ -58,5 +89,3 @@ public class ReadableTokenFormat {
 		}
 	}
 }
-
-
