@@ -1,11 +1,5 @@
 package app.controllers;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
 import app.helpers.CustomJWToken;
 
 public class ReadableTokenFormat {
@@ -19,13 +13,12 @@ public class ReadableTokenFormat {
 		StringBuilder result = new StringBuilder();
 
 		result.append(titleHeaders);
-		result.append(jsonBeautify(token.getHeaderJson()));
-
+		result.append(token.getHeaderJson());
 		result.append(titlePayload);
-		result.append(jsonBeautify(token.getPayloadJson()));
-
+		result.append(token.getPayloadJson());
 		result.append(titleSignature);
 		result.append("\""+token.getSignature()+"\"");
+		
 		return result.toString();
 	}
 	
@@ -57,20 +50,6 @@ public class ReadableTokenFormat {
 		return new CustomJWToken(header, payload, signature);
 	}
 
-	private static String jsonBeautify(String input) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-		
-		JsonNode tree;
-		String output;
-		try {
-			tree = objectMapper.readTree(input);
-			output = objectMapper.writeValueAsString(tree);
-		} catch (IOException e) {
-			return input;
-		}
-		return output;
-	}
 	
 	public static class InvalidTokenFormat extends Exception {
 		private static final long serialVersionUID = 1L;
