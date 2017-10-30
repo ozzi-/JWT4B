@@ -1,6 +1,7 @@
 package model;
 
 import java.awt.Color;
+import java.util.List;
 
 import app.helpers.CookieFlagWrapper;
 
@@ -14,6 +15,7 @@ public class JWTInterceptModel{
 	private String originalSignature;
 	private String problemDetail;
 	private CookieFlagWrapper cFW;
+	private List<TimeClaim> tcl;
 	
 	public String getJWTInput() {
 		return jwtInput;
@@ -69,5 +71,11 @@ public class JWTInterceptModel{
 	}
 	public void setcFW(CookieFlagWrapper cFW) {
 		this.cFW = cFW;
+	}
+	public void setTimeClaims(List<TimeClaim> tcl) {
+		this.tcl=tcl;		
+	}
+	public String getTimeClaimsAsText(){
+		return TimeClaim.getTimeClaimsAsText(tcl);
 	}
 }

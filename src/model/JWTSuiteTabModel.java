@@ -49,13 +49,7 @@ public class JWTSuiteTabModel {
 		this.tcl=tcl;
 	}
 	public String getTimeClaimsAsText(){
-		String timeClaimString = "<html>";
-		for (TimeClaim timeClaim : tcl) {
-			timeClaimString+="<b>"+timeClaim.getClaimName()+
-					(timeClaim.canBeValid()?"</b> check "+(timeClaim.isValid()?"<span style=\"color: green\">passed</span>":"<span style=\"color: red\">failed</span>"):"</b>")+
-					" - "+timeClaim.getDate()+"<br>";
-		}
-		return timeClaimString+"</html>";
+		return TimeClaim.getTimeClaimsAsText(tcl);
 	}
 	public String getVerificationResult() {
 		return this.verificationResult;

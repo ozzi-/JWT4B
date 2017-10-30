@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentListener;
 
@@ -26,6 +27,7 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.algorithm.AlgorithmType;
+import java.awt.SystemColor;
 
 public class JWTViewTab extends JPanel{
 
@@ -37,6 +39,7 @@ public class JWTViewTab extends JPanel{
 	private JButton verificationIndicator;
 	private JWTTabModel jwtTM;
 	private JLabel lblCookieFlags;
+	private JTextPane lbRegisteredClaims;
 
 	public JWTViewTab(JWTTabModel jwtTM) {
 		drawPanel();
@@ -51,9 +54,9 @@ public class JWTViewTab extends JPanel{
 	private void drawPanel() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 10, 447, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 		
 		keyLabel = new JLabel(" ");
@@ -105,13 +108,24 @@ public class JWTViewTab extends JPanel{
 		gbc_outputLabel.gridy = 5;
 		add(outputLabel, gbc_outputLabel);
 		
+		lbRegisteredClaims = new JTextPane();
+		lbRegisteredClaims.setBackground(SystemColor.controlHighlight);
+		lbRegisteredClaims.setContentType("text/html");
+		lbRegisteredClaims.setEditable(false);
+		GridBagConstraints gbc_lbRegisteredClaims = new GridBagConstraints();
+		gbc_lbRegisteredClaims.fill = GridBagConstraints.BOTH;
+		gbc_lbRegisteredClaims.insets = new Insets(0, 0, 5, 5);
+		gbc_lbRegisteredClaims.gridx = 1;
+		gbc_lbRegisteredClaims.gridy = 8;
+		add(lbRegisteredClaims, gbc_lbRegisteredClaims);
+		
 		lblCookieFlags = new JLabel(" ");
 		lblCookieFlags.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblCookieFlags = new GridBagConstraints();
 		gbc_lblCookieFlags.anchor = GridBagConstraints.SOUTHWEST;
 		gbc_lblCookieFlags.insets = new Insets(0, 0, 5, 5);
 		gbc_lblCookieFlags.gridx = 1;
-		gbc_lblCookieFlags.gridy = 8;
+		gbc_lblCookieFlags.gridy = 9;
 		add(lblCookieFlags, gbc_lblCookieFlags);
 		
 		RTextScrollPane sp = new RTextScrollPane(outputField);
@@ -193,6 +207,7 @@ public class JWTViewTab extends JPanel{
 					lblCookieFlags.setText("");
 				}
 				setCaret();
+				lbRegisteredClaims.setText(jwtTM.getTimeClaimsAsText());
 			}
 		});
 	}

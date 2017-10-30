@@ -86,7 +86,6 @@ public class JWTSuiteTabController extends Observable implements ITab {
 		jwts = jwts.replace("Set-Cookie: ", "");
 		jwts = jwts.replace("Cookie: ", "");
 		jwts = jwts.replaceAll("\\s", "");
-		// TODO parse cookie flags
 		jwtSTM.setJwtInput(jwts);
 		try {
 			CustomJWToken jwt = new CustomJWToken(jwts);

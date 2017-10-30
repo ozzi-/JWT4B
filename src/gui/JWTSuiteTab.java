@@ -81,7 +81,6 @@ public class JWTSuiteTab extends JPanel {
 			}
 		});
 	}
-
 	public void registerDocumentListener(DocumentListener jwtInputListener,
 			DocumentListener jwtKeyListener) {
 		jwtInputField.getDocument().addDocumentListener(jwtInputListener);
@@ -210,6 +209,7 @@ public class JWTSuiteTab extends JPanel {
 		add(sp, gbc_jwtOuputField);
 
 		lbRegisteredClaims = new JTextPane();
+		lbRegisteredClaims.setBackground(new Color(238,238,238));
 		lbRegisteredClaims.setContentType("text/html");
 		lbRegisteredClaims.setEditable(false);
 		GridBagConstraints gbc_lbRegisteredClaims = new GridBagConstraints();

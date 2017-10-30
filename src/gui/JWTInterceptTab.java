@@ -28,6 +28,8 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.helpers.Strings;
+import javax.swing.JTextPane;
+import java.awt.SystemColor;
 
 public class JWTInterceptTab extends JPanel {
 
@@ -45,6 +47,7 @@ public class JWTInterceptTab extends JPanel {
 	private JComboBox<String> noneAttackComboBox;
 	private JLabel lblNewLabel;
 	private JLabel lblCookieFlags;
+	private JTextPane lbRegisteredClaims;
 
 	public JWTInterceptTab(JWTInterceptModel jwtIM) {
 		this.jwtIM = jwtIM;
@@ -62,9 +65,9 @@ public class JWTInterceptTab extends JPanel {
 	private void drawGui() {	
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{10, 0, 0, 20, 0};
-		gridBagLayout.rowHeights = new int[]{10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gridBagLayout.rowHeights = new int[]{10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
 		jwtArea = new RSyntaxTextArea ();
@@ -194,6 +197,19 @@ public class JWTInterceptTab extends JPanel {
 		gbc_noneAttackComboBox.gridy = 10;
 		add(noneAttackComboBox, gbc_noneAttackComboBox);
 		
+		lbRegisteredClaims = new JTextPane();
+		lbRegisteredClaims.setBackground(SystemColor.controlHighlight);
+		lbRegisteredClaims.setContentType("text/html");
+		lbRegisteredClaims.setEditable(false);
+		GridBagConstraints gbc_lbRegisteredClaims = new GridBagConstraints();
+		gbc_lbRegisteredClaims.insets = new Insets(0, 0, 5, 5);
+		gbc_lbRegisteredClaims.fill = GridBagConstraints.BOTH;
+		gbc_lbRegisteredClaims.gridx = 2;
+		gbc_lbRegisteredClaims.gridy = 12;
+		add(lbRegisteredClaims, gbc_lbRegisteredClaims);
+		
+
+		
 		noneAttackComboBox.addItem("  -");
 		noneAttackComboBox.addItem("Alg: none");
 		noneAttackComboBox.addItem("Alg: None");
@@ -242,6 +258,7 @@ public class JWTInterceptTab extends JPanel {
 				}else{
 					lblCookieFlags.setText("");
 				}
+				lbRegisteredClaims.setText(jwtIM.getTimeClaimsAsText());
 			}
 		});
 	}

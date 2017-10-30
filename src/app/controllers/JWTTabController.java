@@ -3,6 +3,7 @@ package app.controllers;
 import java.awt.Component;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -23,6 +24,7 @@ import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
 import gui.JWTViewTab;
 import model.JWTTabModel;
+import model.TimeClaim;
 
 public class JWTTabController implements IMessageEditorTab {
 
@@ -73,7 +75,10 @@ public class JWTTabController implements IMessageEditorTab {
 		
 		tokenPosition = ITokenPosition.findTokenPositionImplementation(content, isRequest,helpers);
 		jwtTM.setJWT(tokenPosition.getToken());
-		jwtTM.setJWTJSON(ReadableTokenFormat.getReadableFormat(new CustomJWToken(jwtTM.getJWT())));
+		CustomJWToken jwt = new CustomJWToken(jwtTM.getJWT());
+		jwtTM.setJWTJSON(ReadableTokenFormat.getReadableFormat(jwt));
+		List<TimeClaim> tcl = jwt.getTimeClaimList();
+		jwtTM.setTimeClaims(tcl);
 		jwtTM.setcFW(tokenPosition.getcFW());
 		
 		JWTTabModel current = new JWTTabModel(jwtTM.getKey(), content);
