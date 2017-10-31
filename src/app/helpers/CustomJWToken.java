@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import model.TimeClaim;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 
@@ -21,8 +23,6 @@ import com.eclipsesource.json.JsonValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import model.TimeClaim;
 
 /* 
  * This Class is implemented separately to get raw access to the content of the Tokens. 
@@ -178,6 +178,17 @@ public class CustomJWToken extends JWT {
 
 	private String b64(String input) { 
 		return Base64.encodeBase64URLSafeString(input.getBytes(StandardCharsets.UTF_8));
+	}
+	
+	public static boolean isValidJWT(String token){
+		if(org.apache.commons.lang.StringUtils.countMatches(token, ".")!=2){
+			return false;
+		}
+		try {
+		    JWT.decode(token);
+		    return true;
+		} catch (JWTDecodeException exception){ }
+		return false;
 	}
 	
 	// Method copied from:

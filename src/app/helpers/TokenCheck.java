@@ -10,14 +10,11 @@ public class TokenCheck {
 		if (StringUtils.countMatches(jwt, ".") != 2) {
 			return false;
 		}
-
 		try {
 			DecodedJWT decoded = JWT.decode(jwt);
 			decoded.getAlgorithm();
 			return true;
-		} catch (Exception exception) {
-			exception.printStackTrace();
-			return false;
-		}
+		} catch (Exception exception) {}
+		return false;
 	}
 }

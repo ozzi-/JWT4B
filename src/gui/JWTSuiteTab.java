@@ -15,7 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentListener;
 
@@ -104,10 +103,8 @@ public class JWTSuiteTab extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				JLabelLink jLabelLink = new JLabelLink(Strings.creditTitle, 550, 450);
 
-				jLabelLink
-						.addText("<h2>About JWT4B</h2>JSON Web Tokens (also known as JWT4B) is developed by Oussama Zgheb and Matthias Vetsch.<br><br>JWT4B, excluding the libraries mentioned below and the Burp extender classes, uses the GPL 3 license.");
-				jLabelLink
-						.addURL("* <a href=\"https://github.com/bobbylight/RSyntaxTextArea/blob/master/src/main/dist/RSyntaxTextArea.License.txt\">RSyntaxTextArea</a>");
+				jLabelLink.addText("<h2>About JWT4B</h2>JSON Web Tokens (also known as JWT4B) is developed by Oussama Zgheb and Matthias Vetsch.<br><br>JWT4B, excluding the libraries mentioned below and the Burp extender classes, uses the GPL 3 license.");
+				jLabelLink.addURL("* <a href=\"https://github.com/bobbylight/RSyntaxTextArea/blob/master/src/main/dist/RSyntaxTextArea.License.txt\">RSyntaxTextArea</a>");
 				jLabelLink.addURL("* <a href=\"https://github.com/auth0/java-jwt/blob/master/LICENSE\">Auth0 -java-jwt</a>");
 				jLabelLink.addURL("* <a href=\"https://www.apache.org/licenses/\">Apache Commons Lang</a>");
 				jLabelLink.addText("Thanks to Compass Security AG for providing development time for the initial version<br><br>");

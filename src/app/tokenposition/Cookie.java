@@ -42,9 +42,8 @@ public class Cookie extends ITokenPosition {
 					String value = cookie.split(Pattern.quote("="))[1];
 					int flagMarker = value.indexOf(";");
 					if(flagMarker!=-1){
-						String flags = value.substring(flagMarker);
 						value=value.substring(0, flagMarker);
-						cFW = new CookieFlagWrapper(true, flags.contains("secure"), flags.contains("HttpOnly")); 
+						cFW = new CookieFlagWrapper(true, cookie.contains("; secure"), cookie.contains("; HttpOnly")); 
 					}else{
 						cFW = new CookieFlagWrapper(true, false, false);
 					}

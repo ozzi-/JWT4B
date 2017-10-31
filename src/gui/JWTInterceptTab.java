@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.SystemColor;
 import java.awt.event.ActionListener;
 
 import javax.swing.AbstractButton;
@@ -28,8 +29,6 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.helpers.Strings;
-import javax.swing.JTextPane;
-import java.awt.SystemColor;
 
 public class JWTInterceptTab extends JPanel {
 
@@ -206,8 +205,6 @@ public class JWTInterceptTab extends JPanel {
 		gbc_lbRegisteredClaims.gridy = 12;
 		add(lbRegisteredClaims, gbc_lbRegisteredClaims);
 		
-
-		
 		noneAttackComboBox.addItem("  -");
 		noneAttackComboBox.addItem("Alg: none");
 		noneAttackComboBox.addItem("Alg: None");
@@ -256,7 +253,6 @@ public class JWTInterceptTab extends JPanel {
 				}else{
 					lblCookieFlags.setText("");
 				}
-				System.out.println(jwtIM.getTimeClaimsAsText());
 				lbRegisteredClaims.setText(jwtIM.getTimeClaimsAsText());
 			}
 		});
