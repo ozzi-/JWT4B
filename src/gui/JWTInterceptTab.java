@@ -47,7 +47,7 @@ public class JWTInterceptTab extends JPanel {
 	private JComboBox<String> noneAttackComboBox;
 	private JLabel lblNewLabel;
 	private JLabel lblCookieFlags;
-	private JTextPane lbRegisteredClaims;
+	private JLabel lbRegisteredClaims;
 
 	public JWTInterceptTab(JWTInterceptModel jwtIM) {
 		this.jwtIM = jwtIM;
@@ -197,10 +197,8 @@ public class JWTInterceptTab extends JPanel {
 		gbc_noneAttackComboBox.gridy = 10;
 		add(noneAttackComboBox, gbc_noneAttackComboBox);
 		
-		lbRegisteredClaims = new JTextPane();
+		lbRegisteredClaims = new JLabel();
 		lbRegisteredClaims.setBackground(SystemColor.controlHighlight);
-		lbRegisteredClaims.setContentType("text/html");
-		lbRegisteredClaims.setEditable(false);
 		GridBagConstraints gbc_lbRegisteredClaims = new GridBagConstraints();
 		gbc_lbRegisteredClaims.insets = new Insets(0, 0, 5, 5);
 		gbc_lbRegisteredClaims.fill = GridBagConstraints.BOTH;
@@ -258,6 +256,7 @@ public class JWTInterceptTab extends JPanel {
 				}else{
 					lblCookieFlags.setText("");
 				}
+				System.out.println(jwtIM.getTimeClaimsAsText());
 				lbRegisteredClaims.setText(jwtIM.getTimeClaimsAsText());
 			}
 		});

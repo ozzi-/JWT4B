@@ -158,6 +158,8 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			jwtIM.setJWTJSON(ReadableTokenFormat.getReadableFormat(cJWT));
 			jwtIM.setSignature(cJWT.getSignature());
 			jwtST.updateSetView(true);
+			algAttackMode = null;
+			jwtST.getNoneAttackComboBox().setSelectedIndex(0);
 		}
 	}
 

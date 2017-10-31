@@ -39,7 +39,7 @@ public class JWTViewTab extends JPanel{
 	private JButton verificationIndicator;
 	private JWTTabModel jwtTM;
 	private JLabel lblCookieFlags;
-	private JTextPane lbRegisteredClaims;
+	private JLabel lbRegisteredClaims;
 
 	public JWTViewTab(JWTTabModel jwtTM) {
 		drawPanel();
@@ -108,10 +108,8 @@ public class JWTViewTab extends JPanel{
 		gbc_outputLabel.gridy = 5;
 		add(outputLabel, gbc_outputLabel);
 		
-		lbRegisteredClaims = new JTextPane();
+		lbRegisteredClaims = new JLabel();
 		lbRegisteredClaims.setBackground(SystemColor.controlHighlight);
-		lbRegisteredClaims.setContentType("text/html");
-		lbRegisteredClaims.setEditable(false);
 		GridBagConstraints gbc_lbRegisteredClaims = new GridBagConstraints();
 		gbc_lbRegisteredClaims.fill = GridBagConstraints.BOTH;
 		gbc_lbRegisteredClaims.insets = new Insets(0, 0, 5, 5);
