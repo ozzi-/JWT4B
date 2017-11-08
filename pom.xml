@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>JWT4B</groupId>
 	<artifactId>JWT4B</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.4-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
 			<groupId>com.auth0</groupId>
@@ -41,6 +41,7 @@
 
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
+                <finalName>${project.name}</finalName>
 
 		<plugins>
 			<plugin>
