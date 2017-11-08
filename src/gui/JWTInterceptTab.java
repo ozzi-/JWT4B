@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.SystemColor;
 import java.awt.event.ActionListener;
 
 import javax.swing.AbstractButton;
@@ -44,6 +45,8 @@ public class JWTInterceptTab extends JPanel {
 	private JLabel lblProblem;
 	private JComboBox<String> noneAttackComboBox;
 	private JLabel lblNewLabel;
+	private JLabel lblCookieFlags;
+	private JLabel lbRegisteredClaims;
 
 	public JWTInterceptTab(JWTInterceptModel jwtIM) {
 		this.jwtIM = jwtIM;
@@ -61,9 +64,9 @@ public class JWTInterceptTab extends JPanel {
 	private void drawGui() {	
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{10, 0, 0, 20, 0};
-		gridBagLayout.rowHeights = new int[]{10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gridBagLayout.rowHeights = new int[]{10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
 		jwtArea = new RSyntaxTextArea ();
@@ -177,6 +180,14 @@ public class JWTInterceptTab extends JPanel {
 		gbc_lblNewLabel.gridy = 9;
 		add(lblNewLabel, gbc_lblNewLabel);
 		
+		lblCookieFlags = new JLabel("");
+		GridBagConstraints gbc_lblCookieFlag = new GridBagConstraints();
+		gbc_lblCookieFlag.insets = new Insets(0, 0, 5, 5);
+		gbc_lblCookieFlag.anchor = GridBagConstraints.WEST;
+		gbc_lblCookieFlag.gridx = 1;
+		gbc_lblCookieFlag.gridy = 10;
+		add(lblCookieFlags, gbc_lblCookieFlag);
+		
 		noneAttackComboBox = new JComboBox<String>();
 		GridBagConstraints gbc_noneAttackComboBox = new GridBagConstraints();
 		gbc_noneAttackComboBox.insets = new Insets(0, 0, 5, 5);
@@ -184,6 +195,15 @@ public class JWTInterceptTab extends JPanel {
 		gbc_noneAttackComboBox.gridx = 2;
 		gbc_noneAttackComboBox.gridy = 10;
 		add(noneAttackComboBox, gbc_noneAttackComboBox);
+		
+		lbRegisteredClaims = new JLabel();
+		lbRegisteredClaims.setBackground(SystemColor.controlHighlight);
+		GridBagConstraints gbc_lbRegisteredClaims = new GridBagConstraints();
+		gbc_lbRegisteredClaims.insets = new Insets(0, 0, 5, 5);
+		gbc_lbRegisteredClaims.fill = GridBagConstraints.BOTH;
+		gbc_lbRegisteredClaims.gridx = 2;
+		gbc_lbRegisteredClaims.gridy = 12;
+		add(lbRegisteredClaims, gbc_lbRegisteredClaims);
 		
 		noneAttackComboBox.addItem("  -");
 		noneAttackComboBox.addItem("Alg: none");
@@ -227,6 +247,13 @@ public class JWTInterceptTab extends JPanel {
 				}
 				jwtArea.setCaretPosition(0);
 				lblProblem.setText(jwtIM.getProblemDetail());
+				
+				if(jwtIM.getcFW().isCookie()){
+					lblCookieFlags.setText(jwtIM.getcFW().toHTMLString());
+				}else{
+					lblCookieFlags.setText("");
+				}
+				lbRegisteredClaims.setText(jwtIM.getTimeClaimsAsText());
 			}
 		});
 	}

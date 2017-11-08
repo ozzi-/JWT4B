@@ -3,6 +3,7 @@ package app.controllers;
 import java.awt.Component;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -23,6 +24,7 @@ import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
 import gui.JWTViewTab;
 import model.JWTTabModel;
+import model.TimeClaim;
 
 public class JWTTabController implements IMessageEditorTab {
 
@@ -38,43 +40,49 @@ public class JWTTabController implements IMessageEditorTab {
 	public JWTTabController(IBurpExtenderCallbacks callbacks, final JWTTabModel jwtTM, final JWTViewTab jwtVT) {
 		this.helpers = callbacks.getHelpers();
 		this.jwtTM = jwtTM;
-		this.jwtVT  = jwtVT;
-		
+		this.jwtVT = jwtVT;
+
 		DocumentListener documentListener = new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent arg0) {
 				jwtTM.setKey(jwtVT.getKeyValue());
 				checkKey(jwtTM.getKey());
 			}
+
 			@Override
 			public void insertUpdate(DocumentEvent arg0) {
 				jwtTM.setKey(jwtVT.getKeyValue());
 				checkKey(jwtTM.getKey());
-			}	
+			}
+
 			@Override
 			public void changedUpdate(DocumentEvent arg0) {
 				jwtTM.setKey(jwtVT.getKeyValue());
 				checkKey(jwtTM.getKey());
 			}
 		};
-		
+
 		jwtVT.registerDocumentListener(documentListener);
 	}
-	
+
 	@Override
 	public boolean isEnabled(byte[] content, boolean isRequest) {
 		this.content = content;
-		return ITokenPosition.findTokenPositionImplementation(content, isRequest,helpers) != null;
+		return ITokenPosition.findTokenPositionImplementation(content, isRequest, helpers) != null;
 	}
 
 	@Override
 	public void setMessage(byte[] content, boolean isRequest) {
 		this.message = content;
-		
-		tokenPosition = ITokenPosition.findTokenPositionImplementation(content, isRequest,helpers);
+
+		tokenPosition = ITokenPosition.findTokenPositionImplementation(content, isRequest, helpers);
 		jwtTM.setJWT(tokenPosition.getToken());
-		jwtTM.setJWTJSON(ReadableTokenFormat.getReadableFormat(new CustomJWToken(jwtTM.getJWT())));
-		
+		CustomJWToken jwt = new CustomJWToken(jwtTM.getJWT());
+		jwtTM.setJWTJSON(ReadableTokenFormat.getReadableFormat(jwt));
+		List<TimeClaim> tcl = jwt.getTimeClaimList();
+		jwtTM.setTimeClaims(tcl);
+		jwtTM.setcFW(tokenPosition.getcFW());
+
 		JWTTabModel current = new JWTTabModel(jwtTM.getKey(), content);
 		int containsIndex = modelStateList.indexOf(current);
 
@@ -158,7 +166,6 @@ public class JWTTabController implements IMessageEditorTab {
 	public String getCurrentAlgorithm() {
 		return new CustomJWToken(jwtTM.getJWT()).getAlgorithm();
 	}
-
 
 	public String getState() {
 		return state;

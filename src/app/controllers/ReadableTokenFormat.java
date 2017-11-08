@@ -2,11 +2,13 @@ package app.controllers;
 
 import java.io.IOException;
 
+import app.helpers.CustomJWToken;
+import app.helpers.Lf2SpacesIndenter;
+
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-
-import app.helpers.CustomJWToken;
 
 public class ReadableTokenFormat {
 	private static final String newline = System.getProperty("line.separator");
@@ -56,11 +58,19 @@ public class ReadableTokenFormat {
 		
 		return new CustomJWToken(header, payload, signature);
 	}
+   
+    private static class PrettyPrinter extends DefaultPrettyPrinter {
+		private static final long serialVersionUID = 1L;
+		public static final PrettyPrinter instance = new PrettyPrinter();
+        public PrettyPrinter() {
+            _arrayIndenter = Lf2SpacesIndenter.getInstance();
+        }
+    }
 
 	private static String jsonBeautify(String input) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-		
+	    objectMapper.setDefaultPrettyPrinter(PrettyPrinter.instance);		
 		JsonNode tree;
 		String output;
 		try {
@@ -79,5 +89,3 @@ public class ReadableTokenFormat {
 		}
 	}
 }
-
-

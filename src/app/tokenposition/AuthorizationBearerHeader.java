@@ -3,20 +3,22 @@ package app.tokenposition;
 import java.util.Arrays;
 import java.util.List;
 
+import app.helpers.CustomJWToken;
+
 public class AuthorizationBearerHeader extends ITokenPosition {
 
 	private static List<String> jwtKeywords = Arrays.asList("Authorization: Bearer");
 	private String selectedKeyword;
 	private Integer headerIndex;
 	private List<String> headers;
-
+	
 	public AuthorizationBearerHeader(List<String> headers, String bodyP) {
 		this.headers=headers;
 	}
 	
 	public boolean positionFound() {
 		for(int counter = 0; counter<headers.size(); counter++) { 
-			if(headerContainsaKeyWord(headers.get(counter), jwtKeywords)) { 
+			if(headerContainsaKeyWordAndIsJWT(headers.get(counter), jwtKeywords)) {
 				this.headerIndex = counter;
 				return true;
 			}
@@ -24,11 +26,14 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 		return false;
 	}
 	
-	private boolean headerContainsaKeyWord(String header, List<String> jwtKeywords) {
-		for(String keyword : jwtKeywords) { 
-			if(header.startsWith(keyword)) { 
-				this.selectedKeyword = keyword;
-				return true;
+	private boolean headerContainsaKeyWordAndIsJWT(String header, List<String> jwtKeywords) {
+		for(String keyword : jwtKeywords){
+			if(header.startsWith(keyword)){ 
+				String jwt = header.replace(keyword, "").trim();
+				if(CustomJWToken.isValidJWT(jwt)){
+					this.selectedKeyword = keyword;
+					return true;	
+				}
 			}
 		}
 		return false;

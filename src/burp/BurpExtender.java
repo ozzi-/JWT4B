@@ -1,19 +1,20 @@
 package burp;
 
+import gui.JWTInterceptTab;
+import gui.JWTSuiteTab;
+import gui.JWTViewTab;
+
 import java.io.PrintWriter;
 
+import model.JWTInterceptModel;
+import model.JWTSuiteTabModel;
+import model.JWTTabModel;
 import app.controllers.ContextMenuController;
 import app.controllers.HighLightController;
 import app.controllers.JWTInterceptTabController;
 import app.controllers.JWTSuiteTabController;
 import app.controllers.JWTTabController;
 import app.helpers.Settings;
-import gui.JWTInterceptTab;
-import gui.JWTSuiteTab;
-import gui.JWTViewTab;
-import model.JWTInterceptModel;
-import model.JWTSuiteTabModel;
-import model.JWTTabModel;
 
 public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 	private IBurpExtenderCallbacks callbacks;

@@ -15,7 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentListener;
 
@@ -41,11 +40,11 @@ public class JWTSuiteTab extends JPanel {
 	private JLabel lblEnterSecret;
 	private JWTSuiteTabModel jwtSTM;
 	private JButton creditButton;
-	private JTextPane lbRegisteredClaims;
+	private JLabel lbRegisteredClaims;
 	private JLabel lblExtendedVerificationInfo;
 
 	public JWTSuiteTab(JWTSuiteTabModel jwtSTM) {
-		drawGui(); 
+		drawGui();
 		this.jwtSTM = jwtSTM;
 	}
 
@@ -55,8 +54,7 @@ public class JWTSuiteTab extends JPanel {
 				if (!jwtInputField.getText().equals(jwtSTM.getJwtInput())) {
 					jwtInputField.setText(jwtSTM.getJwtInput());
 				}
-				if (!jwtSignatureButton.getText().equals(
-						jwtSTM.getVerificationLabel())) {
+				if (!jwtSignatureButton.getText().equals(jwtSTM.getVerificationLabel())) {
 					jwtSignatureButton.setText(jwtSTM.getVerificationLabel());
 				}
 				if (!jwtOuputField.getText().equals(jwtSTM.getJwtJSON())) {
@@ -65,25 +63,20 @@ public class JWTSuiteTab extends JPanel {
 				if (!jwtKeyField.getText().equals(jwtSTM.getJwtKey())) {
 					jwtKeyField.setText(jwtSTM.getJwtKey());
 				}
-				if (!jwtSignatureButton.getBackground().equals(
-						jwtSTM.getJwtSignatureColor())) {
-					jwtSignatureButton.setBackground(jwtSTM
-							.getJwtSignatureColor());
+				if (!jwtSignatureButton.getBackground().equals(jwtSTM.getJwtSignatureColor())) {
+					jwtSignatureButton.setBackground(jwtSTM.getJwtSignatureColor());
 				}
 				if (jwtKeyField.getText().equals("")) {
 					jwtSTM.setJwtSignatureColor(new JButton().getBackground());
-					jwtSignatureButton.setBackground(jwtSTM
-							.getJwtSignatureColor());
+					jwtSignatureButton.setBackground(jwtSTM.getJwtSignatureColor());
 				}
-				lblExtendedVerificationInfo.setText(jwtSTM
-						.getVerificationResult());
+				lblExtendedVerificationInfo.setText(jwtSTM.getVerificationResult());
 				lbRegisteredClaims.setText(jwtSTM.getTimeClaimsAsText());
 			}
 		});
 	}
 
-	public void registerDocumentListener(DocumentListener jwtInputListener,
-			DocumentListener jwtKeyListener) {
+	public void registerDocumentListener(DocumentListener jwtInputListener, DocumentListener jwtKeyListener) {
 		jwtInputField.getDocument().addDocumentListener(jwtInputListener);
 		jwtKeyField.getDocument().addDocumentListener(jwtKeyListener);
 	}
@@ -91,12 +84,9 @@ public class JWTSuiteTab extends JPanel {
 	private void drawGui() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 10, 0, 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 10, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0 };
-		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0,
-				Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-				0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowHeights = new int[] { 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gridBagLayout.columnWeights = new double[] { 0.0, 1.0, 0.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
 		JLabel lblPasteJwtToken = new JLabel(Strings.enterJWT);
@@ -112,7 +102,7 @@ public class JWTSuiteTab extends JPanel {
 		creditButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JLabelLink jLabelLink = new JLabelLink(Strings.creditTitle, 550, 450);
-				
+
 				jLabelLink.addText("<h2>About JWT4B</h2>JSON Web Tokens (also known as JWT4B) is developed by Oussama Zgheb and Matthias Vetsch.<br><br>JWT4B, excluding the libraries mentioned below and the Burp extender classes, uses the GPL 3 license.");
 				jLabelLink.addURL("* <a href=\"https://github.com/bobbylight/RSyntaxTextArea/blob/master/src/main/dist/RSyntaxTextArea.License.txt\">RSyntaxTextArea</a>");
 				jLabelLink.addURL("* <a href=\"https://github.com/auth0/java-jwt/blob/master/LICENSE\">Auth0 -java-jwt</a>");
@@ -183,8 +173,7 @@ public class JWTSuiteTab extends JPanel {
 		jwtOuputField.revalidate();
 		jwtOuputField.setHighlightCurrentLine(false);
 		jwtOuputField.setCurrentLineHighlightColor(Color.WHITE);
-		jwtOuputField
-				.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
+		jwtOuputField.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
 		jwtOuputField.setEditable(false);
 		// no context menu on right-click
 		jwtOuputField.setPopupMenu(new JPopupMenu());
@@ -209,9 +198,8 @@ public class JWTSuiteTab extends JPanel {
 
 		add(sp, gbc_jwtOuputField);
 
-		lbRegisteredClaims = new JTextPane();
-		lbRegisteredClaims.setContentType("text/html");
-		lbRegisteredClaims.setEditable(false);
+		lbRegisteredClaims = new JLabel();
+		lbRegisteredClaims.setBackground(new Color(238, 238, 238));
 		GridBagConstraints gbc_lbRegisteredClaims = new GridBagConstraints();
 		gbc_lbRegisteredClaims.fill = GridBagConstraints.BOTH;
 		gbc_lbRegisteredClaims.insets = new Insets(0, 0, 5, 5);

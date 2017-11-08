@@ -83,6 +83,8 @@ public class JWTSuiteTabController extends Observable implements ITab {
 	public void contextActionJWT(String jwts,boolean fromContextMenu) {
 		jwts = jwts.replace("Authorization:", "");
 		jwts = jwts.replace("Bearer", "");
+		jwts = jwts.replace("Set-Cookie: ", "");
+		jwts = jwts.replace("Cookie: ", "");
 		jwts = jwts.replaceAll("\\s", "");
 		jwtSTM.setJwtInput(jwts);
 		try {
