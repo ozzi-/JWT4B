@@ -38,10 +38,10 @@ public class JLabelLink extends JFrame {
 
 	}
 
-	public void addURL(String content) {
+	public void addURL(String content, String tooltip) {
 		JLabel label = new JLabel("<html>"+content+"</html>");
 		label.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		label.setToolTipText(content);
+		label.setToolTipText(tooltip);
 		addMouseHandler(label);
 		pan.add(label);
 	}

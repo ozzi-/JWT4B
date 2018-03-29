@@ -101,15 +101,22 @@ public class JWTSuiteTab extends JPanel {
 		creditButton = new JButton("About");
 		creditButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				JLabelLink jLabelLink = new JLabelLink(Strings.creditTitle, 550, 450);
+				JLabelLink jLabelLink = new JLabelLink(Strings.creditTitle, 530, 550);
 
-				jLabelLink.addText("<h2>About JWT4B</h2>JSON Web Tokens (also known as JWT4B) is developed by Oussama Zgheb and Matthias Vetsch.<br><br>JWT4B, excluding the libraries mentioned below and the Burp extender classes, uses the GPL 3 license.");
-				jLabelLink.addURL("* <a href=\"https://github.com/bobbylight/RSyntaxTextArea/blob/master/src/main/dist/RSyntaxTextArea.License.txt\">RSyntaxTextArea</a>");
-				jLabelLink.addURL("* <a href=\"https://github.com/auth0/java-jwt/blob/master/LICENSE\">Auth0 -java-jwt</a>");
-				jLabelLink.addURL("* <a href=\"https://www.apache.org/licenses/\">Apache Commons Lang</a>");
-				jLabelLink.addText("Thanks to Compass Security AG for providing development time for the initial version<br><br>");
-				jLabelLink.addURL("* <a href=\"https://github.com/mvetsch/JWT4B\">GitHub Repo</a>");
-				jLabelLink.addURL("* <a href=\"https://zgheb.com/\">Mantainer Website</a>");
+				jLabelLink.addText("<h2>About JWT4B</h2>JSON Web Tokens (also known as JWT4B) is developed by Oussama Zgheb and Matthias Vetsch.<br>");
+				jLabelLink.addURL("<a href=\"https://zgheb.com/\">Mantainer Website</a>","zgheb.com");
+				jLabelLink.addURL("<a href=\"https://github.com/mvetsch/JWT4B\">GitHub Repository</a>","github.com/mvetsch/JWT4B");
+				jLabelLink.addText("<br><br>");
+				jLabelLink.addText("JWT4B, excluding the libraries mentioned below and the Burp extender classes, uses the GPL 3 license.");
+				jLabelLink.addURL("* <a href=\"https://github.com/bobbylight/RSyntaxTextArea/blob/master/src/main/dist/RSyntaxTextArea.License.txt\">RSyntaxTextArea</a>","github.com/bobbylight/RSyntaxTextArea");
+				jLabelLink.addURL("* <a href=\"https://github.com/auth0/java-jwt/blob/master/LICENSE\">Auth0 -java-jwt</a>","github.com/auth0/java-jwt");
+				jLabelLink.addURL("* <a href=\"https://www.apache.org/licenses/\">Apache Commons Lang</a>","apache.org");
+				jLabelLink.addText("<br><br>");
+				jLabelLink.addText("Thanks to Compass Security AG for providing development time for the initial version<br>");
+				jLabelLink.addURL("<a href=\"https://www.compass-security.com\">compass-security.com</a><br>","compass-security.com");
+				jLabelLink.addText("and to Brainloop for providing broader token support!");
+				jLabelLink.addURL("<a href=\"https://www.brainloop.com\">brainloop.com</a><br><br>","brainloop.com");
+
 				jLabelLink.addRemoteImage("https://raw.githubusercontent.com/mvetsch/JWT4B/master/resources/logo_sm.png");
 			}
 		});

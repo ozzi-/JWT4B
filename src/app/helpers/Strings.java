@@ -39,6 +39,7 @@ public class Strings {
 			+ "<li>RSyntaxTextArea &nbsp;- https://github.com/bobbylight/RSyntaxTextArea</li>"
 			+ "<li>java-jwt &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- https://github.com/auth0/java-jwt</li>"
 			+ "<li>Compass Security AG, for providing development time<br>https://compass-security.com</li>"
+			+ "<li>Brainloop, for providing broader token support<br>https://www.brainloop.com/</li>"
 			+ "</ul>"
 			+ "</html>";
 
