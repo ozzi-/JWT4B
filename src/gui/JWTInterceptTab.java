@@ -200,6 +200,7 @@ public class JWTInterceptTab extends JPanel {
 		add(noneAttackComboBox, gbc_noneAttackComboBox);
 		
 		chkbxCVEAttack = new JCheckBox("CVE-2018-0114 Attack");
+		chkbxCVEAttack.setToolTipText("The public and private key used can be found in src/app/helpers/Strings.java");
 		chkbxCVEAttack.setHorizontalAlignment(SwingConstants.LEFT);
 		GridBagConstraints gbc_chkbxCVEAttack = new GridBagConstraints();
 		gbc_chkbxCVEAttack.anchor = GridBagConstraints.WEST;
