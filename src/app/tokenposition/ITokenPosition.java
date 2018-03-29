@@ -47,7 +47,7 @@ public abstract class ITokenPosition {
 	}
 
 	public static ITokenPosition findTokenPositionImplementation(byte[] content, boolean isRequest, IExtensionHelpers helpers) {
-		List<Class<? extends ITokenPosition>> implementations = Arrays.asList(AuthorizationBearerHeader.class, PostBody.class, Cookie.class);
+		List<Class<? extends ITokenPosition>> implementations = Arrays.asList(AuthorizationBearerHeader.class, PostBody.class, Cookie.class,Body.class);
 		for (Class<? extends ITokenPosition> implClass : implementations) {
 			try {
 				List<String> headers;
