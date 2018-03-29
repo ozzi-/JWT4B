@@ -97,8 +97,24 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	}
 	
 	private void cveAttackChanged() {
-		JCheckBox a = jwtST.getCVEAttackCheckBox();
-		cveAttackMode = a.isSelected();
+		JCheckBox jcb = jwtST.getCVEAttackCheckBox();
+		cveAttackMode = jcb.isSelected();
+		jwtST.getNoneAttackComboBox().setEnabled(!cveAttackMode);
+		jwtST.getRdbtnDontModify().setEnabled(!cveAttackMode);
+		jwtST.getRdbtnOriginalSignature().setEnabled(!cveAttackMode);
+		jwtST.getRdbtnRandomKey().setEnabled(!cveAttackMode);
+		jwtST.getRdbtnRecalculateSignature().setEnabled(!cveAttackMode);
+		jwtST.setKeyFieldState(!cveAttackMode);
+		jwtST.getCVECopyBtn().setVisible(cveAttackMode);
+		if(cveAttackMode){
+			jwtST.getRdbtnDontModify().setSelected(true);
+			jwtST.getRdbtnOriginalSignature().setSelected(false);
+			jwtST.getRdbtnRandomKey().setSelected(false);
+			jwtST.getRdbtnRecalculateSignature().setSelected(false);
+		}else{
+			jwtST.setKeyFieldValue("");
+			jwtST.setKeyFieldState(false);
+		}
 	}
 
 	private void algAttackChanged() {
@@ -200,8 +216,9 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	@Override
 	public byte[] getMessage() {
 		jwtIM.setProblemDetail("");
-
 		radioButtonChanged(true, false, false, false);
+		jwtST.getCVEAttackCheckBox().setSelected(false);
+		
 		CustomJWToken token = null;
 		try {
 			token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
@@ -232,9 +249,9 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			token.setSignature("");
 		}
 		if (cveAttackMode){
-			String a = token.getHeaderJson();
-			JsonObject value = Json.parse(a).asObject();
-			value.set("alg", "RS256");
+			String headerJSON = token.getHeaderJson();
+			JsonObject headerJSONObj = Json.parse(headerJSON).asObject();
+			headerJSONObj.set("alg", "RS256");
 			JsonObject jwk = new JsonObject();
 			jwk.add("kty", "RSA");
 			jwk.add("kid", "jwt4b@portswigger.net");
@@ -242,13 +259,14 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			RSAPublicKey pk = loadPublicKey();
 			jwk.add("n", Base64.getUrlEncoder().encodeToString(pk.getPublicExponent().toByteArray()));
 			jwk.add("e", Base64.getUrlEncoder().encodeToString(pk.getModulus().toByteArray()));
-			value.add("jwk", jwk);
-			token.setHeaderJson(value.toString());
+			headerJSONObj.add("jwk", jwk);
+			token.setHeaderJson(headerJSONObj.toString());
 			Algorithm algo;
 			try {
 				algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), Strings.privateKey);
 				token.calculateAndSetSignature(algo);
 			} catch (UnsupportedEncodingException e) {
+				ConsoleOut.output("Failed to sign when using cve attack mode");
 				e.printStackTrace();
 			}
 		}

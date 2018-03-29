@@ -5,6 +5,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.SystemColor;
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionListener;
 
 import javax.swing.AbstractButton;
@@ -30,6 +32,8 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.helpers.Strings;
 import javax.swing.JCheckBox;
+import javax.swing.JButton;
+import java.awt.event.ActionEvent;
 
 public class JWTInterceptTab extends JPanel {
 
@@ -49,6 +53,7 @@ public class JWTInterceptTab extends JPanel {
 	private JLabel lblCookieFlags;
 	private JLabel lbRegisteredClaims;
 	private JCheckBox chkbxCVEAttack;
+	private JButton btnCopyPubPrivKeyCVEAttack;
 
 	public JWTInterceptTab(JWTInterceptModel jwtIM) {
 		this.jwtIM = jwtIM;
@@ -218,6 +223,24 @@ public class JWTInterceptTab extends JPanel {
 		gbc_lbRegisteredClaims.gridy = 12;
 		add(lbRegisteredClaims, gbc_lbRegisteredClaims);
 		
+		btnCopyPubPrivKeyCVEAttack = new JButton("Copy used pub&priv key to clipboard used in CVE attack");
+		btnCopyPubPrivKeyCVEAttack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Toolkit.getDefaultToolkit()
+		        .getSystemClipboard()
+		        .setContents(
+		                new StringSelection("Public Key:\r\n"+Strings.publicKey+"\r\n\r\nPrivate Key:\r\n"+Strings.privateKey),
+		                null
+		        );
+			}
+		});
+		btnCopyPubPrivKeyCVEAttack.setVisible(false);
+		GridBagConstraints gbc_button = new GridBagConstraints();
+		gbc_button.insets = new Insets(0, 0, 0, 5);
+		gbc_button.gridx = 2;
+		gbc_button.gridy = 13;
+		add(btnCopyPubPrivKeyCVEAttack, gbc_button);
+		
 		noneAttackComboBox.addItem("  -");
 		noneAttackComboBox.addItem("Alg: none");
 		noneAttackComboBox.addItem("Alg: None");
@@ -246,6 +269,10 @@ public class JWTInterceptTab extends JPanel {
 		return rdbtnRandomKey;
 	}
 
+	public JButton getCVECopyBtn(){
+		return btnCopyPubPrivKeyCVEAttack;
+	}
+	
 	public JRadioButton getRdbtnOriginalSignature() {
 		return rdbtnOriginalSignature;
 	}
