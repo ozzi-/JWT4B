@@ -29,6 +29,7 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.helpers.Strings;
+import javax.swing.JCheckBox;
 
 public class JWTInterceptTab extends JPanel {
 
@@ -47,18 +48,20 @@ public class JWTInterceptTab extends JPanel {
 	private JLabel lblNewLabel;
 	private JLabel lblCookieFlags;
 	private JLabel lbRegisteredClaims;
+	private JCheckBox chkbxCVEAttack;
 
 	public JWTInterceptTab(JWTInterceptModel jwtIM) {
 		this.jwtIM = jwtIM;
 		drawGui();
 	}
 	
-	public void registerActionListeners(ActionListener dontMofiy, ActionListener randomKeyListener, ActionListener originalSignatureListener, ActionListener recalculateSignatureListener, ActionListener algAttackListener){
+	public void registerActionListeners(ActionListener dontMofiy, ActionListener randomKeyListener, ActionListener originalSignatureListener, ActionListener recalculateSignatureListener, ActionListener algAttackListener, ActionListener cveAttackListener){
 		rdbtnDontModifySignature.addActionListener(dontMofiy);
 		rdbtnRecalculateSignature.addActionListener(randomKeyListener);
 		rdbtnOriginalSignature.addActionListener(originalSignatureListener);
 		rdbtnRandomKey.addActionListener(recalculateSignatureListener);
 		noneAttackComboBox.addActionListener(algAttackListener);
+		chkbxCVEAttack.addActionListener(cveAttackListener);
 	}
 	
 	private void drawGui() {	
@@ -196,6 +199,15 @@ public class JWTInterceptTab extends JPanel {
 		gbc_noneAttackComboBox.gridy = 10;
 		add(noneAttackComboBox, gbc_noneAttackComboBox);
 		
+		chkbxCVEAttack = new JCheckBox("CVE-2018-0114 Attack");
+		chkbxCVEAttack.setHorizontalAlignment(SwingConstants.LEFT);
+		GridBagConstraints gbc_chkbxCVEAttack = new GridBagConstraints();
+		gbc_chkbxCVEAttack.anchor = GridBagConstraints.WEST;
+		gbc_chkbxCVEAttack.insets = new Insets(0, 0, 5, 5);
+		gbc_chkbxCVEAttack.gridx = 2;
+		gbc_chkbxCVEAttack.gridy = 11;
+		add(chkbxCVEAttack, gbc_chkbxCVEAttack);
+		
 		lbRegisteredClaims = new JLabel();
 		lbRegisteredClaims.setBackground(SystemColor.controlHighlight);
 		GridBagConstraints gbc_lbRegisteredClaims = new GridBagConstraints();
@@ -223,6 +235,10 @@ public class JWTInterceptTab extends JPanel {
 	
 	public JComboBox<String> getNoneAttackComboBox() {
 		return noneAttackComboBox;
+	}
+	
+	public JCheckBox getCVEAttackCheckBox() {
+		return chkbxCVEAttack;
 	}
 
 	public JRadioButton getRdbtnRandomKey() {

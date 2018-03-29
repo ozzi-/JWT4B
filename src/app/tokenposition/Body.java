@@ -54,6 +54,9 @@ public class Body extends ITokenPosition {
 	private KeyValuePair getJWTFromBodyWithJson() {
 		JsonObject obj;
 		try {
+			if(body.length()<2){
+				return null;
+			}
 			obj = Json.parse(body).asObject();
 		} catch (Exception e) {
 			ConsoleOut.output("Can't parse claims - " + e.getMessage());
