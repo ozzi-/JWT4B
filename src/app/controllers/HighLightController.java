@@ -24,12 +24,19 @@ public class HighLightController implements IHttpListener {
         	content = httpRequestResponse.getResponse();
         }
         if(ITokenPosition.findTokenPositionImplementation(content, isRequest, helpers)!= null){
-        	markRequestResponse(httpRequestResponse,"Contains a JWT");        	
+        	markRequestResponseWithComment(httpRequestResponse,"Contains a JWT");
+            
+            if(!isRequest){
+                markRequestResponseWithColor(httpRequestResponse);
+            }
         }
     }
     
-    private void markRequestResponse(IHttpRequestResponse httpRequestResponse, String comment) {
-        httpRequestResponse.setHighlight(highlightColor);
+    private void markRequestResponseWithComment(IHttpRequestResponse httpRequestResponse, String comment) {
         httpRequestResponse.setComment(comment);
+    }
+
+    private void markRequestResponseWithColor(IHttpRequestResponse httpRequestResponse) {
+        httpRequestResponse.setHighlight(highlightColor);
     }
 }
