@@ -44,10 +44,12 @@ public class TimeClaim {
 	}
 	public static String getTimeClaimsAsText(List<TimeClaim> tcl){
 		String timeClaimString = "<html>";
-		for (TimeClaim timeClaim : tcl) {
-			timeClaimString+="<b>"+timeClaim.getClaimName()+
-					(timeClaim.canBeValid()?"</b> check "+(timeClaim.isValid()?"<span style=\"color: green\">passed</span>":"<span style=\"color: red\">failed</span>"):"</b>")+
-					" - "+timeClaim.getDate()+"<br>";
+		if(tcl != null && tcl.size()>0){
+			for (TimeClaim timeClaim : tcl) {
+				timeClaimString+="<b>"+timeClaim.getClaimName()+
+				(timeClaim.canBeValid()?"</b> check "+(timeClaim.isValid()?"<span style=\"color: green\">passed</span>":"<span style=\"color: red\">failed</span>"):"</b>")+
+				" - "+timeClaim.getDate()+"<br>";
+			}
 		}
 		return timeClaimString+"</html>";
 	}
