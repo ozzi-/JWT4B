@@ -4,11 +4,11 @@ JSON Web Tokens (JWT) support for the Burp Interception Proxy. JWT4B will let yo
 ![Logo](https://i.imgur.com/SnrC5To.png)
 
 # Screenshots
-![Screenshot - Intercept View](https://i.imgur.com/Px72aUL.png)
+![Screenshot - Intercept View](https://i.imgur.com/9fJQuoM.png)
 
-![Screenshot - Decode View](https://i.imgur.com/DaZlBi9.png)
+![Screenshot - Decode View](https://i.imgur.com/LE98YJY.png)
 
-![Screenshot - Suite Tab View](https://i.imgur.com/71KiJJ2.png)
+![Screenshot - Suite Tab View](https://i.imgur.com/2HGOI27.png)
 
 # Testing
 The following url contains links to four pages which simulate a JWT being sent via XHR or as cookie.
