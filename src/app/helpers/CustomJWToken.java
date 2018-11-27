@@ -34,17 +34,19 @@ public class CustomJWToken extends JWT {
 	private String payloadJson;
 	private byte[] signature;
 	private List<TimeClaim> timeClaimList = new ArrayList<TimeClaim>();
-	
+
 	public CustomJWToken(String token) {
-		final String[] parts = splitToken(token);
-		try {
-			headerJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[0]));
-			payloadJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[1]));
-			checkRegisteredClaims(payloadJson);
-		} catch (NullPointerException e) {
-			ConsoleOut.output("The UTF-8 Charset isn't initialized ("+e.getMessage()+")");
+		if (token != null) {
+			final String[] parts = splitToken(token);
+			try {
+				headerJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[0]));
+				payloadJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[1]));
+				checkRegisteredClaims(payloadJson);
+			} catch (NullPointerException e) {
+				ConsoleOut.output("The UTF-8 Charset isn't initialized (" + e.getMessage() + ")");
+			}
+			signature = Base64.decodeBase64(parts[2]);
 		}
-		signature = Base64.decodeBase64(parts[2]);
 	}
 
 	public List<TimeClaim> getTimeClaimList() {
@@ -55,49 +57,48 @@ public class CustomJWToken extends JWT {
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		JsonObject object;
 		try {
-			object = Json.parse(payloadJson).asObject();			
+			object = Json.parse(payloadJson).asObject();
 		} catch (Exception e) {
-			ConsoleOut.output("Can't parse claims - "+e.getMessage());
+			ConsoleOut.output("Can't parse claims - " + e.getMessage());
 			return;
 		}
 		JsonValue exp = object.get("exp");
 		long curUT = System.currentTimeMillis() / 1000L;
-		if(exp!=null){
-			try{
+		if (exp != null) {
+			try {
 				long expUT = exp.asLong();
-				java.util.Date time=new java.util.Date((long)expUT*1000);
+				java.util.Date time = new java.util.Date((long) expUT * 1000);
 				String expDate = time.toString();
-				boolean expValid = expUT>curUT;
+				boolean expValid = expUT > curUT;
 				timeClaimList.add(new TimeClaim("[exp] Expired", expDate, expUT, expValid));
-			}catch (Exception e) {
-				ConsoleOut.output("Could not parse claim - "+e.getMessage());
+			} catch (Exception e) {
+				ConsoleOut.output("Could not parse claim - " + e.getMessage());
 			}
 		}
 		JsonValue nbf = object.get("nbf");
-		if(nbf!=null){
-			try{
+		if (nbf != null) {
+			try {
 				long nbfUT = nbf.asLong();
-				java.util.Date time=new java.util.Date((long)nbfUT*1000);
+				java.util.Date time = new java.util.Date((long) nbfUT * 1000);
 				String nbfDate = time.toString();
-				boolean nbfValid = nbfUT<=curUT;
+				boolean nbfValid = nbfUT <= curUT;
 				timeClaimList.add(new TimeClaim("[nbf] Not before", nbfDate, nbfUT, nbfValid));
-			}catch (Exception e) {
-				ConsoleOut.output("Could not parse claim - "+e.getMessage());
+			} catch (Exception e) {
+				ConsoleOut.output("Could not parse claim - " + e.getMessage());
 			}
 		}
 		JsonValue iat = object.get("iat");
-		if(iat!=null){
-			try{
+		if (iat != null) {
+			try {
 				long iatUT = iat.asLong();
-				java.util.Date time=new java.util.Date((long)iatUT*1000);
+				java.util.Date time = new java.util.Date((long) iatUT * 1000);
 				String iatDate = time.toString();
-				timeClaimList.add(new TimeClaim("[iat] Issued at ", iatDate, iatUT));				
-			}catch (Exception e) {
-				ConsoleOut.output("Could not parse claim - "+e.getMessage());
+				timeClaimList.add(new TimeClaim("[iat] Issued at ", iatDate, iatUT));
+			} catch (Exception e) {
+				ConsoleOut.output("Could not parse claim - " + e.getMessage());
 			}
 		}
 	}
-
 
 	public CustomJWToken(String headerJson, String payloadJson, String signature) {
 		this.headerJson = headerJson;
@@ -118,14 +119,16 @@ public class CustomJWToken extends JWT {
 		try {
 			return objectMapper.readTree(getHeaderJson());
 		} catch (IOException e) {
-			ConsoleOut.output("IO exception reading json tree ("+e.getMessage()+")");
+			ConsoleOut.output("IO exception reading json tree (" + e.getMessage() + ")");
 			return null;
 		}
 	}
-	
-	public void calculateAndSetSignature(Algorithm algorithm){ 
-		 byte[] contentBytes = String.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify(getPayloadJson()))).getBytes(StandardCharsets.UTF_8);
-		 signature = algorithm.sign(contentBytes);
+
+	public void calculateAndSetSignature(Algorithm algorithm) {
+		byte[] contentBytes = String
+				.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify(getPayloadJson())))
+				.getBytes(StandardCharsets.UTF_8);
+		signature = algorithm.sign(contentBytes);
 	}
 
 	public JsonNode getPayloadJsonNode() {
@@ -142,7 +145,7 @@ public class CustomJWToken extends JWT {
 		try {
 			this.headerJson = objectMapper.writeValueAsString(headerPayloadJson);
 		} catch (JsonProcessingException e) {
-			ConsoleOut.output("Setting header for json failed ("+e.getMessage()+")");
+			ConsoleOut.output("Setting header for json failed (" + e.getMessage() + ")");
 		}
 	}
 
@@ -151,22 +154,22 @@ public class CustomJWToken extends JWT {
 		try {
 			this.payloadJson = objectMapper.writeValueAsString(payloadJsonNode);
 		} catch (JsonProcessingException e) {
-			ConsoleOut.output("Setting payload for json failed ("+e.getMessage()+")");
+			ConsoleOut.output("Setting payload for json failed (" + e.getMessage() + ")");
 		}
 	}
 
-	private String jsonMinify(String json){
-	    ObjectMapper objectMapper = new ObjectMapper();
-	    JsonNode jsonNode = null;
+	private String jsonMinify(String json) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonNode = null;
 		try {
 			jsonNode = objectMapper.readValue(json, JsonNode.class);
 			return (jsonNode.toString());
 		} catch (IOException e) {
-			ConsoleOut.output("Could not minify json: "+e.getMessage());
+			ConsoleOut.output("Could not minify json: " + e.getMessage());
 		}
 		return json;
 	}
-	
+
 	@Override
 	public String getToken() {
 		String content = String.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify((getPayloadJson()))));
@@ -176,21 +179,22 @@ public class CustomJWToken extends JWT {
 		return String.format("%s.%s", content, signatureEncoded);
 	}
 
-	private String b64(String input) { 
+	private String b64(String input) {
 		return Base64.encodeBase64URLSafeString(input.getBytes(StandardCharsets.UTF_8));
 	}
-	
-	public static boolean isValidJWT(String token){
-		if(org.apache.commons.lang.StringUtils.countMatches(token, ".")!=2){
+
+	public static boolean isValidJWT(String token) {
+		if (org.apache.commons.lang.StringUtils.countMatches(token, ".") != 2) {
 			return false;
 		}
 		try {
-		    JWT.decode(token);
-		    return true;
-		} catch (JWTDecodeException exception){ }
+			JWT.decode(token);
+			return true;
+		} catch (JWTDecodeException exception) {
+		}
 		return false;
 	}
-	
+
 	// Method copied from:
 	// https://github.com/auth0/java-jwt/blob/9148ca20adf679721591e1d012b7c6b8c4913d75/lib/src/main/java/com/auth0/jwt/TokenUtils.java#L14
 	// Cannot be reused, it's visibility is protected.
@@ -206,7 +210,7 @@ public class CustomJWToken extends JWT {
 		}
 		return parts;
 	}
-	
+
 	public void setHeaderJson(String headerJson) {
 		this.headerJson = headerJson;
 	}
@@ -214,7 +218,7 @@ public class CustomJWToken extends JWT {
 	public void setPayloadJson(String payloadJson) {
 		this.payloadJson = payloadJson;
 	}
-	
+
 	@Override
 	public List<String> getAudience() {
 		throw new UnsupportedOperationException();
@@ -262,9 +266,9 @@ public class CustomJWToken extends JWT {
 
 	@Override
 	public String getAlgorithm() {
-		String algorithm ="";
+		String algorithm = "";
 		try {
-			algorithm = getHeaderJsonNode().get("alg").asText();			
+			algorithm = getHeaderJsonNode().get("alg").asText();
 		} catch (Exception e) {
 		}
 		return algorithm;
@@ -294,8 +298,8 @@ public class CustomJWToken extends JWT {
 	public String getSignature() {
 		return Base64.encodeBase64URLSafeString(this.signature);
 	}
-	
-	public void setSignature(String signature) { 
+
+	public void setSignature(String signature) {
 		this.signature = Base64.decodeBase64(signature);
 	}
 }

@@ -14,7 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentListener;
 
@@ -36,7 +35,7 @@ public class JWTSuiteTab extends JPanel {
 	private JTextArea jwtInputField;
 	private RSyntaxTextArea jwtOuputField;
 	private JButton jwtSignatureButton;
-	private JTextField jwtKeyField;
+	private JTextArea jwtKeyArea;
 	private JLabel lblEnterSecret;
 	private JWTSuiteTabModel jwtSTM;
 	private JButton creditButton;
@@ -60,13 +59,13 @@ public class JWTSuiteTab extends JPanel {
 				if (!jwtOuputField.getText().equals(jwtSTM.getJwtJSON())) {
 					jwtOuputField.setText(jwtSTM.getJwtJSON());
 				}
-				if (!jwtKeyField.getText().equals(jwtSTM.getJwtKey())) {
-					jwtKeyField.setText(jwtSTM.getJwtKey());
+				if (!jwtKeyArea.getText().equals(jwtSTM.getJwtKey())) {
+					jwtKeyArea.setText(jwtSTM.getJwtKey());
 				}
 				if (!jwtSignatureButton.getBackground().equals(jwtSTM.getJwtSignatureColor())) {
 					jwtSignatureButton.setBackground(jwtSTM.getJwtSignatureColor());
 				}
-				if (jwtKeyField.getText().equals("")) {
+				if (jwtKeyArea.getText().equals("")) {
 					jwtSTM.setJwtSignatureColor(new JButton().getBackground());
 					jwtSignatureButton.setBackground(jwtSTM.getJwtSignatureColor());
 				}
@@ -78,7 +77,7 @@ public class JWTSuiteTab extends JPanel {
 
 	public void registerDocumentListener(DocumentListener jwtInputListener, DocumentListener jwtKeyListener) {
 		jwtInputField.getDocument().addDocumentListener(jwtInputListener);
-		jwtKeyField.getDocument().addDocumentListener(jwtKeyListener);
+		jwtKeyArea.getDocument().addDocumentListener(jwtKeyListener);
 	}
 
 	private void drawGui() {
@@ -147,14 +146,14 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lblEnterSecret.gridy = 3;
 		add(lblEnterSecret, gbc_lblEnterSecret);
 
-		jwtKeyField = new JTextField();
+		jwtKeyArea = new JTextArea();
 		GridBagConstraints gbc_jwtKeyField = new GridBagConstraints();
 		gbc_jwtKeyField.insets = new Insets(0, 0, 5, 5);
 		gbc_jwtKeyField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_jwtKeyField.gridx = 1;
 		gbc_jwtKeyField.gridy = 4;
-		add(jwtKeyField, gbc_jwtKeyField);
-		jwtKeyField.setColumns(10);
+		add(jwtKeyArea, gbc_jwtKeyField);
+		jwtKeyArea.setColumns(10);
 
 		jwtSignatureButton = new JButton("");
 		Dimension preferredSize = new Dimension(400, 30);
@@ -221,6 +220,6 @@ public class JWTSuiteTab extends JPanel {
 	}
 
 	public String getKeyInput() {
-		return jwtKeyField.getText();
+		return jwtKeyArea.getText();
 	}
 }

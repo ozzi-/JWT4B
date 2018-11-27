@@ -59,7 +59,7 @@ public class Body extends ITokenPosition {
 			}
 			obj = Json.parse(body).asObject();
 		} catch (Exception e) {
-			ConsoleOut.output("Can't parse claims - " + e.getMessage());
+			//ConsoleOut.output("Can't parse claims - " + e.getMessage());
 			return null;
 		}
 		return lookForJwtInJsonObject(obj);

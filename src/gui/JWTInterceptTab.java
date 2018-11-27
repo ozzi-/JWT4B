@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
-import javax.swing.JTextField;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -43,7 +43,7 @@ public class JWTInterceptTab extends JPanel {
 	private JRadioButton rdbtnRecalculateSignature;
 	private JRadioButton rdbtnRandomKey;
 	private JRadioButton rdbtnOriginalSignature;
-	private JTextField keyField;
+	private JTextArea jwtKeyArea;
 	private JLabel lblSecretKey;
 	private JSeparator separator;
 	private JRadioButton rdbtnDontModifySignature;
@@ -162,16 +162,16 @@ public class JWTInterceptTab extends JPanel {
 		gbc_lblSecretKey.gridy = 6;
 		add(lblSecretKey, gbc_lblSecretKey);
 		
-		keyField = new JTextField();
-		keyField.setEnabled(false);
+		jwtKeyArea = new JTextArea();
+		jwtKeyArea.setEnabled(false);
 		GridBagConstraints gbc_keyField = new GridBagConstraints();
 		gbc_keyField.anchor = GridBagConstraints.NORTH;
 		gbc_keyField.insets = new Insets(0, 0, 5, 5);
 		gbc_keyField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_keyField.gridx = 2;
 		gbc_keyField.gridy = 7;
-		add(keyField, gbc_keyField);
-		keyField.setColumns(10);
+		add(jwtKeyArea, gbc_keyField);
+		jwtKeyArea.setColumns(10);
 		
 		lblProblem = new JLabel("");
 		GridBagConstraints gbc_lblProblem = new GridBagConstraints();
@@ -283,11 +283,11 @@ public class JWTInterceptTab extends JPanel {
 				if(!jwtArea.getText().equals(jwtIM.getJWTJSON())){
 					jwtArea.setText(jwtIM.getJWTJSON());
 				}
-				keyField.setText(jwtIM.getJWTKey());
+				jwtKeyArea.setText(jwtIM.getJWTKey());
 				if(reset){
 					rdbtnDontModifySignature.setSelected(true);
-					keyField.setText("");
-					keyField.setEnabled(false);
+					jwtKeyArea.setText("");
+					jwtKeyArea.setEnabled(false);
 				}
 				jwtArea.setCaretPosition(0);
 				lblProblem.setText(jwtIM.getProblemDetail());
@@ -303,7 +303,7 @@ public class JWTInterceptTab extends JPanel {
 	}
 	
 	public void setKeyFieldState(boolean state){
-		keyField.setEnabled(state);
+		jwtKeyArea.setEnabled(state);
 	}
 	
 	public String getJWTfromArea(){
@@ -315,10 +315,10 @@ public class JWTInterceptTab extends JPanel {
 	}
 
 	public String getKeyFieldValue() {
-		return keyField.getText();
+		return jwtKeyArea.getText();
 	}
 	
 	public void setKeyFieldValue(String string) {
-		keyField.setText(string);
+		jwtKeyArea.setText(string);
 	}
 }
