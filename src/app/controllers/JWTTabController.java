@@ -14,7 +14,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import app.algorithm.AlgorithmLinker;
-import app.helpers.ConsoleOut;
 import app.helpers.CustomJWToken;
 import app.helpers.Settings;
 import app.helpers.Strings;
@@ -126,13 +125,13 @@ public class JWTTabController implements IMessageEditorTab {
 			test.getAlgorithm();
 			jwtVT.updateSetView(algoType);
 		} catch (JWTVerificationException e) {
-			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
+			//ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
 			jwtTM.setVerificationLabel(Strings.verificationWrongKey);
 			jwtTM.setVerificationColor(Settings.colorInvalid);
 			jwtTM.setVerificationResult(e.getMessage());
 			jwtVT.updateSetView(algoType);
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
-			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
+			//ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
 			jwtTM.setVerificationResult(e.getMessage());
 			jwtTM.setVerificationLabel(Strings.verificationInvalidKey);
 			jwtTM.setVerificationColor(Settings.colorProblemInvalid);

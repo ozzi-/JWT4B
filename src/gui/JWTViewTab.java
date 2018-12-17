@@ -13,7 +13,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentListener;
 
@@ -32,7 +31,7 @@ public class JWTViewTab extends JPanel{
 
 	private static final long serialVersionUID = 1L;
 	private RSyntaxTextArea  outputField;
-	private JTextField keyField;
+	private JTextArea jwtKeyArea;
 	private JLabel outputLabel;
 	private JLabel keyLabel;
 	private JButton verificationIndicator;
@@ -46,7 +45,7 @@ public class JWTViewTab extends JPanel{
 	}
 
 	public void registerDocumentListener(DocumentListener inputFieldListener) {
-		keyField.getDocument().addDocumentListener(inputFieldListener);
+		jwtKeyArea.getDocument().addDocumentListener(inputFieldListener);
 	}
 
 	
@@ -68,14 +67,14 @@ public class JWTViewTab extends JPanel{
 		gbc_inputLabel1.gridy = 1;
 		add(keyLabel, gbc_inputLabel1);
 
-		keyField = new JTextField();
+		jwtKeyArea = new JTextArea();
 		GridBagConstraints gbc_inputField1 = new GridBagConstraints();
 		gbc_inputField1.insets = new Insets(0, 0, 5, 5);
 		gbc_inputField1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_inputField1.gridx = 1;
 		gbc_inputField1.gridy = 2;
-		add(keyField, gbc_inputField1);
-		keyField.setColumns(10);
+		add(jwtKeyArea, gbc_inputField1);
+		jwtKeyArea.setColumns(10);
 		
 		verificationIndicator = new JButton("");
 		Dimension preferredSize = new Dimension(400, 30);
@@ -142,11 +141,11 @@ public class JWTViewTab extends JPanel{
 	}
 		
 	public String getKeyValue() {
-		return keyField.getText();
+		return jwtKeyArea.getText();
 	}
 
 	public void setKeyValue(String value) {
-		keyField.setText(value);		
+		jwtKeyArea.setText(value);		
 	}
 
 	public void setVerificationResult(String value) {
@@ -175,8 +174,8 @@ public class JWTViewTab extends JPanel{
 				if(!jwtTM.getKeyLabel().equals(keyLabel.getText())){
 					keyLabel.setText(jwtTM.getKeyLabel());
 				}
-				if(!jwtTM.getKey().equals(keyField.getText())){
-					keyField.setText(jwtTM.getKey());
+				if(!jwtTM.getKey().equals(jwtKeyArea.getText())){
+					jwtKeyArea.setText(jwtTM.getKey());
 				}
 				if(!jwtTM.getVerificationColor().equals(verificationIndicator.getBackground())){
 					verificationIndicator.setBackground(jwtTM.getVerificationColor());
@@ -186,16 +185,16 @@ public class JWTViewTab extends JPanel{
 				}
 				if(algorithmType.equals(AlgorithmType.symmetric)){
 					keyLabel.setText("Secret");
-					keyField.setEnabled(true);
+					jwtKeyArea.setEnabled(true);
 				}
 				if(algorithmType.equals(AlgorithmType.asymmetric)){
 					keyLabel.setText("Public Key");
-					keyField.setEnabled(true);
+					jwtKeyArea.setEnabled(true);
 				}
 				if(algorithmType.equals(AlgorithmType.none)){
 					keyLabel.setText("");
-					keyField.setEnabled(false);
-					keyField.setEnabled(false);
+					jwtKeyArea.setEnabled(false);
+					jwtKeyArea.setEnabled(false);
 				}
 				
 				if(jwtTM.getcFW().isCookie()){

@@ -4,11 +4,11 @@ JSON Web Tokens (JWT) support for the Burp Interception Proxy. JWT4B will let yo
 ![Logo](https://i.imgur.com/SnrC5To.png)
 
 # Screenshots
-![Screenshot - Intercept View](https://i.imgur.com/Px72aUL.png)
+![Screenshot - Intercept View](https://i.imgur.com/9fJQuoM.png)
 
-![Screenshot - Decode View](https://i.imgur.com/DaZlBi9.png)
+![Screenshot - Decode View](https://i.imgur.com/LE98YJY.png)
 
-![Screenshot - Suite Tab View](https://i.imgur.com/71KiJJ2.png)
+![Screenshot - Suite Tab View](https://i.imgur.com/2HGOI27.png)
 
 # Testing
 The following url contains links to four pages which simulate a JWT being sent via XHR or as cookie.
@@ -21,3 +21,6 @@ The following url contains links to four pages which simulate a JWT being sent v
 3. Open Burp -> Extender -> APIs -> Save interface files -> Copy all files to JWT4B\src\burp
 4. Export runnable fat JAR including libraries
 5. Load the JAR in Burp through the Extender Tab -> Extensions -> Add (Good to know: CTRL+Click on a extension to reload it)
+
+# Installation from BApp Store
+This extension is available in the [BApp Store](https://portswigger.net/bappstore/f923cbf91698420890354c1d8958fee6).
