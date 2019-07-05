@@ -1,5 +1,9 @@
 package app.helpers;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class Strings {
 	public static final String contextMenuString = "Send selected text to JSON Web Tokens Tab to decode";
 
@@ -23,11 +27,14 @@ public class Strings {
 	public static final String keepOriginalSignature ="Keep original signature";
 	public static final String randomKey = "Sign with random key pair";
 	public static final String enterSecretKey="Enter Secret / Key";
+	public static final String chooseSignature = "Load Secret / Key from File";
 
+	
 	public static final String dontModifyToolTip ="The signature will be taken straight out of the editable field to the left";
 	public static final String recalculateSignatureToolTip = "<html>The signature will be recalculated depending<br> on the content and algorithm set</html>";
 	public static final String keepOriginalSignatureToolTip = "The signature originally sent will be preserved and sent unchanged";
 	public static final String randomKeyToolTip = "<html>The signature will be recalculated depending<br>on the content and algorithm set<br>by a random signature / key</html>";
+	public static String chooseSignatureToolTip = "Load the secret / key from a file chosen by your OS file picker";
 
 	public static final String creditTitle ="JSON Web Tokens - About";
 
@@ -68,4 +75,20 @@ public class Strings {
 									+"GxUqX+ALVY6ikZ/SBOQIDrnI9aixwXYQ3t3Nwjim73/0uiLXLOpO92dBSym7GeSP"
 									+"YqWZhkyQ8C05tDyGvDI5b7bVmD1pxmnhG9sOktrkDVkOsYUnAhRwCgmuExkoeGWP"
 									+"vUt+85cmMpJfHHqbrb5FLqTeXQ==";
+
+	
+	public static String filePathToString(String filePath) {
+		StringBuilder contentBuilder = new StringBuilder();
+		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+
+			String sCurrentLine;
+			while ((sCurrentLine = br.readLine()) != null) {
+				contentBuilder.append(sCurrentLine).append(System.lineSeparator());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		String result = contentBuilder.toString();
+		return result.substring(0,result.length()-System.lineSeparator().length());
+	}
 }
