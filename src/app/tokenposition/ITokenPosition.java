@@ -12,16 +12,13 @@ import burp.IRequestInfo;
 import burp.IResponseInfo;
 
 public abstract class ITokenPosition {
+	
 	protected IExtensionHelpers helpers;
 	protected byte[] message;
 	protected boolean isRequest;
-
 	public abstract boolean positionFound();
-
 	public abstract String getToken();
-
 	public abstract byte[] replaceToken(String newToken);
-
 	private static CookieFlagWrapper cFW;
 
 	public void setMessage(byte[] message, boolean isRequest) {

@@ -116,7 +116,7 @@ public class JWTSuiteTab extends JPanel {
 				jLabelLink.addText("and to Brainloop for providing broader token support!");
 				jLabelLink.addURL("<a href=\"https://www.brainloop.com\">brainloop.com</a><br><br>","brainloop.com");
 
-				jLabelLink.addRemoteImage("https://raw.githubusercontent.com/mvetsch/JWT4B/master/resources/logo_sm.png");
+				jLabelLink.addLogoImage();
 			}
 		});
 		GridBagConstraints gbc_creditButton = new GridBagConstraints();
