@@ -23,7 +23,10 @@ import app.helpers.ConsoleOut;
 import app.helpers.PublicKeyBroker;
 
 public class AlgorithmLinker {
-
+	
+	public static final String publicKeyBegin = "-----BEGIN PUBLIC KEY-----";
+	public static final String publicKeyEnd = "-----BEGIN PUBLIC KEY-----";
+	
 	public static final app.algorithm.AlgorithmWrapper none = 
 			new app.algorithm.AlgorithmWrapper("none",AlgorithmType.none);
 	public static final app.algorithm.AlgorithmWrapper HS256 = 
@@ -51,7 +54,7 @@ public class AlgorithmLinker {
 	private static PublicKey generatePublicKeyFromString(String key, String algorithm) {
 		PublicKey publicKey = null;
 		if(key.length()>1){
-			key = key.replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "")
+			key = key.replace(publicKeyBegin, "").replace(publicKeyEnd, "")
 					.replaceAll("\\s+", "").replaceAll("\\r+", "").replaceAll("\\n+", "");
 			byte[] keyByteArray = java.util.Base64.getDecoder().decode(key);
 			try {
@@ -68,7 +71,7 @@ public class AlgorithmLinker {
 	private static PrivateKey generatePrivateKeyFromString(String key, String algorithm) {
 		PrivateKey privateKey = null;
 		if(key.length()>1){
-			key = key.replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "")
+			key = key.replace(publicKeyBegin, "").replace(publicKeyEnd, "")
 				 .replaceAll("\\s+", "").replaceAll("\\r+", "").replaceAll("\\n+", "");
 			byte[] keyByteArray = Base64.decode(key);
 			try {

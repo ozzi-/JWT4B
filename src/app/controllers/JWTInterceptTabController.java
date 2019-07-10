@@ -1,6 +1,8 @@
 package app.controllers;
 
 import java.awt.Component;
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.UnsupportedEncodingException;
@@ -13,7 +15,6 @@ import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
-
 
 import com.auth0.jwt.algorithms.Algorithm;
 import com.eclipsesource.json.Json;
@@ -44,11 +45,11 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	private boolean dontModify;
 	private boolean randomKey;
 	private boolean keepOriginalSignature;
+	private boolean chooseSignature;
 	private boolean recalculateSignature;
 	private String algAttackMode;
 	private boolean cveAttackMode;
 
-	
 	public JWTInterceptTabController(IBurpExtenderCallbacks callbacks, JWTInterceptModel jwIM, JWTInterceptTab jwtST) {
 		this.jwtIM = jwIM;
 		this.jwtST = jwtST;
@@ -57,25 +58,31 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		ActionListener dontModifyListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(true, false, false, false);
+				radioButtonChanged(true, false, false, false, false);
 			}
 		};
 		ActionListener randomKeyListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(false, true, false, false);
+				radioButtonChanged(false, true, false, false, false);
 			}
 		};
 		ActionListener originalSignatureListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(false, false, true, false);
+				radioButtonChanged(false, false, true, false, false);
 			}
 		};
 		ActionListener recalculateSignatureListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(false, false, false, true);
+				radioButtonChanged(false, false, false, true, false);
+			}
+		};
+		ActionListener chooseSignatureListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioButtonChanged(false, false, false, false, true);
 			}
 		};
 		ActionListener algAttackListener = new ActionListener() {
@@ -91,11 +98,10 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			}
 		};
 
-		jwtST.registerActionListeners(dontModifyListener, randomKeyListener, 
-				originalSignatureListener, recalculateSignatureListener,
-				algAttackListener,cveAttackListener);
+		jwtST.registerActionListeners(dontModifyListener, randomKeyListener, originalSignatureListener,
+				recalculateSignatureListener, chooseSignatureListener, algAttackListener, cveAttackListener);
 	}
-	
+
 	private void cveAttackChanged() {
 		JCheckBox jcb = jwtST.getCVEAttackCheckBox();
 		cveAttackMode = jcb.isSelected();
@@ -106,12 +112,12 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		jwtST.getRdbtnRecalculateSignature().setEnabled(!cveAttackMode);
 		jwtST.setKeyFieldState(!cveAttackMode);
 		jwtST.getCVECopyBtn().setVisible(cveAttackMode);
-		if(cveAttackMode){
+		if (cveAttackMode) {
 			jwtST.getRdbtnDontModify().setSelected(true);
 			jwtST.getRdbtnOriginalSignature().setSelected(false);
 			jwtST.getRdbtnRandomKey().setSelected(false);
 			jwtST.getRdbtnRecalculateSignature().setSelected(false);
-		}else{
+		} else {
 			jwtST.setKeyFieldValue("");
 			jwtST.setKeyFieldState(false);
 		}
@@ -139,13 +145,17 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		}
 	}
 
-	private void radioButtonChanged(boolean cDM, boolean cRK, boolean cOS, boolean cRS) {
+	private void radioButtonChanged(boolean cDM, boolean cRK, boolean cOS, boolean cRS, boolean cCS) {
 		boolean oldRandomKey = randomKey;
+
 		dontModify = jwtST.getRdbtnDontModify().isSelected();
 		randomKey = jwtST.getRdbtnRandomKey().isSelected();
 		keepOriginalSignature = jwtST.getRdbtnOriginalSignature().isSelected();
 		recalculateSignature = jwtST.getRdbtnRecalculateSignature().isSelected();
-		jwtST.setKeyFieldState(!keepOriginalSignature && !dontModify && !randomKey);
+		chooseSignature = jwtST.getRdbtnChooseSignature().isSelected();
+
+		jwtST.setKeyFieldState(!keepOriginalSignature && !dontModify && !randomKey && !chooseSignature);
+
 		if (keepOriginalSignature || dontModify) {
 			jwtIM.setJWTKey("");
 			jwtST.setKeyFieldValue("");
@@ -153,11 +163,25 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		if (randomKey && !oldRandomKey) {
 			generateRandomKey();
 		}
+		if (cCS) {
+			FileDialog dialog = new FileDialog((Frame) null, "Select File to Open");
+			dialog.setMode(FileDialog.LOAD);
+			dialog.setVisible(true);
+			if(dialog.getFile()!=null) {
+				String file = dialog.getDirectory() + dialog.getFile();
+				ConsoleOut.output(file + " chosen.");
+				String chosen = Strings.filePathToString(file);
+				jwtIM.setJWTKey(chosen);
+				jwtST.updateSetView(false);	
+			}
+		}
 	}
-	
-	private RSAPublicKey loadPublicKey(){
-	    String publicPEM = Strings.publicKey.replaceAll("\\n", "").replace("-----BEGIN PUBLIC KEY-----", "").replace("-----END PUBLIC KEY-----", "");;
-        KeyFactory kf;
+
+	private RSAPublicKey loadPublicKey() {
+		String publicPEM = Strings.publicKey.replaceAll("\\n", "").replace("-----BEGIN PUBLIC KEY-----", "")
+				.replace("-----END PUBLIC KEY-----", "");
+		;
+		KeyFactory kf;
 		try {
 			kf = KeyFactory.getInstance("RSA");
 			X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(Base64.getDecoder().decode(publicPEM));
@@ -216,9 +240,9 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	@Override
 	public byte[] getMessage() {
 		jwtIM.setProblemDetail("");
-		radioButtonChanged(true, false, false, false);
+		radioButtonChanged(true, false, false, false, false);
 		jwtST.getCVEAttackCheckBox().setSelected(false);
-		
+
 		CustomJWToken token = null;
 		try {
 			token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
@@ -227,13 +251,13 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			return this.message;
 		}
 
-		if ((recalculateSignature || randomKey)) {
+		if ((recalculateSignature || randomKey || chooseSignature)) {
 			if (recalculateSignature) {
 				jwtIM.setJWTKey(jwtST.getKeyFieldValue());
 			}
 			Algorithm algo;
 			try {
-				ConsoleOut.output("Recalculating Signature with Secret - " + jwtIM.getJWTKey());
+				ConsoleOut.output("Recalculating Signature with Secret - '" + jwtIM.getJWTKey() + "'");
 				algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), jwtIM.getJWTKey());
 				token.calculateAndSetSignature(algo);
 				addLogHeadersToRequest();
@@ -248,7 +272,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			token.setHeaderJson(header.replace(token.getAlgorithm(), algAttackMode));
 			token.setSignature("");
 		}
-		if (cveAttackMode){
+		if (cveAttackMode) {
 			String headerJSON = token.getHeaderJson();
 			JsonObject headerJSONObj = Json.parse(headerJSON).asObject();
 			headerJSONObj.set("alg", "RS256");
@@ -270,7 +294,6 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 				e.printStackTrace();
 			}
 		}
-		System.out.println(token.getToken());
 		this.message = this.tokenPosition.replaceToken(token.getToken());
 		return this.message;
 

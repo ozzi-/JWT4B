@@ -1,5 +1,9 @@
 package app.helpers;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class Strings {
 	public static final String contextMenuString = "Send selected text to JSON Web Tokens Tab to decode";
 
@@ -23,25 +27,16 @@ public class Strings {
 	public static final String keepOriginalSignature ="Keep original signature";
 	public static final String randomKey = "Sign with random key pair";
 	public static final String enterSecretKey="Enter Secret / Key";
+	public static final String chooseSignature = "Load Secret / Key from File";
 
+	
 	public static final String dontModifyToolTip ="The signature will be taken straight out of the editable field to the left";
 	public static final String recalculateSignatureToolTip = "<html>The signature will be recalculated depending<br> on the content and algorithm set</html>";
 	public static final String keepOriginalSignatureToolTip = "The signature originally sent will be preserved and sent unchanged";
 	public static final String randomKeyToolTip = "<html>The signature will be recalculated depending<br>on the content and algorithm set<br>by a random signature / key</html>";
+	public static String chooseSignatureToolTip = "Load the secret / key from a file chosen by your OS file picker";
 
 	public static final String creditTitle ="JSON Web Tokens - About";
-
-	public static final String creditText ="<html><h2>About JSON Web Tokens</h2>JSON Web Tokens is developed by Oussama Zgheb (zgheb.com) and Matthias Vetsch.<br><br>"
-			+ "All self-written code, excluding the BURP Extender classes, auth0 java-jwt library (MIT), Apache Commons Lang (apache license 2.0) and the RSyntaxTextArea library <br>(https://github.com/bobbylight/RSyntaxTextArea/blob/master/src/main/dist/<br>RSyntaxTextArea.License.txt) use the"
-			+ " GPL3 licence<br>https://www.gnu.org/licenses/gpl-3.0.html.<br><br>"
-			+ "Credits:"
-			+ "<ul>"
-			+ "<li>RSyntaxTextArea &nbsp;- https://github.com/bobbylight/RSyntaxTextArea</li>"
-			+ "<li>java-jwt &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- https://github.com/auth0/java-jwt</li>"
-			+ "<li>Compass Security AG, for providing development time<br>https://compass-security.com</li>"
-			+ "<li>Brainloop, for providing broader token support<br>https://www.brainloop.com/</li>"
-			+ "</ul>"
-			+ "</html>";
 
 	public static final String JWTHeaderPrefix = "JWT4B: ";
 	public static final String JWTHeaderInfo = JWTHeaderPrefix+"The following headers are added automatically, in order to log the keys";
@@ -80,4 +75,20 @@ public class Strings {
 									+"GxUqX+ALVY6ikZ/SBOQIDrnI9aixwXYQ3t3Nwjim73/0uiLXLOpO92dBSym7GeSP"
 									+"YqWZhkyQ8C05tDyGvDI5b7bVmD1pxmnhG9sOktrkDVkOsYUnAhRwCgmuExkoeGWP"
 									+"vUt+85cmMpJfHHqbrb5FLqTeXQ==";
+
+	
+	public static String filePathToString(String filePath) {
+		StringBuilder contentBuilder = new StringBuilder();
+		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+
+			String sCurrentLine;
+			while ((sCurrentLine = br.readLine()) != null) {
+				contentBuilder.append(sCurrentLine).append(System.lineSeparator());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		String result = contentBuilder.toString();
+		return result.substring(0,result.length()-System.lineSeparator().length());
+	}
 }

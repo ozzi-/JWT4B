@@ -43,7 +43,7 @@ public class Cookie extends ITokenPosition {
 					int flagMarker = value.indexOf(";");
 					if(flagMarker!=-1){
 						value=value.substring(0, flagMarker);
-						cFW = new CookieFlagWrapper(true, cookie.contains("; secure"), cookie.contains("; HttpOnly")); 
+						cFW = new CookieFlagWrapper(true, cookie.toLowerCase().contains("; secure"), cookie.toLowerCase().contains("; httponly")); 
 					}else{
 						cFW = new CookieFlagWrapper(true, false, false);
 					}

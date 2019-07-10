@@ -1,27 +1,30 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-
-import model.JWTInterceptModel;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Style;
@@ -31,9 +34,7 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.helpers.Strings;
-import javax.swing.JCheckBox;
-import javax.swing.JButton;
-import java.awt.event.ActionEvent;
+import model.JWTInterceptModel;
 
 public class JWTInterceptTab extends JPanel {
 
@@ -43,6 +44,8 @@ public class JWTInterceptTab extends JPanel {
 	private JRadioButton rdbtnRecalculateSignature;
 	private JRadioButton rdbtnRandomKey;
 	private JRadioButton rdbtnOriginalSignature;
+	private JRadioButton rdbtnChooseSignature;
+
 	private JTextArea jwtKeyArea;
 	private JLabel lblSecretKey;
 	private JSeparator separator;
@@ -60,10 +63,11 @@ public class JWTInterceptTab extends JPanel {
 		drawGui();
 	}
 	
-	public void registerActionListeners(ActionListener dontMofiy, ActionListener randomKeyListener, ActionListener originalSignatureListener, ActionListener recalculateSignatureListener, ActionListener algAttackListener, ActionListener cveAttackListener){
+	public void registerActionListeners(ActionListener dontMofiy, ActionListener randomKeyListener, ActionListener originalSignatureListener, ActionListener recalculateSignatureListener, ActionListener chooseSignatureListener, ActionListener algAttackListener, ActionListener cveAttackListener){
 		rdbtnDontModifySignature.addActionListener(dontMofiy);
 		rdbtnRecalculateSignature.addActionListener(randomKeyListener);
 		rdbtnOriginalSignature.addActionListener(originalSignatureListener);
+		rdbtnChooseSignature.addActionListener(chooseSignatureListener);
 		rdbtnRandomKey.addActionListener(recalculateSignatureListener);
 		noneAttackComboBox.addActionListener(algAttackListener);
 		chkbxCVEAttack.addActionListener(cveAttackListener);
@@ -71,14 +75,15 @@ public class JWTInterceptTab extends JPanel {
 	
 	private void drawGui() {	
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{10, 0, 0, 20, 0};
+		gridBagLayout.columnWidths = new int[] {0, 0, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
-		jwtArea = new RSyntaxTextArea ();
-		jwtArea.setColumns(20);
+		jwtArea = new RSyntaxTextArea(20,60);
+		jwtArea.setMinimumSize(new Dimension(300, 300));
+		jwtArea.setColumns(90);
 		SyntaxScheme scheme = jwtArea.getSyntaxScheme();
 		Style style = new Style();
 		style.foreground = new Color(222,133,10);
@@ -94,11 +99,13 @@ public class JWTInterceptTab extends JPanel {
 		
 		GridBagConstraints gbc_jwtArea = new GridBagConstraints();
 		gbc_jwtArea.gridheight = 7;
+		gbc_jwtArea.gridwidth = 1;
 		gbc_jwtArea.insets = new Insets(0, 0, 5, 5);
 		gbc_jwtArea.fill = GridBagConstraints.BOTH;
 		gbc_jwtArea.gridx = 1;
 		gbc_jwtArea.gridy = 1;
 		add(sp, gbc_jwtArea);
+
 		
 		rdbtnDontModifySignature = new JRadioButton(Strings.dontModify);
 		rdbtnDontModifySignature.setToolTipText(Strings.dontModifyToolTip);
@@ -141,12 +148,24 @@ public class JWTInterceptTab extends JPanel {
 		gbc_rdbtnNewRadioButton.gridy = 4;
 		add(rdbtnRandomKey, gbc_rdbtnNewRadioButton);
 		
+		
+		rdbtnChooseSignature = new JRadioButton(Strings.chooseSignature);
+		rdbtnChooseSignature.setToolTipText(Strings.chooseSignatureToolTip);
+		rdbtnChooseSignature.setHorizontalAlignment(SwingConstants.LEFT);
+		GridBagConstraints gbc_rdbtnNewRadioButton1 = new GridBagConstraints();
+		gbc_rdbtnNewRadioButton1.anchor = GridBagConstraints.WEST;
+		gbc_rdbtnNewRadioButton1.insets = new Insets(0, 0, 5, 5);
+		gbc_rdbtnNewRadioButton1.gridx = 2;
+		gbc_rdbtnNewRadioButton1.gridy = 5;
+		add(rdbtnChooseSignature, gbc_rdbtnNewRadioButton1);
+		
 		ButtonGroup btgrp = new ButtonGroup();
 		btgrp.add(rdbtnDontModifySignature);
 		btgrp.add(rdbtnOriginalSignature);
 		btgrp.add(rdbtnRandomKey);
 		btgrp.add(rdbtnRecalculateSignature);
-		
+		btgrp.add(rdbtnChooseSignature);
+
 		separator = new JSeparator();
 		GridBagConstraints gbc_separator = new GridBagConstraints();
 		gbc_separator.insets = new Insets(0, 0, 5, 5);
@@ -162,16 +181,23 @@ public class JWTInterceptTab extends JPanel {
 		gbc_lblSecretKey.gridy = 6;
 		add(lblSecretKey, gbc_lblSecretKey);
 		
-		jwtKeyArea = new JTextArea();
+		jwtKeyArea = new JTextArea("");
 		jwtKeyArea.setEnabled(false);
+
 		GridBagConstraints gbc_keyField = new GridBagConstraints();
 		gbc_keyField.anchor = GridBagConstraints.NORTH;
 		gbc_keyField.insets = new Insets(0, 0, 5, 5);
 		gbc_keyField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_keyField.gridx = 2;
 		gbc_keyField.gridy = 7;
-		add(jwtKeyArea, gbc_keyField);
-		jwtKeyArea.setColumns(10);
+		jwtKeyArea.setRows(5);
+		
+        JScrollPane jp = new JScrollPane(jwtKeyArea);
+		
+		add(jp, gbc_keyField);
+		jwtKeyArea.setColumns(2);
+		jwtKeyArea.setRows(2);
+		jwtKeyArea.setLineWrap(false);
 		
 		lblProblem = new JLabel("");
 		GridBagConstraints gbc_lblProblem = new GridBagConstraints();
@@ -251,6 +277,10 @@ public class JWTInterceptTab extends JPanel {
 	
 	public AbstractButton getRdbtnDontModify() {
 		return rdbtnDontModifySignature;
+	}
+	
+	public JRadioButton getRdbtnChooseSignature() {
+		return rdbtnChooseSignature;
 	}
 	
 	public JRadioButton getRdbtnRecalculateSignature() {
