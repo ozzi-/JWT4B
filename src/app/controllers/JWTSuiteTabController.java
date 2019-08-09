@@ -11,7 +11,9 @@ import javax.swing.event.DocumentListener;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import app.algorithm.AlgorithmLinker;
@@ -119,8 +121,18 @@ public class JWTSuiteTabController extends Observable implements ITab {
 		} catch (JWTVerificationException e) {
 			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
 			jwtSTM.setVerificationResult(e.getMessage());
-			jwtSTM.setJwtSignatureColor(Settings.colorInvalid);
-			jwtSTM.setVerificationLabel(Strings.verificationWrongKey);
+
+			if (e instanceof SignatureVerificationException) {
+				jwtSTM.setJwtSignatureColor(Settings.colorInvalid);
+				jwtSTM.setVerificationLabel(Strings.verificationInvalidSignature);
+			} else if(e instanceof InvalidClaimException) {
+				jwtSTM.setJwtSignatureColor(Settings.colorProblemInvalid);
+				jwtSTM.setVerificationLabel(Strings.verificationInvalidClaim);
+			}else {
+				jwtSTM.setJwtSignatureColor(Settings.colorProblemInvalid);
+				jwtSTM.setVerificationLabel(Strings.verificationError);
+			}
+
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
 			jwtSTM.setJwtSignatureColor(Settings.colorProblemInvalid);
