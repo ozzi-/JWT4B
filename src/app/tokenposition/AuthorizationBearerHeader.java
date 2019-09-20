@@ -27,10 +27,8 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 	}
 	
 	private boolean headerContainsaKeyWordAndIsJWT(String header, List<String> jwtKeywords) {
-		header = header.toLowerCase();
 		for(String keyword : jwtKeywords){
-			keyword = keyword.toLowerCase();
-			if(header.startsWith(keyword)){ 
+			if(header.toLowerCase().startsWith(keyword.toLowerCase())){ 
 				String jwt = header.replace(keyword, "").trim();
 				if(CustomJWToken.isValidJWT(jwt)){
 					this.selectedKeyword = keyword;
