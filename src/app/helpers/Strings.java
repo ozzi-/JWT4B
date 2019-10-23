@@ -18,8 +18,10 @@ public class Strings {
 	public static final String enterJWT = "Enter JWT";
 	
 	public static final String verificationValid = "Signature verified";
-	public static final String verificationInvalidKey = "Invalid key";
-	public static final String verificationWrongKey = "Invalid Signature / wrong key / claim failed";
+	public static final String verificationInvalidKey = "Invalid Key";
+	public static String verificationInvalidSignature = "Cannot verify Signature";
+	public static String verificationInvalidClaim = "Not all Claims accepted";
+	public static final String verificationError = "Invalid Signature / wrong key / claim failed";
 
 	public static final String interceptRecalculationKey = "Secret / Key for Signature recalculation:";
 
@@ -76,7 +78,7 @@ public class Strings {
 									+"YqWZhkyQ8C05tDyGvDI5b7bVmD1pxmnhG9sOktrkDVkOsYUnAhRwCgmuExkoeGWP"
 									+"vUt+85cmMpJfHHqbrb5FLqTeXQ==";
 
-	
+
 	public static String filePathToString(String filePath) {
 		StringBuilder contentBuilder = new StringBuilder();
 		try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {

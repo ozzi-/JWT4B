@@ -10,7 +10,9 @@ import javax.swing.event.DocumentListener;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import app.algorithm.AlgorithmLinker;
@@ -125,9 +127,16 @@ public class JWTTabController implements IMessageEditorTab {
 			test.getAlgorithm();
 			jwtVT.updateSetView(algoType);
 		} catch (JWTVerificationException e) {
-			//ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
-			jwtTM.setVerificationLabel(Strings.verificationWrongKey);
-			jwtTM.setVerificationColor(Settings.colorInvalid);
+			if (e instanceof SignatureVerificationException) {
+				jwtTM.setVerificationColor(Settings.colorInvalid);
+				jwtTM.setVerificationLabel(Strings.verificationInvalidSignature);
+			} else if(e instanceof InvalidClaimException) {
+				jwtTM.setVerificationColor(Settings.colorProblemInvalid);
+				jwtTM.setVerificationLabel(Strings.verificationInvalidClaim);
+			}else {
+				jwtTM.setVerificationColor(Settings.colorProblemInvalid);
+				jwtTM.setVerificationLabel(Strings.verificationError);
+			}
 			jwtTM.setVerificationResult(e.getMessage());
 			jwtVT.updateSetView(algoType);
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {

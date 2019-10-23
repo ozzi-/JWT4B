@@ -7,7 +7,7 @@ import app.helpers.CustomJWToken;
 
 public class AuthorizationBearerHeader extends ITokenPosition {
 
-	private static List<String> jwtKeywords = Arrays.asList("Authorization: Bearer");
+	private static List<String> jwtKeywords = Arrays.asList("Authorization: Bearer", "Authorization: bearer", "authorization: Bearer", "authorization: bearer");
 	private String selectedKeyword;
 	private Integer headerIndex;
 	private List<String> headers;
