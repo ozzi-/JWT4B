@@ -24,8 +24,8 @@ import app.helpers.PublicKeyBroker;
 
 public class AlgorithmLinker {
 	
-	public static final String publicKeyBegin = "-----BEGIN PUBLIC KEY-----";
-	public static final String publicKeyEnd = "-----BEGIN PUBLIC KEY-----";
+	public static final String[] keyBeginMarkers = new String[]{"-----BEGIN PUBLIC KEY-----","-----BEGIN CERTIFICATE-----"};
+	public static final String[] keyEndMarkers = new String[]{"-----END PUBLIC KEY-----","-----END CERTIFICATE-----"};
 	
 	public static final app.algorithm.AlgorithmWrapper none = 
 			new app.algorithm.AlgorithmWrapper("none",AlgorithmType.none);
@@ -54,8 +54,7 @@ public class AlgorithmLinker {
 	private static PublicKey generatePublicKeyFromString(String key, String algorithm) {
 		PublicKey publicKey = null;
 		if(key.length()>1){
-			key = key.replace(publicKeyBegin, "").replace(publicKeyEnd, "")
-					.replaceAll("\\s+", "").replaceAll("\\r+", "").replaceAll("\\n+", "");
+			key = cleanKey(key);
 			byte[] keyByteArray = java.util.Base64.getDecoder().decode(key);
 			try {
 				KeyFactory kf = KeyFactory.getInstance(algorithm);
@@ -68,11 +67,22 @@ public class AlgorithmLinker {
 		return publicKey;
 	}
 
+	public static String cleanKey(String key) {
+		for (String keyBeginMarker : keyBeginMarkers) {
+			key = key.replace(keyBeginMarker, "");		
+		}
+		for (String keyEndMarker : keyEndMarkers) {
+			key = key.replace(keyEndMarker, "");
+		}
+		key = key.replaceAll("\\s+", "").replaceAll("\\r+", "").replaceAll("\\n+", "");			
+
+		return key;
+	}
+	
 	private static PrivateKey generatePrivateKeyFromString(String key, String algorithm) {
 		PrivateKey privateKey = null;
 		if(key.length()>1){
-			key = key.replace(publicKeyBegin, "").replace(publicKeyEnd, "")
-				 .replaceAll("\\s+", "").replaceAll("\\r+", "").replaceAll("\\n+", "");
+			key = cleanKey(key);
 			byte[] keyByteArray = Base64.decode(key);
 			try {
 				KeyFactory kf = KeyFactory.getInstance(algorithm);
