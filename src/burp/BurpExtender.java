@@ -1,20 +1,20 @@
 package burp;
 
-import gui.JWTInterceptTab;
-import gui.JWTSuiteTab;
-import gui.JWTViewTab;
-
 import java.io.PrintWriter;
 
-import model.JWTInterceptModel;
-import model.JWTSuiteTabModel;
-import model.JWTTabModel;
 import app.controllers.ContextMenuController;
 import app.controllers.HighLightController;
 import app.controllers.JWTInterceptTabController;
 import app.controllers.JWTSuiteTabController;
 import app.controllers.JWTTabController;
+import app.helpers.Config;
 import app.helpers.Settings;
+import gui.JWTInterceptTab;
+import gui.JWTSuiteTab;
+import gui.JWTViewTab;
+import model.JWTInterceptModel;
+import model.JWTSuiteTabModel;
+import model.JWTTabModel;
 
 public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 	private IBurpExtenderCallbacks callbacks;
@@ -23,10 +23,14 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 	public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
 		this.callbacks = callbacks;
 		PrintWriter stdout = new PrintWriter(callbacks.getStdout(), true);
+		PrintWriter stderr = new PrintWriter(callbacks.getStderr(), true);
+
 		stdout.println("JWT4B says hi!");
 		
 		callbacks.setExtensionName(Settings.extensionName);
 		callbacks.registerMessageEditorTabFactory(this);
+		
+		Config.loadConfig(stdout,stderr);
 		
 		final HighLightController marker = new HighLightController(callbacks);
         callbacks.registerHttpListener(marker);
@@ -40,6 +44,7 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 		// Context Menu
 		ContextMenuController cmC = new ContextMenuController(jstC);
 		callbacks.registerContextMenuFactory(cmC);
+		stdout.close();
 	}
 
 	@Override
