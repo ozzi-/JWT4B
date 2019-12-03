@@ -16,6 +16,9 @@ import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.WriterConfig;
 
 public class Config {
+	
+	public static PrintWriter stdout;
+	public static PrintWriter stderr;
 
 	public static List<String> jwtKeywords = Arrays.asList("Authorization: Bearer", "Authorization: bearer", "authorization: Bearer", "authorization: bearer");
 	public static List<String> tokenKeywords = Arrays.asList("id_token", "ID_TOKEN", "access_token", "token");
@@ -61,28 +64,28 @@ public class Config {
     public static String configFolderName = ".JWT4B";
     public static String configPath = System.getProperty("user.home") + File.separator + configFolderName + File.separator +configName;
 	
-	public static void loadConfig(PrintWriter stdout, PrintWriter stderr) {		
+	public static void loadConfig() {		
 		
 		File configFile = new File(configPath);
 		
         if (!configFile.getParentFile().exists()) {
-    		stdout.println("Config file directory '"+configFolderName+"' does not exist - creating it");
+        	Output.output("Config file directory '"+configFolderName+"' does not exist - creating it");
             configFile.getParentFile().mkdir();
         }
 		
 		if(!configFile.exists()) {
-			stdout.println("Config file '"+configPath+"' does not exist - creating it");
+			Output.output("Config file '"+configPath+"' does not exist - creating it");
 			try {
 				configFile.createNewFile();
 			} catch (IOException e) {
-				stderr.println("Error creating config file '"+configPath+"' - message:"+e.getMessage()+" - cause:"+e.getCause().toString());
+				Output.outputError("Error creating config file '"+configPath+"' - message:"+e.getMessage()+" - cause:"+e.getCause().toString());
 				return;
 			}
 			String defaultConfigJSONRaw = generateDefaultConfigFile();
 			try {
 				Files.write(Paths.get(configPath), defaultConfigJSONRaw.getBytes());
 			} catch (IOException e) {
-				stderr.println("Error writing config file '"+configPath+"' - message:"+e.getMessage()+" - cause:"+e.getCause().toString());
+				Output.outputError("Error writing config file '"+configPath+"' - message:"+e.getMessage()+" - cause:"+e.getCause().toString());
 			}
 		}
 		
@@ -107,7 +110,7 @@ public class Config {
 			ArrayList<String> allowedColors = new ArrayList<String>(Arrays.asList("red","orange","yellow","green","cyan","blue","pink","magenta","gray"));
 			if(!allowedColors.contains(highlightColor)) {
 				highlightColor = null;
-				stderr.println("Unknown color, only 'red, orange, yellow, green, cyan, blue, pink, magenta, gray' is possible - defaulting to null.");
+				Output.output("Unknown color, only 'red, orange, yellow, green, cyan, blue, pink, magenta, gray' is possible - defaulting to null.");
 			} 
 			
 			interceptComment = configJO.get("interceptComment").asString();
@@ -116,7 +119,7 @@ public class Config {
 			cveAttackModePrivateKey = configJO.get("cveAttackModePrivateKey").asString();
 
 		} catch (IOException e) {
-			stderr.println("Error loading config file '"+configPath+"' - message:"+e.getMessage()+" - cause:"+e.getCause().toString());
+			Output.outputError("Error loading config file '"+configPath+"' - message:"+e.getMessage()+" - cause:"+e.getCause().toString());
 		}
 	}
 

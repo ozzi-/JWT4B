@@ -8,6 +8,7 @@ import app.controllers.JWTInterceptTabController;
 import app.controllers.JWTSuiteTabController;
 import app.controllers.JWTTabController;
 import app.helpers.Config;
+import app.helpers.Output;
 import app.helpers.Settings;
 import gui.JWTInterceptTab;
 import gui.JWTSuiteTab;
@@ -22,15 +23,15 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 	@Override
 	public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
 		this.callbacks = callbacks;
-		PrintWriter stdout = new PrintWriter(callbacks.getStdout(), true);
-		PrintWriter stderr = new PrintWriter(callbacks.getStderr(), true);
+		Config.stdout = new PrintWriter(callbacks.getStdout(), true);
+		Config.stderr = new PrintWriter(callbacks.getStderr(), true);
 
-		stdout.println("JWT4B says hi!");
+		Output.output("JWT4B says hi!");
 		
 		callbacks.setExtensionName(Settings.extensionName);
 		callbacks.registerMessageEditorTabFactory(this);
 		
-		Config.loadConfig(stdout,stderr);
+		Config.loadConfig();
 		
 		final HighLightController marker = new HighLightController(callbacks);
         callbacks.registerHttpListener(marker);
@@ -44,9 +45,6 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 		// Context Menu
 		ContextMenuController cmC = new ContextMenuController(jstC);
 		callbacks.registerContextMenuFactory(cmC);
-		
-		stdout.close();
-		stderr.close();
 	}
 
 	@Override

@@ -17,7 +17,7 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import app.algorithm.AlgorithmLinker;
-import app.helpers.ConsoleOut;
+import app.helpers.Output;
 import app.helpers.CustomJWToken;
 import app.helpers.Settings;
 import app.helpers.Strings;
@@ -95,7 +95,7 @@ public class JWTSuiteTabController extends Observable implements ITab {
 			jwtSTM.setTimeClaims(tcl);
 			jwtSTM.setJwtJSON(ReadableTokenFormat.getReadableFormat(jwt));
 		} catch (Exception e) {
-			ConsoleOut.output("JWT Context Action: "+e.getMessage());
+			Output.outputError("JWT Context Action: "+e.getMessage());
 		}
 		if(fromContextMenu){
 			// Reset View and Select
@@ -119,7 +119,7 @@ public class JWTSuiteTabController extends Observable implements ITab {
 			jwtSTM.setVerificationLabel(Strings.verificationValid);
 			test.getAlgorithm();
 		} catch (JWTVerificationException e) {
-			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
+			Output.output("Verification failed (" + e.getMessage() + ")");
 			jwtSTM.setVerificationResult(e.getMessage());
 
 			if (e instanceof SignatureVerificationException) {
@@ -134,7 +134,7 @@ public class JWTSuiteTabController extends Observable implements ITab {
 			}
 
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
-			ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
+			Output.output("Verification failed (" + e.getMessage() + ")");
 			jwtSTM.setJwtSignatureColor(Settings.colorProblemInvalid);
 			jwtSTM.setVerificationResult(e.getMessage());
 			jwtSTM.setVerificationLabel(Strings.verificationInvalidKey);

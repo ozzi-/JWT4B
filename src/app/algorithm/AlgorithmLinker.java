@@ -19,7 +19,7 @@ import org.bouncycastle.util.encoders.Base64;
 
 import com.auth0.jwt.algorithms.Algorithm;
 
-import app.helpers.ConsoleOut;
+import app.helpers.Output;
 import app.helpers.PublicKeyBroker;
 
 public class AlgorithmLinker {
@@ -61,7 +61,7 @@ public class AlgorithmLinker {
 				EncodedKeySpec keySpec = new X509EncodedKeySpec(keyByteArray);
 				publicKey = kf.generatePublic(keySpec);
 			} catch (Exception e) {
-				ConsoleOut.output(e.getMessage());
+				Output.outputError(e.getMessage());
 			}
 		}
 		return publicKey;
@@ -89,7 +89,7 @@ public class AlgorithmLinker {
 				EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyByteArray);
 				privateKey = kf.generatePrivate(keySpec);
 			} catch (Exception e) {
-				ConsoleOut.output(e.getMessage());
+				Output.outputError(e.getMessage());
 			}
 		}
 		return privateKey;
@@ -159,7 +159,7 @@ public class AlgorithmLinker {
 				PublicKeyBroker.publicKey = Base64.toBase64String(keyPair.getPublic().getEncoded());
 				return Base64.toBase64String((keyPair.getPrivate().getEncoded()));
 			} catch (NoSuchAlgorithmException e) {
-				ConsoleOut.output(e.getMessage());
+				Output.outputError(e.getMessage());
 			}
 		}
 		if (algorithmType.equals(AlgorithmType.asymmetric) && algorithm.substring(0,2).equals("ES")) {
@@ -167,7 +167,7 @@ public class AlgorithmLinker {
 				KeyPair keyPair = KeyPairGenerator.getInstance("EC").generateKeyPair();
 				return Base64.toBase64String(keyPair.getPrivate().getEncoded());
 			} catch (NoSuchAlgorithmException e) {
-				ConsoleOut.output(e.getMessage());
+				Output.outputError(e.getMessage());
 			}
 		}
 		throw new RuntimeException("Cannot get random key of provided algorithm as it does not seem valid HS, RS or ES");

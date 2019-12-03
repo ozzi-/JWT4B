@@ -7,7 +7,7 @@ import java.util.Observer;
 
 import javax.swing.JMenuItem;
 
-import app.helpers.ConsoleOut;
+import app.helpers.Output;
 import app.helpers.Strings;
 import burp.IContextMenuFactory;
 import burp.IContextMenuInvocation;
@@ -40,7 +40,7 @@ public class ContextMenuController implements Observer, IContextMenuFactory{
 					|| iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_RESPONSE) {
 				selectedText=new String(ihrr.getResponse()).substring(selection[0], selection[1]);
 			} else {
-				ConsoleOut.output("This context menu case (" + iContext + ") has not been covered yet!");
+				Output.outputError("This context menu case (" + iContext + ") has not been covered yet!");
 			}
 
 			JMenuItem item = new JMenuItem(Strings.contextMenuString);

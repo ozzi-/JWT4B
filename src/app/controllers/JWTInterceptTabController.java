@@ -23,7 +23,7 @@ import com.eclipsesource.json.JsonObject;
 import app.algorithm.AlgorithmLinker;
 import app.controllers.ReadableTokenFormat.InvalidTokenFormat;
 import app.helpers.Config;
-import app.helpers.ConsoleOut;
+import app.helpers.Output;
 import app.helpers.CustomJWToken;
 import app.helpers.PublicKeyBroker;
 import app.helpers.Settings;
@@ -170,7 +170,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			dialog.setVisible(true);
 			if(dialog.getFile()!=null) {
 				String file = dialog.getDirectory() + dialog.getFile();
-				ConsoleOut.output(file + " chosen.");
+				Output.output(file + " chosen.");
 				String chosen = Strings.filePathToString(file);
 				jwtIM.setJWTKey(chosen);
 				jwtST.updateSetView(false);	
@@ -200,9 +200,9 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 				CustomJWToken token = null;
 				try {
 					token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
-					ConsoleOut.output("Generating Random Key for Signature Calculation");
+					Output.output("Generating Random Key for Signature Calculation");
 					String randomKey = AlgorithmLinker.getRandomKey(token.getAlgorithm());
-					ConsoleOut.output("RandomKey generated: " + randomKey);
+					Output.output("RandomKey generated: " + randomKey);
 					jwtIM.setJWTKey(randomKey);
 					jwtST.updateSetView(false);
 				} catch (InvalidTokenFormat invalidTokenFormat) {
@@ -258,12 +258,12 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			}
 			Algorithm algo;
 			try {
-				ConsoleOut.output("Recalculating Signature with Secret - '" + jwtIM.getJWTKey() + "'");
+				Output.output("Recalculating Signature with Secret - '" + jwtIM.getJWTKey() + "'");
 				algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), jwtIM.getJWTKey());
 				token.calculateAndSetSignature(algo);
 				addLogHeadersToRequest();
 			} catch (IllegalArgumentException | UnsupportedEncodingException e) {
-				ConsoleOut.output(e.getStackTrace().toString());
+				Output.outputError(e.getStackTrace().toString());
 			}
 		} else if (keepOriginalSignature) {
 			jwtIM.setSignature(jwtIM.getOriginalSignature());
@@ -291,7 +291,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 				algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), Config.cveAttackModePrivateKey);
 				token.calculateAndSetSignature(algo);
 			} catch (UnsupportedEncodingException e) {
-				ConsoleOut.output("Failed to sign when using cve attack mode");
+				Output.outputError("Failed to sign when using cve attack mode");
 				e.printStackTrace();
 			}
 		}

@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 
 import app.helpers.Config;
-import app.helpers.ConsoleOut;
+import app.helpers.Output;
 import app.helpers.KeyValuePair;
 import app.helpers.TokenCheck;
 
@@ -91,7 +91,7 @@ public class PostBody extends ITokenPosition {
 			}
 		}
 		if (!replaced) {
-			ConsoleOut.output("Could not replace token in post body.");
+			Output.outputError("Could not replace token in post body.");
 		}
 		return body;	
 	}

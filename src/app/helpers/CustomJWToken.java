@@ -43,7 +43,7 @@ public class CustomJWToken extends JWT {
 				payloadJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[1]));
 				checkRegisteredClaims(payloadJson);
 			} catch (NullPointerException e) {
-				ConsoleOut.output("The UTF-8 Charset isn't initialized (" + e.getMessage() + ")");
+				Output.outputError("The UTF-8 Charset isn't initialized (" + e.getMessage() + ")");
 			}
 			signature = Base64.decodeBase64(parts[2]);
 		}
@@ -59,7 +59,7 @@ public class CustomJWToken extends JWT {
 		try {
 			object = Json.parse(payloadJson).asObject();
 		} catch (Exception e) {
-			ConsoleOut.output("Can't parse claims - " + e.getMessage());
+			Output.output("Could not parse claims - " + e.getMessage());
 			return;
 		}
 		JsonValue exp = object.get("exp");
@@ -72,7 +72,7 @@ public class CustomJWToken extends JWT {
 				boolean expValid = expUT > curUT;
 				timeClaimList.add(new TimeClaim("[exp] Expired", expDate, expUT, expValid));
 			} catch (Exception e) {
-				ConsoleOut.output("Could not parse claim - " + e.getMessage());
+				Output.output("Could not parse claim - " + e.getMessage());
 			}
 		}
 		JsonValue nbf = object.get("nbf");
@@ -84,7 +84,7 @@ public class CustomJWToken extends JWT {
 				boolean nbfValid = nbfUT <= curUT;
 				timeClaimList.add(new TimeClaim("[nbf] Not before", nbfDate, nbfUT, nbfValid));
 			} catch (Exception e) {
-				ConsoleOut.output("Could not parse claim - " + e.getMessage());
+				Output.output("Could not parse claim - " + e.getMessage());
 			}
 		}
 		JsonValue iat = object.get("iat");
@@ -95,7 +95,7 @@ public class CustomJWToken extends JWT {
 				String iatDate = time.toString();
 				timeClaimList.add(new TimeClaim("[iat] Issued at ", iatDate, iatUT));
 			} catch (Exception e) {
-				ConsoleOut.output("Could not parse claim - " + e.getMessage());
+				Output.output("Could not parse claim - " + e.getMessage());
 			}
 		}
 	}
@@ -119,7 +119,7 @@ public class CustomJWToken extends JWT {
 		try {
 			return objectMapper.readTree(getHeaderJson());
 		} catch (IOException e) {
-			ConsoleOut.output("IO exception reading json tree (" + e.getMessage() + ")");
+			Output.outputError("IO exception reading json tree (" + e.getMessage() + ")");
 			return null;
 		}
 	}
@@ -145,7 +145,7 @@ public class CustomJWToken extends JWT {
 		try {
 			this.headerJson = objectMapper.writeValueAsString(headerPayloadJson);
 		} catch (JsonProcessingException e) {
-			ConsoleOut.output("Setting header for json failed (" + e.getMessage() + ")");
+			Output.outputError("Setting header for json failed (" + e.getMessage() + ")");
 		}
 	}
 
@@ -154,7 +154,7 @@ public class CustomJWToken extends JWT {
 		try {
 			this.payloadJson = objectMapper.writeValueAsString(payloadJsonNode);
 		} catch (JsonProcessingException e) {
-			ConsoleOut.output("Setting payload for json failed (" + e.getMessage() + ")");
+			Output.outputError("Setting payload for json failed (" + e.getMessage() + ")");
 		}
 	}
 
@@ -165,7 +165,7 @@ public class CustomJWToken extends JWT {
 			jsonNode = objectMapper.readValue(json, JsonNode.class);
 			return (jsonNode.toString());
 		} catch (IOException e) {
-			ConsoleOut.output("Could not minify json: " + e.getMessage());
+			Output.outputError("Could not minify json: " + e.getMessage());
 		}
 		return json;
 	}
