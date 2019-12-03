@@ -104,7 +104,7 @@ public class JWTSuiteTab extends JPanel {
 		creditButton = new JButton("About");
 		creditButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				JLabelLink jLabelLink = new JLabelLink(Strings.creditTitle, 530, 550);
+				JLabelLink jLabelLink = new JLabelLink(Strings.creditTitle, 530, 555);
 
 				jLabelLink.addText("<h2>About JWT4B</h2>JSON Web Tokens (also known as JWT4B) is developed by Oussama Zgheb and Matthias Vetsch.<br>");
 				jLabelLink.addURL("<a href=\"https://zgheb.com/\">Mantainer Website</a>","zgheb.com");
@@ -127,10 +127,11 @@ public class JWTSuiteTab extends JPanel {
 		gbc_creditButton.insets = new Insets(0, 0, 5, 0);
 		gbc_creditButton.gridx = 2;
 		gbc_creditButton.gridy = 1;
+		gbc_creditButton.fill = GridBagConstraints.HORIZONTAL;
 		add(creditButton, gbc_creditButton);
 		
 		
-		configButton = new JButton("Config");
+		configButton = new JButton("Change Config");
 		configButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				File file = new File (Config.configPath);
@@ -147,6 +148,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_configButton.insets = new Insets(0, 0, 5, 0);
 		gbc_configButton.gridx = 2;
 		gbc_configButton.gridy = 2;
+		gbc_configButton.fill = GridBagConstraints.HORIZONTAL;
 		add(configButton, gbc_configButton);
 
 		jwtInputField = new JTextArea();

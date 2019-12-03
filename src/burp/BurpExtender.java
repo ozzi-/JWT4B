@@ -44,7 +44,9 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 		// Context Menu
 		ContextMenuController cmC = new ContextMenuController(jstC);
 		callbacks.registerContextMenuFactory(cmC);
+		
 		stdout.close();
+		stderr.close();
 	}
 
 	@Override

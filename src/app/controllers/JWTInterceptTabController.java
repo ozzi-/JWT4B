@@ -22,6 +22,7 @@ import com.eclipsesource.json.JsonObject;
 
 import app.algorithm.AlgorithmLinker;
 import app.controllers.ReadableTokenFormat.InvalidTokenFormat;
+import app.helpers.Config;
 import app.helpers.ConsoleOut;
 import app.helpers.CustomJWToken;
 import app.helpers.PublicKeyBroker;
@@ -178,7 +179,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	}
 
 	private RSAPublicKey loadPublicKey() {
-		String publicPEM = Strings.publicKey.replaceAll("\\n", "").replace("-----BEGIN PUBLIC KEY-----", "")
+		String publicPEM = Config.cveAttackModePublicKey.replaceAll("\\n", "").replace("-----BEGIN PUBLIC KEY-----", "")
 				.replace("-----END PUBLIC KEY-----", "");
 		;
 		KeyFactory kf;
@@ -287,7 +288,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			token.setHeaderJson(headerJSONObj.toString());
 			Algorithm algo;
 			try {
-				algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), Strings.privateKey);
+				algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), Config.cveAttackModePrivateKey);
 				token.calculateAndSetSignature(algo);
 			} catch (UnsupportedEncodingException e) {
 				ConsoleOut.output("Failed to sign when using cve attack mode");

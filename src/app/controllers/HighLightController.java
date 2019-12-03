@@ -24,7 +24,9 @@ public class HighLightController implements IHttpListener {
         	content = httpRequestResponse.getResponse();
         }
         if(ITokenPosition.findTokenPositionImplementation(content, isRequest, helpers)!= null){
-        	markRequestResponseWithComment(httpRequestResponse,"Contains a JWT");
+        	if(!Config.interceptComment.equals("")) {
+        		markRequestResponseWithComment(httpRequestResponse,Config.interceptComment);        		
+        	}
             
             if(!isRequest){
                 markRequestResponseWithColor(httpRequestResponse);

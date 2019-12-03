@@ -41,12 +41,10 @@ public class Lf2SpacesIndenter implements Indenter {
 	public Lf2SpacesIndenter() {
 	}
 
-	// @Override
 	public boolean isInline() {
 		return false;
 	}
 
-	// @Override
 	public void writeIndentation(JsonGenerator jg, int level) throws IOException, JsonGenerationException {
 		jg.writeRaw(SYSTEM_LINE_SEPARATOR);
 		if (level > 0) {

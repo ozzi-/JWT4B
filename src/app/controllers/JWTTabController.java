@@ -178,5 +178,4 @@ public class JWTTabController implements IMessageEditorTab {
 	public String getState() {
 		return state;
 	}
-
 }
