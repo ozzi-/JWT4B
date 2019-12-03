@@ -62,8 +62,8 @@ public class CustomJWToken extends JWT {
 			Output.output("Could not parse claims - " + e.getMessage());
 			return;
 		}
+		
 		JsonValue exp = object.get("exp");
-
 		long curUT = System.currentTimeMillis() / 1000L;
 		if (exp != null) {
 			try {
@@ -76,6 +76,7 @@ public class CustomJWToken extends JWT {
 				Output.output("Could not parse claim (exp) - " + e.getMessage()+" - "+e.getCause());
 			}
 		}
+
 		JsonValue nbf = object.get("nbf");
 		if (nbf != null) {
 			try {
@@ -88,10 +89,11 @@ public class CustomJWToken extends JWT {
 				Output.output("Could not parse claim (nbf) - " + e.getMessage()+" - "+e.getCause());
 			}
 		}
+
 		JsonValue iat = object.get("iat");
 		if (iat != null) {
 			try {
-				long iatUT = getDateJSONValue(nbf);
+				long iatUT = getDateJSONValue(iat);
 				java.util.Date time = new java.util.Date((long) iatUT * 1000);
 				String iatDate = time.toString();
 				timeClaimList.add(new TimeClaim("[iat] Issued at ", iatDate, iatUT));
