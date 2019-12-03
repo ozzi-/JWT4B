@@ -209,8 +209,18 @@ public class JWTSuiteTab extends JPanel {
 		jwtOuputField.setEditable(false);
 		// no context menu on right-click
 		jwtOuputField.setPopupMenu(new JPopupMenu());
-		RTextScrollPane sp = new RTextScrollPane(jwtOuputField);
-		sp.setLineNumbersEnabled(false);
+		
+		// hopefully fixing:
+		// java.lang.ClassCastException: class javax.swing.plaf.nimbus.DerivedColor$UIResource cannot be cast to class 
+		// java.lang.Boolean (javax.swing.plaf.nimbus.DerivedColor$UIResource is in module java.desktop of loader 'bootstrap'; 
+		// java.lang.Boolean is in module java.base of loader 'bootstrap')
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				RTextScrollPane sp = new RTextScrollPane(jwtOuputField);
+				sp.setLineNumbersEnabled(false);
+				add(sp, gbc_jwtOuputField);
+			}
+		});
 
 		lblExtendedVerificationInfo = new JLabel("");
 		GridBagConstraints gbc_lblExtendedVerificationInfo = new GridBagConstraints();
@@ -228,7 +238,6 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lblDecodedJwt.gridy = 8;
 		add(lblDecodedJwt, gbc_lblDecodedJwt);
 
-		add(sp, gbc_jwtOuputField);
 
 		lbRegisteredClaims = new JLabel();
 		lbRegisteredClaims.setBackground(new Color(238, 238, 238));

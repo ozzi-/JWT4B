@@ -63,41 +63,53 @@ public class CustomJWToken extends JWT {
 			return;
 		}
 		JsonValue exp = object.get("exp");
+
 		long curUT = System.currentTimeMillis() / 1000L;
 		if (exp != null) {
 			try {
-				long expUT = exp.asLong();
+				long expUT = getDateJSONValue(exp);
 				java.util.Date time = new java.util.Date((long) expUT * 1000);
 				String expDate = time.toString();
 				boolean expValid = expUT > curUT;
 				timeClaimList.add(new TimeClaim("[exp] Expired", expDate, expUT, expValid));
 			} catch (Exception e) {
-				Output.output("Could not parse claim - " + e.getMessage());
+				Output.output("Could not parse claim (exp) - " + e.getMessage()+" - "+e.getCause());
 			}
 		}
 		JsonValue nbf = object.get("nbf");
 		if (nbf != null) {
 			try {
-				long nbfUT = nbf.asLong();
+				long nbfUT = getDateJSONValue(nbf);
 				java.util.Date time = new java.util.Date((long) nbfUT * 1000);
 				String nbfDate = time.toString();
 				boolean nbfValid = nbfUT <= curUT;
 				timeClaimList.add(new TimeClaim("[nbf] Not before", nbfDate, nbfUT, nbfValid));
 			} catch (Exception e) {
-				Output.output("Could not parse claim - " + e.getMessage());
+				Output.output("Could not parse claim (nbf) - " + e.getMessage()+" - "+e.getCause());
 			}
 		}
 		JsonValue iat = object.get("iat");
 		if (iat != null) {
 			try {
-				long iatUT = iat.asLong();
+				long iatUT = getDateJSONValue(nbf);
 				java.util.Date time = new java.util.Date((long) iatUT * 1000);
 				String iatDate = time.toString();
 				timeClaimList.add(new TimeClaim("[iat] Issued at ", iatDate, iatUT));
 			} catch (Exception e) {
-				Output.output("Could not parse claim - " + e.getMessage());
+				Output.output("Could not parse claim (iat) - " + e.getMessage()+" - "+e.getCause());
 			}
 		}
+	}
+
+	private long getDateJSONValue(JsonValue jv) {
+		long utL;
+		try {
+			utL = jv.asLong();
+		}catch (Exception e) {
+			Double utD = jv.asDouble();
+			utL = utD.longValue();
+		}
+		return utL; 
 	}
 
 	public CustomJWToken(String headerJson, String payloadJson, String signature) {
