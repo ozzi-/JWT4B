@@ -1,3 +1,7 @@
+![licence](https://img.shields.io/github/license/mvetsch/JWT4B.svg)
+![open issues](https://img.shields.io/github/issues/mvetsch/JWT4B.svg)
+
+
 # JWT4B
 JSON Web Tokens (JWT) support for the Burp Interception Proxy. JWT4B will let you manipulate a JWT on the fly, automate common attacks against JWT and decode it for you in the proxy history. JWT4B automagically detects JWTs in the form of 'Authorization Bearer' headers as well as customizable post body parameters.
 
