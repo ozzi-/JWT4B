@@ -124,12 +124,13 @@ public class Body extends ITokenPosition {
 		boolean replaced = false;
 		KeyValuePair postJWT = getJWTFromBody();
 		if (postJWT != null) {
+			String oldBody=body;
 			body = body.replace(postJWT.getValue(), newToken);
+			replaced = !oldBody.equals(body);
 		}
 		if (!replaced) {
 			Output.outputError("Could not replace token in post body.");
 		}
 		return body;
 	}
-
 }
