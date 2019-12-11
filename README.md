@@ -1,3 +1,4 @@
+![build status](https://api.travis-ci.com/ozzi-/JWT4B.svg?branch=master)
 ![licence](https://img.shields.io/github/license/mvetsch/JWT4B.svg)
 ![open issues](https://img.shields.io/github/issues/mvetsch/JWT4B.svg)
 
