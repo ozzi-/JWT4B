@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import app.helpers.ConsoleOut;
+import app.helpers.Output;
 import app.helpers.CookieFlagWrapper;
 import app.helpers.Strings;
 import burp.IExtensionHelpers;
@@ -73,10 +73,11 @@ public abstract class ITokenPosition {
 					return impl;
 				}
 			} catch (Exception e) {
-				// sometimes is enabled is called in order to build the views
-				// before an actual request / response passes through
+				// sometimes 'isEnabled' is called in order to build the views
+				// before an actual request / response passes through - in that case
+				// it is not worth reporting
 				if (!e.getMessage().equals("Request cannot be null") && !e.getMessage().equals("1")) {
-					ConsoleOut.output(e.getMessage());
+					Output.outputError(e.getMessage());
 				}
 				return null;
 			}

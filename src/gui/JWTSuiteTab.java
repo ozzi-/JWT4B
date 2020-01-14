@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -8,6 +9,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -17,8 +20,6 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentListener;
 
-import model.JWTSuiteTabModel;
-
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Style;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -26,8 +27,10 @@ import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
+import app.helpers.Config;
 import app.helpers.JLabelLink;
 import app.helpers.Strings;
+import model.JWTSuiteTabModel;
 
 public class JWTSuiteTab extends JPanel {
 
@@ -39,6 +42,7 @@ public class JWTSuiteTab extends JPanel {
 	private JLabel lblEnterSecret;
 	private JWTSuiteTabModel jwtSTM;
 	private JButton creditButton;
+	private JButton configButton;
 	private JLabel lbRegisteredClaims;
 	private JLabel lblExtendedVerificationInfo;
 
@@ -100,7 +104,7 @@ public class JWTSuiteTab extends JPanel {
 		creditButton = new JButton("About");
 		creditButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				JLabelLink jLabelLink = new JLabelLink(Strings.creditTitle, 530, 550);
+				JLabelLink jLabelLink = new JLabelLink(Strings.creditTitle, 530, 555);
 
 				jLabelLink.addText("<h2>About JWT4B</h2>JSON Web Tokens (also known as JWT4B) is developed by Oussama Zgheb and Matthias Vetsch.<br>");
 				jLabelLink.addURL("<a href=\"https://zgheb.com/\">Mantainer Website</a>","zgheb.com");
@@ -123,13 +127,35 @@ public class JWTSuiteTab extends JPanel {
 		gbc_creditButton.insets = new Insets(0, 0, 5, 0);
 		gbc_creditButton.gridx = 2;
 		gbc_creditButton.gridy = 1;
+		gbc_creditButton.fill = GridBagConstraints.HORIZONTAL;
 		add(creditButton, gbc_creditButton);
+		
+		
+		configButton = new JButton("Change Config");
+		configButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				File file = new File (Config.configPath);
+				Desktop desktop = Desktop.getDesktop();
+				try {
+					desktop.open(file);
+				} catch (IOException e) {
+					System.err.println("Error using Desktop API - "+e.getMessage()+" - "+e.getCause());
+				}
+			}
+		});
+
+		GridBagConstraints gbc_configButton = new GridBagConstraints();
+		gbc_configButton.insets = new Insets(0, 0, 5, 0);
+		gbc_configButton.gridx = 2;
+		gbc_configButton.gridy = 2;
+		gbc_configButton.fill = GridBagConstraints.HORIZONTAL;
+		add(configButton, gbc_configButton);
 
 		jwtInputField = new JTextArea();
 		jwtInputField.setRows(2);
 		jwtInputField.setLineWrap(true);
 		jwtInputField.setWrapStyleWord(true);
-
+		
 		GridBagConstraints gbc_jwtInputField = new GridBagConstraints();
 		gbc_jwtInputField.insets = new Insets(0, 0, 5, 5);
 		gbc_jwtInputField.fill = GridBagConstraints.BOTH;
@@ -183,8 +209,18 @@ public class JWTSuiteTab extends JPanel {
 		jwtOuputField.setEditable(false);
 		// no context menu on right-click
 		jwtOuputField.setPopupMenu(new JPopupMenu());
-		RTextScrollPane sp = new RTextScrollPane(jwtOuputField);
-		sp.setLineNumbersEnabled(false);
+		
+		// hopefully fixing:
+		// java.lang.ClassCastException: class javax.swing.plaf.nimbus.DerivedColor$UIResource cannot be cast to class 
+		// java.lang.Boolean (javax.swing.plaf.nimbus.DerivedColor$UIResource is in module java.desktop of loader 'bootstrap'; 
+		// java.lang.Boolean is in module java.base of loader 'bootstrap')
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				RTextScrollPane sp = new RTextScrollPane(jwtOuputField);
+				sp.setLineNumbersEnabled(false);
+				add(sp, gbc_jwtOuputField);
+			}
+		});
 
 		lblExtendedVerificationInfo = new JLabel("");
 		GridBagConstraints gbc_lblExtendedVerificationInfo = new GridBagConstraints();
@@ -202,7 +238,6 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lblDecodedJwt.gridy = 8;
 		add(lblDecodedJwt, gbc_lblDecodedJwt);
 
-		add(sp, gbc_jwtOuputField);
 
 		lbRegisteredClaims = new JLabel();
 		lbRegisteredClaims.setBackground(new Color(238, 238, 238));

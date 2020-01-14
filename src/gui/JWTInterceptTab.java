@@ -33,6 +33,7 @@ import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
+import app.helpers.Config;
 import app.helpers.Strings;
 import model.JWTInterceptModel;
 
@@ -249,13 +250,13 @@ public class JWTInterceptTab extends JPanel {
 		gbc_lbRegisteredClaims.gridy = 12;
 		add(lbRegisteredClaims, gbc_lbRegisteredClaims);
 		
-		btnCopyPubPrivKeyCVEAttack = new JButton("Copy used pub&priv key to clipboard used in CVE attack");
+		btnCopyPubPrivKeyCVEAttack = new JButton("Copy used public &private key to clipboard used in CVE attack");
 		btnCopyPubPrivKeyCVEAttack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Toolkit.getDefaultToolkit()
 		        .getSystemClipboard()
 		        .setContents(
-		                new StringSelection("Public Key:\r\n"+Strings.publicKey+"\r\n\r\nPrivate Key:\r\n"+Strings.privateKey),
+		                new StringSelection("Public Key:\r\n"+Config.cveAttackModePublicKey+"\r\n\r\nPrivate Key:\r\n"+Config.cveAttackModePrivateKey),
 		                null
 		        );
 			}

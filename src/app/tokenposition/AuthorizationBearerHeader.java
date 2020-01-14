@@ -1,13 +1,12 @@
 package app.tokenposition;
 
-import java.util.Arrays;
 import java.util.List;
 
+import app.helpers.Config;
 import app.helpers.CustomJWToken;
 
 public class AuthorizationBearerHeader extends ITokenPosition {
 
-	private static List<String> jwtKeywords = Arrays.asList("Authorization: Bearer", "Authorization: bearer", "authorization: Bearer", "authorization: bearer");
 	private String selectedKeyword;
 	private Integer headerIndex;
 	private List<String> headers;
@@ -18,7 +17,7 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 	
 	public boolean positionFound() {
 		for(int counter = 0; counter<headers.size(); counter++) { 
-			if(headerContainsaKeyWordAndIsJWT(headers.get(counter), jwtKeywords)) {
+			if(headerContainsaKeyWordAndIsJWT(headers.get(counter), Config.jwtKeywords)) {
 				this.headerIndex = counter;
 				return true;
 			}

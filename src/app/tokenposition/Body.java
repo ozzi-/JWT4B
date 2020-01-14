@@ -6,7 +6,7 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import org.apache.commons.lang.StringUtils;
 
-import app.helpers.ConsoleOut;
+import app.helpers.Output;
 import app.helpers.KeyValuePair;
 import app.helpers.TokenCheck;
 
@@ -59,7 +59,6 @@ public class Body extends ITokenPosition {
 			}
 			obj = Json.parse(body).asObject();
 		} catch (Exception e) {
-			//ConsoleOut.output("Can't parse claims - " + e.getMessage());
 			return null;
 		}
 		return lookForJwtInJsonObject(obj);
@@ -125,12 +124,13 @@ public class Body extends ITokenPosition {
 		boolean replaced = false;
 		KeyValuePair postJWT = getJWTFromBody();
 		if (postJWT != null) {
+			String oldBody=body;
 			body = body.replace(postJWT.getValue(), newToken);
+			replaced = !oldBody.equals(body);
 		}
 		if (!replaced) {
-			ConsoleOut.output("Could not replace token in post body.");
+			Output.outputError("Could not replace token in post body.");
 		}
 		return body;
 	}
-
 }

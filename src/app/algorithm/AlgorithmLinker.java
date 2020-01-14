@@ -19,13 +19,13 @@ import org.bouncycastle.util.encoders.Base64;
 
 import com.auth0.jwt.algorithms.Algorithm;
 
-import app.helpers.ConsoleOut;
+import app.helpers.Output;
 import app.helpers.PublicKeyBroker;
 
 public class AlgorithmLinker {
 	
-	public static final String publicKeyBegin = "-----BEGIN PUBLIC KEY-----";
-	public static final String publicKeyEnd = "-----BEGIN PUBLIC KEY-----";
+	public static final String[] keyBeginMarkers = new String[]{"-----BEGIN PUBLIC KEY-----","-----BEGIN CERTIFICATE-----"};
+	public static final String[] keyEndMarkers = new String[]{"-----END PUBLIC KEY-----","-----END CERTIFICATE-----"};
 	
 	public static final app.algorithm.AlgorithmWrapper none = 
 			new app.algorithm.AlgorithmWrapper("none",AlgorithmType.none);
@@ -54,32 +54,42 @@ public class AlgorithmLinker {
 	private static PublicKey generatePublicKeyFromString(String key, String algorithm) {
 		PublicKey publicKey = null;
 		if(key.length()>1){
-			key = key.replace(publicKeyBegin, "").replace(publicKeyEnd, "")
-					.replaceAll("\\s+", "").replaceAll("\\r+", "").replaceAll("\\n+", "");
+			key = cleanKey(key);
 			byte[] keyByteArray = java.util.Base64.getDecoder().decode(key);
 			try {
 				KeyFactory kf = KeyFactory.getInstance(algorithm);
 				EncodedKeySpec keySpec = new X509EncodedKeySpec(keyByteArray);
 				publicKey = kf.generatePublic(keySpec);
 			} catch (Exception e) {
-				ConsoleOut.output(e.getMessage());
+				Output.outputError(e.getMessage());
 			}
 		}
 		return publicKey;
 	}
 
+	public static String cleanKey(String key) {
+		for (String keyBeginMarker : keyBeginMarkers) {
+			key = key.replace(keyBeginMarker, "");		
+		}
+		for (String keyEndMarker : keyEndMarkers) {
+			key = key.replace(keyEndMarker, "");
+		}
+		key = key.replaceAll("\\s+", "").replaceAll("\\r+", "").replaceAll("\\n+", "");			
+
+		return key;
+	}
+	
 	private static PrivateKey generatePrivateKeyFromString(String key, String algorithm) {
 		PrivateKey privateKey = null;
 		if(key.length()>1){
-			key = key.replace(publicKeyBegin, "").replace(publicKeyEnd, "")
-				 .replaceAll("\\s+", "").replaceAll("\\r+", "").replaceAll("\\n+", "");
+			key = cleanKey(key);
 			byte[] keyByteArray = Base64.decode(key);
 			try {
 				KeyFactory kf = KeyFactory.getInstance(algorithm);
 				EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyByteArray);
 				privateKey = kf.generatePrivate(keySpec);
 			} catch (Exception e) {
-				ConsoleOut.output(e.getMessage());
+				Output.outputError(e.getMessage());
 			}
 		}
 		return privateKey;
@@ -149,7 +159,7 @@ public class AlgorithmLinker {
 				PublicKeyBroker.publicKey = Base64.toBase64String(keyPair.getPublic().getEncoded());
 				return Base64.toBase64String((keyPair.getPrivate().getEncoded()));
 			} catch (NoSuchAlgorithmException e) {
-				ConsoleOut.output(e.getMessage());
+				Output.outputError(e.getMessage());
 			}
 		}
 		if (algorithmType.equals(AlgorithmType.asymmetric) && algorithm.substring(0,2).equals("ES")) {
@@ -157,7 +167,7 @@ public class AlgorithmLinker {
 				KeyPair keyPair = KeyPairGenerator.getInstance("EC").generateKeyPair();
 				return Base64.toBase64String(keyPair.getPrivate().getEncoded());
 			} catch (NoSuchAlgorithmException e) {
-				ConsoleOut.output(e.getMessage());
+				Output.outputError(e.getMessage());
 			}
 		}
 		throw new RuntimeException("Cannot get random key of provided algorithm as it does not seem valid HS, RS or ES");

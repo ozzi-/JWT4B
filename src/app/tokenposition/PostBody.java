@@ -1,21 +1,19 @@
 package app.tokenposition;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
-import app.helpers.ConsoleOut;
+import app.helpers.Config;
+import app.helpers.Output;
 import app.helpers.KeyValuePair;
 import app.helpers.TokenCheck;
 
 public class PostBody extends ITokenPosition {
 	private String token;
 	private boolean found = false;
-	// TODO maybe we could / should scan all parameters?
-	private List<String> tokenKeyWords = Arrays.asList("id_token", "ID_TOKEN", "access_token", "token");
 	private String body;
 
 	
@@ -58,7 +56,7 @@ public class PostBody extends ITokenPosition {
 				}
 			}
 		}
-		for (String keyword : tokenKeyWords) {
+		for (String keyword : Config.tokenKeywords) {
 			for (KeyValuePair postParameter : postParameterList) {
 				if (keyword.equals(postParameter.getName())
 						&& TokenCheck.isValidJWT(postParameter.getValue())) {
@@ -85,7 +83,7 @@ public class PostBody extends ITokenPosition {
 		// we cannot use the location of parameter, as the body might have changed, thus
 		// we need to search for it again 
 		KeyValuePair postJWT = getJWTFromPostBody();
-		for (String keyword : tokenKeyWords) {
+		for (String keyword : Config.tokenKeywords) {
 			if (keyword.equals(postJWT.getName())) {
 				String toReplace = postJWT.getNameAsParam() + postJWT.getValue();
 				body = body.replace(toReplace, postJWT.getNameAsParam() + newToken);
@@ -93,7 +91,7 @@ public class PostBody extends ITokenPosition {
 			}
 		}
 		if (!replaced) {
-			ConsoleOut.output("Could not replace token in post body.");
+			Output.outputError("Could not replace token in post body.");
 		}
 		return body;	
 	}
