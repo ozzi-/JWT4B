@@ -140,7 +140,6 @@ public class JWTTabController implements IMessageEditorTab {
 			jwtTM.setVerificationResult(e.getMessage());
 			jwtVT.updateSetView(algoType);
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
-			//ConsoleOut.output("Verification failed (" + e.getMessage() + ")");
 			jwtTM.setVerificationResult(e.getMessage());
 			jwtTM.setVerificationLabel(Strings.verificationInvalidKey);
 			jwtTM.setVerificationColor(Settings.colorProblemInvalid);
@@ -178,5 +177,4 @@ public class JWTTabController implements IMessageEditorTab {
 	public String getState() {
 		return state;
 	}
-
 }

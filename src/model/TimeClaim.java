@@ -36,12 +36,15 @@ public class TimeClaim {
 	public long getUnixTimestamp() {
 		return unixTimestamp;
 	}
+	
 	public boolean canBeValid() {
 		return canBeValid;
 	}
+	
 	public boolean isValid() {
 		return valid;
 	}
+	
 	public static String getTimeClaimsAsText(List<TimeClaim> tcl){
 		String timeClaimString = "<html>";
 		if(tcl != null && tcl.size()>0){

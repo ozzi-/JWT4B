@@ -1,5 +1,6 @@
 package app.controllers;
 
+import app.helpers.Config;
 import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
@@ -9,7 +10,6 @@ import burp.IHttpRequestResponse;
 public class HighLightController implements IHttpListener {
     private final IExtensionHelpers helpers;
 
-    private static final String highlightColor = "blue";
 
     public HighLightController(IBurpExtenderCallbacks callbacks) {
         this.helpers = callbacks.getHelpers();
@@ -24,7 +24,9 @@ public class HighLightController implements IHttpListener {
         	content = httpRequestResponse.getResponse();
         }
         if(ITokenPosition.findTokenPositionImplementation(content, isRequest, helpers)!= null){
-        	markRequestResponseWithComment(httpRequestResponse,"Contains a JWT");
+        	if(!Config.interceptComment.equals("")) {
+        		markRequestResponseWithComment(httpRequestResponse,Config.interceptComment);        		
+        	}
             
             if(!isRequest){
                 markRequestResponseWithColor(httpRequestResponse);
@@ -37,6 +39,6 @@ public class HighLightController implements IHttpListener {
     }
 
     private void markRequestResponseWithColor(IHttpRequestResponse httpRequestResponse) {
-        httpRequestResponse.setHighlight(highlightColor);
+        httpRequestResponse.setHighlight(Config.highlightColor);
     }
 }

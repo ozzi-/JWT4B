@@ -7,8 +7,6 @@ import javax.swing.JButton;
 public class Settings {
 	public static final String tabname = "JSON Web Tokens";
 	public static final String extensionName = "JSON Web Tokens";
-
-	public static final Boolean output = true;
 	
 	public static final Color colorValid = Color.GREEN;
 	public static final Color colorInvalid = Color.RED;

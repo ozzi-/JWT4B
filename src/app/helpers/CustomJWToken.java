@@ -43,7 +43,7 @@ public class CustomJWToken extends JWT {
 				payloadJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[1]));
 				checkRegisteredClaims(payloadJson);
 			} catch (NullPointerException e) {
-				ConsoleOut.output("The UTF-8 Charset isn't initialized (" + e.getMessage() + ")");
+				Output.outputError("The UTF-8 Charset isn't initialized (" + e.getMessage() + ")");
 			}
 			signature = Base64.decodeBase64(parts[2]);
 		}
@@ -59,45 +59,59 @@ public class CustomJWToken extends JWT {
 		try {
 			object = Json.parse(payloadJson).asObject();
 		} catch (Exception e) {
-			ConsoleOut.output("Can't parse claims - " + e.getMessage());
+			Output.output("Could not parse claims - " + e.getMessage());
 			return;
 		}
+		
 		JsonValue exp = object.get("exp");
 		long curUT = System.currentTimeMillis() / 1000L;
 		if (exp != null) {
 			try {
-				long expUT = exp.asLong();
+				long expUT = getDateJSONValue(exp);
 				java.util.Date time = new java.util.Date((long) expUT * 1000);
 				String expDate = time.toString();
 				boolean expValid = expUT > curUT;
 				timeClaimList.add(new TimeClaim("[exp] Expired", expDate, expUT, expValid));
 			} catch (Exception e) {
-				ConsoleOut.output("Could not parse claim - " + e.getMessage());
+				Output.output("Could not parse claim (exp) - " + e.getMessage()+" - "+e.getCause());
 			}
 		}
+
 		JsonValue nbf = object.get("nbf");
 		if (nbf != null) {
 			try {
-				long nbfUT = nbf.asLong();
+				long nbfUT = getDateJSONValue(nbf);
 				java.util.Date time = new java.util.Date((long) nbfUT * 1000);
 				String nbfDate = time.toString();
 				boolean nbfValid = nbfUT <= curUT;
 				timeClaimList.add(new TimeClaim("[nbf] Not before", nbfDate, nbfUT, nbfValid));
 			} catch (Exception e) {
-				ConsoleOut.output("Could not parse claim - " + e.getMessage());
+				Output.output("Could not parse claim (nbf) - " + e.getMessage()+" - "+e.getCause());
 			}
 		}
+
 		JsonValue iat = object.get("iat");
 		if (iat != null) {
 			try {
-				long iatUT = iat.asLong();
+				long iatUT = getDateJSONValue(iat);
 				java.util.Date time = new java.util.Date((long) iatUT * 1000);
 				String iatDate = time.toString();
 				timeClaimList.add(new TimeClaim("[iat] Issued at ", iatDate, iatUT));
 			} catch (Exception e) {
-				ConsoleOut.output("Could not parse claim - " + e.getMessage());
+				Output.output("Could not parse claim (iat) - " + e.getMessage()+" - "+e.getCause());
 			}
 		}
+	}
+
+	private long getDateJSONValue(JsonValue jv) {
+		long utL;
+		try {
+			utL = jv.asLong();
+		}catch (Exception e) {
+			Double utD = jv.asDouble();
+			utL = utD.longValue();
+		}
+		return utL; 
 	}
 
 	public CustomJWToken(String headerJson, String payloadJson, String signature) {
@@ -119,7 +133,7 @@ public class CustomJWToken extends JWT {
 		try {
 			return objectMapper.readTree(getHeaderJson());
 		} catch (IOException e) {
-			ConsoleOut.output("IO exception reading json tree (" + e.getMessage() + ")");
+			Output.outputError("IO exception reading json tree (" + e.getMessage() + ")");
 			return null;
 		}
 	}
@@ -145,7 +159,7 @@ public class CustomJWToken extends JWT {
 		try {
 			this.headerJson = objectMapper.writeValueAsString(headerPayloadJson);
 		} catch (JsonProcessingException e) {
-			ConsoleOut.output("Setting header for json failed (" + e.getMessage() + ")");
+			Output.outputError("Setting header for json failed (" + e.getMessage() + ")");
 		}
 	}
 
@@ -154,7 +168,7 @@ public class CustomJWToken extends JWT {
 		try {
 			this.payloadJson = objectMapper.writeValueAsString(payloadJsonNode);
 		} catch (JsonProcessingException e) {
-			ConsoleOut.output("Setting payload for json failed (" + e.getMessage() + ")");
+			Output.outputError("Setting payload for json failed (" + e.getMessage() + ")");
 		}
 	}
 
@@ -165,7 +179,7 @@ public class CustomJWToken extends JWT {
 			jsonNode = objectMapper.readValue(json, JsonNode.class);
 			return (jsonNode.toString());
 		} catch (IOException e) {
-			ConsoleOut.output("Could not minify json: " + e.getMessage());
+			Output.outputError("Could not minify json: " + e.getMessage());
 		}
 		return json;
 	}
