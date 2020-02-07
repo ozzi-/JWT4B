@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -10,28 +11,31 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.Document;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.Style;
-import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
-import org.fife.ui.rsyntaxtextarea.Token;
-import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.helpers.Config;
 import app.helpers.Strings;
@@ -41,7 +45,7 @@ public class JWTInterceptTab extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JWTInterceptModel jwtIM;
-	private RSyntaxTextArea jwtArea;
+	private JTextArea jwtArea;
 	private JRadioButton rdbtnRecalculateSignature;
 	private JRadioButton rdbtnRandomKey;
 	private JRadioButton rdbtnOriginalSignature;
@@ -74,7 +78,7 @@ public class JWTInterceptTab extends JPanel {
 		chkbxCVEAttack.addActionListener(cveAttackListener);
 	}
 	
-	private void drawGui() {	
+	private void drawGui() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {0, 0, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -82,21 +86,15 @@ public class JWTInterceptTab extends JPanel {
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
-		jwtArea = new RSyntaxTextArea(20,60);
+
+		jwtArea = new JTextArea (20,60);
+
 		jwtArea.setMinimumSize(new Dimension(300, 300));
 		jwtArea.setColumns(90);
-		SyntaxScheme scheme = jwtArea.getSyntaxScheme();
-		Style style = new Style();
-		style.foreground = new Color(222,133,10);
-		scheme.setStyle(Token.LITERAL_STRING_DOUBLE_QUOTE, style);
 		jwtArea.revalidate();
-		jwtArea.setHighlightCurrentLine(false);
-		jwtArea.setCurrentLineHighlightColor(Color.WHITE);
-		jwtArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
+		Font font = new Font("Consolas", 0, 13);
+		jwtArea.setFont(font);
 		jwtArea.setEditable(true);
-		jwtArea.setPopupMenu(new JPopupMenu()); 
-		RTextScrollPane sp = new RTextScrollPane(jwtArea);
-		sp.setLineNumbersEnabled(false);
 		
 		GridBagConstraints gbc_jwtArea = new GridBagConstraints();
 		gbc_jwtArea.gridheight = 7;
@@ -105,7 +103,7 @@ public class JWTInterceptTab extends JPanel {
 		gbc_jwtArea.fill = GridBagConstraints.BOTH;
 		gbc_jwtArea.gridx = 1;
 		gbc_jwtArea.gridy = 1;
-		add(sp, gbc_jwtArea);
+		add(jwtArea, gbc_jwtArea);
 
 		
 		rdbtnDontModifySignature = new JRadioButton(Strings.dontModify);
@@ -273,7 +271,46 @@ public class JWTInterceptTab extends JPanel {
 		noneAttackComboBox.addItem("Alg: None");
 		noneAttackComboBox.addItem("Alg: nOnE");
 		noneAttackComboBox.addItem("Alg: NONE");
-		
+	}
+
+	private void addUndoRedo(JTextArea jwtArea) {
+		KeyStroke undo = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
+		KeyStroke redo = KeyStroke.getKeyStroke(KeyEvent.VK_Y, Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx());
+
+	    UndoManager undoManager = new UndoManager();
+
+	    Document document = jwtArea.getDocument();
+	    document.addUndoableEditListener(new UndoableEditListener() {
+	        @Override
+	        public void undoableEditHappened(UndoableEditEvent e) {
+	            undoManager.addEdit(e.getEdit());
+	        }
+	    });
+	    
+	    jwtArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+	            .put(undo, "undoKeyStroke");
+	    jwtArea.getActionMap().put("undoKeyStroke", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+	        public void actionPerformed(ActionEvent e) {
+	            try {
+	                undoManager.undo();
+	             } catch (CannotUndoException cue) {}
+	        }
+	    });
+	    
+	    jwtArea.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+	            .put(redo, "redoKeyStroke");
+	    jwtArea.getActionMap().put("redoKeyStroke", new AbstractAction() {
+			private static final long serialVersionUID = 1L;
+			@Override
+	        public void actionPerformed(ActionEvent e) {
+	            try {
+	                undoManager.redo();
+	             } catch (CannotRedoException cre) {}
+	        }
+	    });
 	}
 	
 	public AbstractButton getRdbtnDontModify() {
@@ -311,6 +348,8 @@ public class JWTInterceptTab extends JPanel {
 	public void updateSetView(final boolean reset) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				
+				
 				if(!jwtArea.getText().equals(jwtIM.getJWTJSON())){
 					jwtArea.setText(jwtIM.getJWTJSON());
 				}
@@ -329,6 +368,9 @@ public class JWTInterceptTab extends JPanel {
 					lblCookieFlags.setText("");
 				}
 				lbRegisteredClaims.setText(jwtIM.getTimeClaimsAsText());
+				
+				addUndoRedo(jwtArea);
+
 			}
 		});
 	}
