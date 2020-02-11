@@ -1,28 +1,35 @@
 package app.controllers;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.JMenuItem;
 
+import app.helpers.MessageBean;
 import app.helpers.Output;
 import app.helpers.Strings;
 import burp.IContextMenuFactory;
 import burp.IContextMenuInvocation;
 import burp.IHttpRequestResponse;
 
-public class ContextMenuController implements Observer, IContextMenuFactory{
+public class ContextMenuController implements IContextMenuFactory{
 
 	private MenuItemListener menuItemListener;
 	private String selectedText = null;
-	private JWTSuiteTabController jstC;
 	
-	public ContextMenuController(JWTSuiteTabController jstC) {
-		menuItemListener = new MenuItemListener();
-		menuItemListener.addObserver(this); 
-		this.jstC = jstC;
+	public ContextMenuController(JWTSuiteTabController jstC) {	
+		MessageBean bean = new MessageBean();
+		bean.addPropertyChangeListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				if(evt.getNewValue().equals("menuitem")) {
+					jstC.contextActionJWT(selectedText,true);					
+				}
+			}
+		});
+		menuItemListener = new MenuItemListener(bean);
 	}
 
 	@Override
@@ -50,14 +57,7 @@ public class ContextMenuController implements Observer, IContextMenuFactory{
 		return menuItems;
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		// Menu Item Listener was clicked, notify the Suite Tab Controller
-		jstC.contextActionJWT(selectedText,true);
-	}
-
 	public String getSelectedText() {
 		return selectedText;
 	}
-
 }

@@ -220,7 +220,6 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	@Override
 	public void setMessage(byte[] content, boolean isRequest) {
 		this.message = content;
-
 		tokenPosition = ITokenPosition.findTokenPositionImplementation(content, isRequest, helpers);
 		jwtIM.setcFW(tokenPosition.getcFW());
 		if (tokenPosition == null) {
