@@ -3,7 +3,6 @@ package app.controllers;
 import java.awt.Component;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Observable;
 
 import javax.swing.JTabbedPane;
 import javax.swing.event.DocumentEvent;
@@ -17,8 +16,8 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import app.algorithm.AlgorithmLinker;
-import app.helpers.Output;
 import app.helpers.CustomJWToken;
+import app.helpers.Output;
 import app.helpers.Settings;
 import app.helpers.Strings;
 import burp.ITab;
@@ -26,7 +25,7 @@ import gui.JWTSuiteTab;
 import model.JWTSuiteTabModel;
 import model.TimeClaim;
 
-public class JWTSuiteTabController extends Observable implements ITab {
+public class JWTSuiteTabController implements ITab {
 
 	private JWTSuiteTabModel jwtSTM;
 	private JWTSuiteTab jwtST;

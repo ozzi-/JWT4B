@@ -75,6 +75,7 @@ public class JWTSuiteTab extends JPanel {
 				}
 				lblExtendedVerificationInfo.setText(jwtSTM.getVerificationResult());
 				lbRegisteredClaims.setText(jwtSTM.getTimeClaimsAsText());
+				jwtOuputField.setCaretPosition(0);
 			}
 		});
 	}
