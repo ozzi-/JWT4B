@@ -5,6 +5,8 @@ import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
@@ -23,8 +25,8 @@ import com.eclipsesource.json.JsonObject;
 import app.algorithm.AlgorithmLinker;
 import app.controllers.ReadableTokenFormat.InvalidTokenFormat;
 import app.helpers.Config;
-import app.helpers.Output;
 import app.helpers.CustomJWToken;
+import app.helpers.Output;
 import app.helpers.PublicKeyBroker;
 import app.helpers.Settings;
 import app.helpers.Strings;
@@ -50,11 +52,25 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	private boolean recalculateSignature;
 	private String algAttackMode;
 	private boolean cveAttackMode;
+	private boolean edited;
 
 	public JWTInterceptTabController(IBurpExtenderCallbacks callbacks, JWTInterceptModel jwIM, JWTInterceptTab jwtST) {
 		this.jwtIM = jwIM;
 		this.jwtST = jwtST;
 		this.helpers = callbacks.getHelpers();
+		
+		jwtST.getJwtArea().addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+			}
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				edited = true;
+			}
+		});
 
 		ActionListener dontModifyListener = new ActionListener() {
 			@Override
@@ -219,8 +235,8 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
 	@Override
 	public void setMessage(byte[] content, boolean isRequest) {
+		edited = false;
 		this.message = content;
-
 		tokenPosition = ITokenPosition.findTokenPositionImplementation(content, isRequest, helpers);
 		jwtIM.setcFW(tokenPosition.getcFW());
 		if (tokenPosition == null) {
@@ -253,6 +269,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		}
 
 		if ((recalculateSignature || randomKey || chooseSignature)) {
+			edited = true;
 			if (recalculateSignature) {
 				jwtIM.setJWTKey(jwtST.getKeyFieldValue());
 			}
@@ -269,11 +286,13 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			jwtIM.setSignature(jwtIM.getOriginalSignature());
 		}
 		if (algAttackMode != null) {
+			edited = true;
 			String header = token.getHeaderJson();
 			token.setHeaderJson(header.replace(token.getAlgorithm(), algAttackMode));
 			token.setSignature("");
 		}
 		if (cveAttackMode) {
+			edited = true;
 			String headerJSON = token.getHeaderJson();
 			JsonObject headerJSONObj = Json.parse(headerJSON).asObject();
 			headerJSONObj.set("alg", "RS256");
@@ -322,8 +341,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
 	@Override
 	public boolean isModified() {
-		// TODO set true when model changed ?
-		return false;
+		return edited;
 	}
 
 	@Override
