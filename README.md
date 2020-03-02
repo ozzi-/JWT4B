@@ -23,6 +23,7 @@ The following url contains links to four pages which simulate a JWT being sent v
 A config file will be created under "%user.home%\.JWT4B\config.json" with the following content:
 ```
 {
+  "resetEditor": true,
   "highlightColor": "blue",
   "interceptComment": "Contains a JWT",
   "jwtKeywords": [
@@ -43,6 +44,7 @@ A config file will be created under "%user.home%\.JWT4B\config.json" with the fo
 ```
 Changing the config requires a reload of the extension or BURP.
 If you messed something up, just delete the file, it will be created again with the default values.
+Note: If resetEditor is set to false, all options such as the re-singing and alg attack won't be reset for every new request. This might be useful when working in the repeater.
 
 ## Building your own version (with Eclipse)
 1. Clone repository and create new Eclipse Java Project
