@@ -16,17 +16,18 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import app.algorithm.AlgorithmLinker;
-import app.helpers.CustomJWToken;
-import app.helpers.Settings;
-import app.helpers.Strings;
 import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
 import gui.JWTViewTab;
+import model.CustomJWToken;
 import model.JWTTabModel;
+import model.Settings;
+import model.Strings;
 import model.TimeClaim;
 
+// view to check JWTs such as in the HTTP history
 public class JWTTabController implements IMessageEditorTab {
 
 	private IExtensionHelpers helpers;

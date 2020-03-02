@@ -12,6 +12,7 @@ import app.helpers.KeyValuePair;
 import app.helpers.Output;
 import app.helpers.TokenCheck;
 
+//finds and replaces JWT's in HTTP bodies
 public class Body extends ITokenPosition {
 	private String token;
 	private boolean found = false;
@@ -84,7 +85,6 @@ public class Body extends ITokenPosition {
 
 
 	private KeyValuePair getJWTFromBodyWithParameters() {
-
 		int from = 0;
 		int index = body.indexOf("&") == -1 ? body.length() : body.indexOf("&");
 		int parameterCount = StringUtils.countMatches(body, "&") + 1;

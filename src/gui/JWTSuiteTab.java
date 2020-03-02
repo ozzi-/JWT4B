@@ -28,9 +28,8 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.helpers.Config;
-import app.helpers.JLabelLink;
-import app.helpers.Strings;
 import model.JWTSuiteTabModel;
+import model.Strings;
 
 public class JWTSuiteTab extends JPanel {
 

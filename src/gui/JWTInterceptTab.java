@@ -36,8 +36,8 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
 import app.helpers.Config;
-import app.helpers.Strings;
 import model.JWTInterceptModel;
+import model.Strings;
 
 public class JWTInterceptTab extends JPanel {
 

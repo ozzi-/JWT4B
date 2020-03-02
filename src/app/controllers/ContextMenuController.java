@@ -9,10 +9,13 @@ import javax.swing.JMenuItem;
 
 import app.helpers.MessageBean;
 import app.helpers.Output;
-import app.helpers.Strings;
 import burp.IContextMenuFactory;
 import burp.IContextMenuInvocation;
 import burp.IHttpRequestResponse;
+import model.Strings;
+
+// This controller handles the right-click context option "Send selected text to JWT4B Tab to decode
+// which is available in the Raw view of the HTTP history tab
 
 public class ContextMenuController implements IContextMenuFactory{
 
@@ -25,7 +28,7 @@ public class ContextMenuController implements IContextMenuFactory{
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				if(evt.getNewValue().equals("menuitem")) {
-					jstC.contextActionJWT(selectedText,true);					
+					jstC.contextActionSendJWTtoSuiteTab(selectedText,true);					
 				}
 			}
 		});
@@ -39,7 +42,7 @@ public class ContextMenuController implements IContextMenuFactory{
 		byte iContext = invocation.getInvocationContext();
 		if (selection != null) { // only if user currently is in an input field
 			IHttpRequestResponse ihrr = invocation.getSelectedMessages()[0];
-			// TODO https://github.com/mvetsch/JWT4B/issues/10 -> this issue needs to be fixed here
+			// TODO https://github.com/ozzi-/JWT4B/issues/10 -> this issue needs to be fixed here
 			if (iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_REQUEST
 					|| iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_REQUEST) {
 				selectedText=new String(ihrr.getRequest()).substring(selection[0], selection[1]);

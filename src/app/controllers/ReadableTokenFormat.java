@@ -2,8 +2,8 @@ package app.controllers;
 
 import java.io.IOException;
 
-import app.helpers.CustomJWToken;
 import app.helpers.Lf2SpacesIndenter;
+import model.CustomJWToken;
 
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;

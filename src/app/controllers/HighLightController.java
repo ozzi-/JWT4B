@@ -7,27 +7,23 @@ import burp.IExtensionHelpers;
 import burp.IHttpListener;
 import burp.IHttpRequestResponse;
 
+// This controller handles the highlighting of entries in the HTTP history tab
+
 public class HighLightController implements IHttpListener {
     private final IExtensionHelpers helpers;
-
-
+    
     public HighLightController(IBurpExtenderCallbacks callbacks) {
         this.helpers = callbacks.getHelpers();
     }
 
     @Override
     public void processHttpMessage(int toolFlag, boolean isRequest, IHttpRequestResponse httpRequestResponse) {
-    	byte[] content;
-    	if(isRequest){
-    		content = httpRequestResponse.getRequest();
-        }else{
-        	content = httpRequestResponse.getResponse();
-        }
-        if(ITokenPosition.findTokenPositionImplementation(content, isRequest, helpers)!= null){
+    	byte[] content = isRequest ? httpRequestResponse.getRequest() :  httpRequestResponse.getResponse();	
+    	boolean containsJWT = ITokenPosition.findTokenPositionImplementation(content, isRequest, helpers)!= null;
+        if(containsJWT){
         	if(!Config.interceptComment.equals("")) {
         		markRequestResponseWithComment(httpRequestResponse,Config.interceptComment);        		
         	}
-            
             if(!isRequest){
                 markRequestResponseWithColor(httpRequestResponse);
             }

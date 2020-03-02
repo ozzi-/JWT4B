@@ -9,7 +9,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import app.algorithm.AlgorithmLinker;
-import app.helpers.CustomJWToken;
+import model.CustomJWToken;
 
 public class TestAlgorithmLinker {
 

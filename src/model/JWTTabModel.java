@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.util.List;
 
 import app.helpers.CookieFlagWrapper;
-import app.helpers.Settings;
 
 public class JWTTabModel {
 	private String key = "";

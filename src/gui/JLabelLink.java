@@ -1,4 +1,4 @@
-package app.helpers;
+package gui;
 
 import java.awt.Cursor;
 /**

@@ -25,17 +25,17 @@ import com.eclipsesource.json.JsonObject;
 import app.algorithm.AlgorithmLinker;
 import app.controllers.ReadableTokenFormat.InvalidTokenFormat;
 import app.helpers.Config;
-import app.helpers.CustomJWToken;
 import app.helpers.Output;
 import app.helpers.PublicKeyBroker;
-import app.helpers.Settings;
-import app.helpers.Strings;
 import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
 import gui.JWTInterceptTab;
+import model.CustomJWToken;
 import model.JWTInterceptModel;
+import model.Settings;
+import model.Strings;
 import model.TimeClaim;
 
 
@@ -61,64 +61,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		this.jwtST = jwtST;
 		this.helpers = callbacks.getHelpers();
 		
-		jwtST.getJwtArea().addKeyListener(new KeyListener() {
-			@Override
-			public void keyTyped(KeyEvent arg0) {
-			}
-			@Override
-			public void keyReleased(KeyEvent arg0) {
-			}
-			@Override
-			public void keyPressed(KeyEvent arg0) {
-				edited = true;
-			}
-		});
-
-		ActionListener dontModifyListener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(true, false, false, false, false);
-			}
-		};
-		ActionListener randomKeyListener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(false, true, false, false, false);
-			}
-		};
-		ActionListener originalSignatureListener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(false, false, true, false, false);
-			}
-		};
-		ActionListener recalculateSignatureListener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(false, false, false, true, false);
-			}
-		};
-		ActionListener chooseSignatureListener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(false, false, false, false, true);
-			}
-		};
-		ActionListener algAttackListener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				algAttackChanged();
-			}
-		};
-		ActionListener cveAttackListener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cveAttackChanged();
-			}
-		};
-
-		jwtST.registerActionListeners(dontModifyListener, randomKeyListener, originalSignatureListener,
-				recalculateSignatureListener, chooseSignatureListener, algAttackListener, cveAttackListener);
+		createAndRegisterActionListeners(jwtST);
 	}
 
 	private void cveAttackChanged() {
@@ -353,5 +296,65 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	public byte[] getSelectedData() {
 		return jwtST.getSelectedData().getBytes();
 	}
+	
+	private void createAndRegisterActionListeners(JWTInterceptTab jwtST) {
+		jwtST.getJwtArea().addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+			}
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				edited = true;
+			}
+		});
 
+		ActionListener dontModifyListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioButtonChanged(true, false, false, false, false);
+			}
+		};
+		ActionListener randomKeyListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioButtonChanged(false, true, false, false, false);
+			}
+		};
+		ActionListener originalSignatureListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioButtonChanged(false, false, true, false, false);
+			}
+		};
+		ActionListener recalculateSignatureListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioButtonChanged(false, false, false, true, false);
+			}
+		};
+		ActionListener chooseSignatureListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioButtonChanged(false, false, false, false, true);
+			}
+		};
+		ActionListener algAttackListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				algAttackChanged();
+			}
+		};
+		ActionListener cveAttackListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cveAttackChanged();
+			}
+		};
+
+		jwtST.registerActionListeners(dontModifyListener, randomKeyListener, originalSignatureListener,
+				recalculateSignatureListener, chooseSignatureListener, algAttackListener, cveAttackListener);
+	}
 }

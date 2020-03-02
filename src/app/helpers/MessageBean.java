@@ -5,7 +5,7 @@ import java.beans.PropertyChangeSupport;
 
 public class MessageBean {
 
-    private String message; // the bean  property
+    private String message; 
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {

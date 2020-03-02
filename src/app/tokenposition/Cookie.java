@@ -2,12 +2,11 @@ package app.tokenposition;
 
 import java.util.List;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang.StringUtils;
-
 import app.helpers.CookieFlagWrapper;
 import app.helpers.TokenCheck;
 
+//finds and replaces JWT's in cookies
 public class Cookie extends ITokenPosition {
 
 	private boolean found;
