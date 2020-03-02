@@ -2,12 +2,14 @@ package app.tokenposition;
 
 import java.util.List;
 import java.util.regex.Pattern;
-import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonObject;
+
 import org.apache.commons.lang.StringUtils;
 
-import app.helpers.Output;
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+
 import app.helpers.KeyValuePair;
+import app.helpers.Output;
 import app.helpers.TokenCheck;
 
 public class Body extends ITokenPosition {

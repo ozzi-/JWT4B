@@ -38,6 +38,8 @@ import gui.JWTInterceptTab;
 import model.JWTInterceptModel;
 import model.TimeClaim;
 
+
+// used in the proxy intercept and repeater tabs
 public class JWTInterceptTabController implements IMessageEditorTab {
 
 	private JWTInterceptModel jwtIM;
@@ -236,7 +238,6 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	@Override
 	public void setMessage(byte[] content, boolean isRequest) {
 		edited = false;
-		this.message = content;
 		tokenPosition = ITokenPosition.findTokenPositionImplementation(content, isRequest, helpers);
 		jwtIM.setcFW(tokenPosition.getcFW());
 		if (tokenPosition == null) {
@@ -252,10 +253,15 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			algAttackMode = null;
 			jwtST.getNoneAttackComboBox().setSelectedIndex(0);
 		}
+		this.message = content;
 	}
 
 	@Override
 	public byte[] getMessage() {
+		
+		// TODO check if edits have been made, if not return this.message directly
+		// see https://github.com/PortSwigger/example-custom-editor-tab/blob/master/java/BurpExtender.java#L119
+		
 		jwtIM.setProblemDetail("");
 		radioButtonChanged(true, false, false, false, false);
 		jwtST.getCVEAttackCheckBox().setSelected(false);
@@ -316,7 +322,6 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		}
 		this.message = this.tokenPosition.replaceToken(token.getToken());
 		return this.message;
-
 	}
 
 	private void addLogHeadersToRequest() {
