@@ -346,8 +346,6 @@ public class JWTInterceptTab extends JPanel {
 	public void updateSetView(final boolean reset) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				
-				
 				if(!jwtArea.getText().equals(jwtIM.getJWTJSON())){
 					jwtArea.setText(jwtIM.getJWTJSON());
 				}
