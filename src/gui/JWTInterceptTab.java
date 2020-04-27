@@ -34,7 +34,7 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.helpers.Config;
-import app.helpers.Strings;
+import model.Strings;
 import model.JWTInterceptModel;
 
 public class JWTInterceptTab extends JPanel {
@@ -331,6 +331,10 @@ public class JWTInterceptTab extends JPanel {
 				lbRegisteredClaims.setText(jwtIM.getTimeClaimsAsText());
 			}
 		});
+	}
+	
+	public JTextArea getJwtArea() {
+		return jwtArea;
 	}
 	
 	public void setKeyFieldState(boolean state){
