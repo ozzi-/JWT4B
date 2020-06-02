@@ -83,13 +83,13 @@ public class AlgorithmLinker {
 		PrivateKey privateKey = null;
 		if(key.length()>1){
 			key = cleanKey(key);
-			byte[] keyByteArray = Base64.decode(key);
 			try {
+				byte[] keyByteArray = Base64.decode(key);
 				KeyFactory kf = KeyFactory.getInstance(algorithm);
 				EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyByteArray);
 				privateKey = kf.generatePrivate(keySpec);
 			} catch (Exception e) {
-				Output.outputError(e.getMessage());
+				Output.outputError("Error generating private key with input string '"+key+"' and algorithm '"+algorithm+"' - "+e.getMessage()+" - ");
 			}
 		}
 		return privateKey;
