@@ -115,6 +115,7 @@ public class CustomJWToken extends JWT {
 	}
 
 	public CustomJWToken(String headerJson, String payloadJson, String signature) {
+		//TODO check if valid json
 		this.headerJson = headerJson;
 		this.payloadJson = payloadJson;
 		this.signature = Base64.decodeBase64(signature);
@@ -180,6 +181,8 @@ public class CustomJWToken extends JWT {
 			return (jsonNode.toString());
 		} catch (IOException e) {
 			Output.outputError("Could not minify json: " + e.getMessage());
+			Output.outputError("json = " + json);
+			json="{\"error\":true}";
 		}
 		return json;
 	}
