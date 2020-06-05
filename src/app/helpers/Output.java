@@ -11,11 +11,21 @@ public class Output {
 	
 	public static void output(String string) {
 		Date cal = Calendar.getInstance(TimeZone.getDefault()).getTime();
-		Config.stdout.println(sdf.format(cal.getTime()) + " | " + string);
+		String msg = sdf.format(cal.getTime()) + " | " + string;
+		if(Config.stdout==null) {
+			System.out.println(msg);
+		}else {
+			Config.stdout.println(msg);			
+		}
 	}
 	
 	public static void outputError(String string) {
 		Date cal = Calendar.getInstance(TimeZone.getDefault()).getTime();
-		Config.stderr.println(sdf.format(cal.getTime()) + " | " + string);
+		String msg = sdf.format(cal.getTime()) + " | " + string;
+		if(Config.stderr==null) {
+			System.err.println(msg);
+		}else {
+			Config.stderr.println(msg);			
+		}
 	}
 }
