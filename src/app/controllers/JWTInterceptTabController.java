@@ -203,10 +203,8 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
 	@Override
 	public byte[] getMessage() {
-		
 		// TODO check if edits have been made, if not return this.message directly
-		// see https://github.com/PortSwigger/example-custom-editor-tab/blob/master/java/BurpExtender.java#L119
-		
+		// see https://github.com/PortSwigger/example-custom-editor-tab/blob/master/java/BurpExtender.java#L119		
 		jwtIM.setProblemDetail("");
 		radioButtonChanged(true, false, false, false, false);
 		jwtST.getCVEAttackCheckBox().setSelected(false);
@@ -222,7 +220,8 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		if ((recalculateSignature || randomKey || chooseSignature)) {
 			edited = true;
 			if (recalculateSignature) {
-				jwtIM.setJWTKey(jwtST.getKeyFieldValue());
+				String cleanKey = jwtST.getKeyFieldValue().replaceAll("\\n", "").replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "");
+				jwtIM.setJWTKey(cleanKey);
 			}
 			Algorithm algo;
 			try {
