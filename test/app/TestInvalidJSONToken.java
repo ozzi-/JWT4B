@@ -18,6 +18,6 @@ public class TestInvalidJSONToken {
 		CustomJWToken cjt = new CustomJWToken(token);
 		cjt.calculateAndSetSignature(algo);
 		String getToken = cjt.getToken();
-		assertEquals(getToken, "eyJhbGciOiJIUzI1NiJkLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.BlSSO6cNdL8glGutwX8Rlr2mN_H4HSAb4vBkXwD1xzw");
+		assertEquals(getToken, null);
 	}
 }

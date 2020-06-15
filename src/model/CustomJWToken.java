@@ -140,10 +140,13 @@ public class CustomJWToken extends JWT {
 	}
 
 	public void calculateAndSetSignature(Algorithm algorithm) {
-		byte[] contentBytes = String
-				.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify(getPayloadJson())))
-				.getBytes(StandardCharsets.UTF_8);
-		signature = algorithm.sign(contentBytes);
+		
+		if (jsonMinify(getHeaderJson())!=null && jsonMinify(getPayloadJson()) !=null){
+			byte[] contentBytes = String
+					.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify(getPayloadJson())))
+					.getBytes(StandardCharsets.UTF_8);
+			signature = algorithm.sign(contentBytes);			
+		}
 	}
 
 	public JsonNode getPayloadJsonNode() {
@@ -175,24 +178,24 @@ public class CustomJWToken extends JWT {
 
 	private String jsonMinify(String json) {
 		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonNode = null;
+		JsonNode jsonNode = null; 
 		try {
 			jsonNode = objectMapper.readValue(json, JsonNode.class);
 			return (jsonNode.toString());
 		} catch (IOException e) {
 			Output.outputError("Could not minify json: " + e.getMessage());
-			Output.outputError("json = " + json);
-			json="{\"error\":true}";
+			return null;
 		}
-		return json;
 	}
 
 	@Override
 	public String getToken() {
-		String content = String.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify((getPayloadJson()))));
-		String signatureEncoded = Base64.encodeBase64URLSafeString(this.signature);
-
-		return String.format("%s.%s", content, signatureEncoded);
+		if (jsonMinify(getHeaderJson())!=null && jsonMinify(getPayloadJson()) !=null){
+			String content = String.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify((getPayloadJson()))));
+			String signatureEncoded = Base64.encodeBase64URLSafeString(this.signature);
+			return String.format("%s.%s", content, signatureEncoded);
+		}
+		return null;
 	}
 
 	private String b64(String input) {
