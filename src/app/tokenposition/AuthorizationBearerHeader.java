@@ -3,8 +3,9 @@ package app.tokenposition;
 import java.util.List;
 
 import app.helpers.Config;
-import app.helpers.CustomJWToken;
+import model.CustomJWToken;
 
+// finds and replaces JWT's in authorization headers
 public class AuthorizationBearerHeader extends ITokenPosition {
 
 	private String selectedKeyword;

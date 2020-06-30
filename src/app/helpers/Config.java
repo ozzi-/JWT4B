@@ -24,6 +24,7 @@ public class Config {
 	public static List<String> tokenKeywords = Arrays.asList("id_token", "ID_TOKEN", "access_token", "token");
     public static String highlightColor = "blue";
     public static String interceptComment = "Contains a JWT";
+    public static boolean resetEditor = true;
     
 	public static String cveAttackModePublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuNCJ/1Tawe8DUIbQDxjR"
 			+"r+bVSoIdcOjJm5wskbMUjHopTWERzLo65yLPjCVcRudQ8DNJIs3yb+hzxi0b8uyK"
@@ -105,6 +106,8 @@ public class Config {
 				tokenKeywords.add(tokenKeyword.asString());
 			}
 			
+			resetEditor = configJO.getBoolean("resetEditor", true);
+			
 			highlightColor = configJO.get("highlightColor").asString();
 			// 	red, orange, yellow, green, cyan, blue, pink, magenta, gray,or a null String to clear any existing highlight.
 			ArrayList<String> allowedColors = new ArrayList<String>(Arrays.asList("red","orange","yellow","green","cyan","blue","pink","magenta","gray"));
@@ -136,6 +139,7 @@ public class Config {
 			tokenKeywordsJA.add(tokenKeyword);
 		}
 		
+		configJO.add("resetEditor", true);
 		configJO.add("highlightColor", highlightColor);
 		configJO.add("interceptComment", interceptComment);
 		configJO.add("jwtKeywords",jwtKeywordsJA);

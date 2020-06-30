@@ -6,10 +6,10 @@ import java.util.List;
 
 import app.helpers.Output;
 import app.helpers.CookieFlagWrapper;
-import app.helpers.Strings;
 import burp.IExtensionHelpers;
 import burp.IRequestInfo;
 import burp.IResponseInfo;
+import model.Strings;
 
 public abstract class ITokenPosition {
 	

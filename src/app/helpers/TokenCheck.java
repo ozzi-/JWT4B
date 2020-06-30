@@ -11,6 +11,7 @@ public class TokenCheck {
 		if (StringUtils.countMatches(jwt, ".") != 2) {
 			return false;
 		}
+		
 		jwt=jwt.trim();
 		if(StringUtils.contains(jwt," ")){
 			return false;
@@ -31,6 +32,7 @@ public class TokenCheck {
 			decoded.getAlgorithm();
 			return true;
 		} catch (Exception exception) {}
+		
 		return false;
 	}
 }

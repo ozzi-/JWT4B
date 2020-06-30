@@ -9,13 +9,13 @@ import app.controllers.JWTSuiteTabController;
 import app.controllers.JWTTabController;
 import app.helpers.Config;
 import app.helpers.Output;
-import app.helpers.Settings;
 import gui.JWTInterceptTab;
 import gui.JWTSuiteTab;
 import gui.JWTViewTab;
 import model.JWTInterceptModel;
 import model.JWTSuiteTabModel;
 import model.JWTTabModel;
+import model.Settings;
 
 public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 	private IBurpExtenderCallbacks callbacks;

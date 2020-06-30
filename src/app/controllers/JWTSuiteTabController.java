@@ -3,7 +3,6 @@ package app.controllers;
 import java.awt.Component;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Observable;
 
 import javax.swing.JTabbedPane;
 import javax.swing.event.DocumentEvent;
@@ -18,15 +17,16 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 import app.algorithm.AlgorithmLinker;
 import app.helpers.Output;
-import app.helpers.CustomJWToken;
-import app.helpers.Settings;
-import app.helpers.Strings;
 import burp.ITab;
 import gui.JWTSuiteTab;
+import model.CustomJWToken;
 import model.JWTSuiteTabModel;
+import model.Settings;
+import model.Strings;
 import model.TimeClaim;
 
-public class JWTSuiteTabController extends Observable implements ITab {
+// used to provide the standalone suite tab after "User Options"
+public class JWTSuiteTabController implements ITab {
 
 	private JWTSuiteTabModel jwtSTM;
 	private JWTSuiteTab jwtST;
@@ -35,36 +35,7 @@ public class JWTSuiteTabController extends Observable implements ITab {
 		this.jwtSTM = jwtSTM;
 		this.jwtST = jwtST;
 
-		DocumentListener jwtDocInputListener = new DocumentListener() {
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				jwtSTM.setJwtInput(jwtST.getJWTInput());
-				contextActionJWT(jwtSTM.getJwtInput(),false);
-			}
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				jwtSTM.setJwtInput(jwtST.getJWTInput());
-				contextActionJWT(jwtSTM.getJwtInput(),false);
-			}
-			@Override
-			public void changedUpdate(DocumentEvent e) {}
-		};
-		DocumentListener jwtDocKeyListener = new DocumentListener() {
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				jwtSTM.setJwtKey(jwtST.getKeyInput());
-				contextActionKey(jwtSTM.getJwtKey());
-			}
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				jwtSTM.setJwtKey(jwtST.getKeyInput());
-				contextActionKey(jwtSTM.getJwtKey());
-			}
-			@Override
-			public void changedUpdate(DocumentEvent e) {}
-		};
-
-		jwtST.registerDocumentListener(jwtDocInputListener, jwtDocKeyListener);
+		createAndRegisterActionListeners(jwtSTM, jwtST);
 	}
 
 	// This method was copied from
@@ -82,7 +53,7 @@ public class JWTSuiteTabController extends Observable implements ITab {
 		}
 	}
 
-	public void contextActionJWT(String jwts,boolean fromContextMenu) {
+	public void contextActionSendJWTtoSuiteTab(String jwts,boolean fromContextMenu) {
 		jwts = jwts.replace("Authorization:", "");
 		jwts = jwts.replace("Bearer", "");
 		jwts = jwts.replace("Set-Cookie: ", "");
@@ -150,5 +121,38 @@ public class JWTSuiteTabController extends Observable implements ITab {
 	@Override
 	public Component getUiComponent() {
 		return jwtST;
+	}
+	
+	private void createAndRegisterActionListeners(final JWTSuiteTabModel jwtSTM, final JWTSuiteTab jwtST) {
+		DocumentListener jwtDocInputListener = new DocumentListener() {
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				jwtSTM.setJwtInput(jwtST.getJWTInput());
+				contextActionSendJWTtoSuiteTab(jwtSTM.getJwtInput(),false);
+			}
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				jwtSTM.setJwtInput(jwtST.getJWTInput());
+				contextActionSendJWTtoSuiteTab(jwtSTM.getJwtInput(),false);
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e) {}
+		};
+		DocumentListener jwtDocKeyListener = new DocumentListener() {
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				jwtSTM.setJwtKey(jwtST.getKeyInput());
+				contextActionKey(jwtSTM.getJwtKey());
+			}
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				jwtSTM.setJwtKey(jwtST.getKeyInput());
+				contextActionKey(jwtSTM.getJwtKey());
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e) {}
+		};
+
+		jwtST.registerDocumentListener(jwtDocInputListener, jwtDocKeyListener);
 	}
 }

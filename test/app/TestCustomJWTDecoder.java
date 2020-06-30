@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import app.helpers.CustomJWToken;
+import model.CustomJWToken;
 
 public class TestCustomJWTDecoder {
 	@Test

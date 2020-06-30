@@ -5,6 +5,8 @@ import java.awt.FileDialog;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
@@ -24,18 +26,20 @@ import app.algorithm.AlgorithmLinker;
 import app.controllers.ReadableTokenFormat.InvalidTokenFormat;
 import app.helpers.Config;
 import app.helpers.Output;
-import app.helpers.CustomJWToken;
 import app.helpers.PublicKeyBroker;
-import app.helpers.Settings;
-import app.helpers.Strings;
 import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import burp.IMessageEditorTab;
 import gui.JWTInterceptTab;
+import model.CustomJWToken;
 import model.JWTInterceptModel;
+import model.Settings;
+import model.Strings;
 import model.TimeClaim;
 
+
+// used in the proxy intercept and repeater tabs
 public class JWTInterceptTabController implements IMessageEditorTab {
 
 	private JWTInterceptModel jwtIM;
@@ -50,57 +54,14 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	private boolean recalculateSignature;
 	private String algAttackMode;
 	private boolean cveAttackMode;
+	private boolean edited;
 
 	public JWTInterceptTabController(IBurpExtenderCallbacks callbacks, JWTInterceptModel jwIM, JWTInterceptTab jwtST) {
 		this.jwtIM = jwIM;
 		this.jwtST = jwtST;
 		this.helpers = callbacks.getHelpers();
-
-		ActionListener dontModifyListener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(true, false, false, false, false);
-			}
-		};
-		ActionListener randomKeyListener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(false, true, false, false, false);
-			}
-		};
-		ActionListener originalSignatureListener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(false, false, true, false, false);
-			}
-		};
-		ActionListener recalculateSignatureListener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(false, false, false, true, false);
-			}
-		};
-		ActionListener chooseSignatureListener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioButtonChanged(false, false, false, false, true);
-			}
-		};
-		ActionListener algAttackListener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				algAttackChanged();
-			}
-		};
-		ActionListener cveAttackListener = new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cveAttackChanged();
-			}
-		};
-
-		jwtST.registerActionListeners(dontModifyListener, randomKeyListener, originalSignatureListener,
-				recalculateSignatureListener, chooseSignatureListener, algAttackListener, cveAttackListener);
+		
+		createAndRegisterActionListeners(jwtST);
 	}
 
 	private void cveAttackChanged() {
@@ -219,8 +180,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
 	@Override
 	public void setMessage(byte[] content, boolean isRequest) {
-		this.message = content;
-
+		edited = false;
 		tokenPosition = ITokenPosition.findTokenPositionImplementation(content, isRequest, helpers);
 		jwtIM.setcFW(tokenPosition.getcFW());
 		if (tokenPosition == null) {
@@ -232,14 +192,19 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			jwtIM.setTimeClaims(tcl);
 			jwtIM.setJWTJSON(ReadableTokenFormat.getReadableFormat(cJWT));
 			jwtIM.setSignature(cJWT.getSignature());
-			jwtST.updateSetView(true);
+			jwtST.updateSetView(Config.resetEditor);
 			algAttackMode = null;
-			jwtST.getNoneAttackComboBox().setSelectedIndex(0);
+			if(Config.resetEditor) {
+				jwtST.getNoneAttackComboBox().setSelectedIndex(0);				
+			}
 		}
+		this.message = content;
 	}
 
 	@Override
 	public byte[] getMessage() {
+		// TODO check if edits have been made, if not return this.message directly
+		// see https://github.com/PortSwigger/example-custom-editor-tab/blob/master/java/BurpExtender.java#L119		
 		jwtIM.setProblemDetail("");
 		radioButtonChanged(true, false, false, false, false);
 		jwtST.getCVEAttackCheckBox().setSelected(false);
@@ -253,8 +218,10 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		}
 
 		if ((recalculateSignature || randomKey || chooseSignature)) {
+			edited = true;
 			if (recalculateSignature) {
-				jwtIM.setJWTKey(jwtST.getKeyFieldValue());
+				String cleanKey = jwtST.getKeyFieldValue().replaceAll("\\n", "").replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "");
+				jwtIM.setJWTKey(cleanKey);
 			}
 			Algorithm algo;
 			try {
@@ -269,11 +236,13 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			jwtIM.setSignature(jwtIM.getOriginalSignature());
 		}
 		if (algAttackMode != null) {
+			edited = true;
 			String header = token.getHeaderJson();
 			token.setHeaderJson(header.replace(token.getAlgorithm(), algAttackMode));
 			token.setSignature("");
 		}
 		if (cveAttackMode) {
+			edited = true;
 			String headerJSON = token.getHeaderJson();
 			JsonObject headerJSONObj = Json.parse(headerJSON).asObject();
 			headerJSONObj.set("alg", "RS256");
@@ -295,9 +264,11 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 				e.printStackTrace();
 			}
 		}
-		this.message = this.tokenPosition.replaceToken(token.getToken());
+		// token may be null, if it is invalid JSON, if so, don't try changing anything
+		if(token.getToken()!=null) {
+			this.message = this.tokenPosition.replaceToken(token.getToken());
+		}
 		return this.message;
-
 	}
 
 	private void addLogHeadersToRequest() {
@@ -322,13 +293,72 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
 	@Override
 	public boolean isModified() {
-		// TODO set true when model changed ?
-		return false;
+		return edited;
 	}
 
 	@Override
 	public byte[] getSelectedData() {
 		return jwtST.getSelectedData().getBytes();
 	}
+	
+	private void createAndRegisterActionListeners(JWTInterceptTab jwtST) {
+		jwtST.getJwtArea().addKeyListener(new KeyListener() {
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+			}
+			@Override
+			public void keyPressed(KeyEvent arg0) {
+				edited = true;
+			}
+		});
 
+		ActionListener dontModifyListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioButtonChanged(true, false, false, false, false);
+			}
+		};
+		ActionListener randomKeyListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioButtonChanged(false, true, false, false, false);
+			}
+		};
+		ActionListener originalSignatureListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioButtonChanged(false, false, true, false, false);
+			}
+		};
+		ActionListener recalculateSignatureListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioButtonChanged(false, false, false, true, false);
+			}
+		};
+		ActionListener chooseSignatureListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioButtonChanged(false, false, false, false, true);
+			}
+		};
+		ActionListener algAttackListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				algAttackChanged();
+			}
+		};
+		ActionListener cveAttackListener = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cveAttackChanged();
+			}
+		};
+
+		jwtST.registerActionListeners(dontModifyListener, randomKeyListener, originalSignatureListener,
+				recalculateSignatureListener, chooseSignatureListener, algAttackListener, cveAttackListener);
+	}
 }

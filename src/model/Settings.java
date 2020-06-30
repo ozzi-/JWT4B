@@ -1,4 +1,4 @@
-package app.helpers;
+package model;
 
 import java.awt.Color;
 

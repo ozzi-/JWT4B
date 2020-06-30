@@ -1,4 +1,4 @@
-package app.helpers;
+package model;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
-import model.TimeClaim;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
@@ -23,6 +21,8 @@ import com.eclipsesource.json.JsonValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import app.helpers.Output;
 
 /* 
  * This Class is implemented separately to get raw access to the content of the Tokens. 
@@ -115,6 +115,7 @@ public class CustomJWToken extends JWT {
 	}
 
 	public CustomJWToken(String headerJson, String payloadJson, String signature) {
+		//TODO check if valid json
 		this.headerJson = headerJson;
 		this.payloadJson = payloadJson;
 		this.signature = Base64.decodeBase64(signature);
@@ -139,10 +140,13 @@ public class CustomJWToken extends JWT {
 	}
 
 	public void calculateAndSetSignature(Algorithm algorithm) {
-		byte[] contentBytes = String
-				.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify(getPayloadJson())))
-				.getBytes(StandardCharsets.UTF_8);
-		signature = algorithm.sign(contentBytes);
+		
+		if (jsonMinify(getHeaderJson())!=null && jsonMinify(getPayloadJson()) !=null){
+			byte[] contentBytes = String
+					.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify(getPayloadJson())))
+					.getBytes(StandardCharsets.UTF_8);
+			signature = algorithm.sign(contentBytes);			
+		}
 	}
 
 	public JsonNode getPayloadJsonNode() {
@@ -174,23 +178,24 @@ public class CustomJWToken extends JWT {
 
 	private String jsonMinify(String json) {
 		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonNode = null;
+		JsonNode jsonNode = null; 
 		try {
 			jsonNode = objectMapper.readValue(json, JsonNode.class);
 			return (jsonNode.toString());
 		} catch (IOException e) {
 			Output.outputError("Could not minify json: " + e.getMessage());
+			return null;
 		}
-		return json;
 	}
 
 	@Override
 	public String getToken() {
-		String content = String.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify((getPayloadJson()))));
-
-		String signatureEncoded = Base64.encodeBase64URLSafeString(this.signature);
-
-		return String.format("%s.%s", content, signatureEncoded);
+		if (jsonMinify(getHeaderJson())!=null && jsonMinify(getPayloadJson()) !=null){
+			String content = String.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify((getPayloadJson()))));
+			String signatureEncoded = Base64.encodeBase64URLSafeString(this.signature);
+			return String.format("%s.%s", content, signatureEncoded);
+		}
+		return null;
 	}
 
 	private String b64(String input) {
@@ -219,8 +224,7 @@ public class CustomJWToken extends JWT {
 			parts = new String[] { parts[0], parts[1], "" };
 		}
 		if (parts.length != 3) {
-			throw new JWTDecodeException(
-					String.format("The token was expected to have 3 parts, but got %s.", parts.length));
+			throw new JWTDecodeException(String.format("The token was expected to have 3 parts, but got %s.", parts.length));
 		}
 		return parts;
 	}
@@ -283,8 +287,7 @@ public class CustomJWToken extends JWT {
 		String algorithm = "";
 		try {
 			algorithm = getHeaderJsonNode().get("alg").asText();
-		} catch (Exception e) {
-		}
+		} catch (Exception e) { }
 		return algorithm;
 	}
 
