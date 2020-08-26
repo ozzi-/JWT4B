@@ -9,11 +9,11 @@ public class Dummy extends ITokenPosition {
 
 	@Override
 	public String getToken() {
-		return "eyJhbGciOiJIUzI1NiJ9.e30.4E_Bsx-pJi3kOW9wVXN8CgbATwP09D9V5gxh9-9zSZ0";
+		return "e30=.e30=.";
 	}
 
 	@Override
 	public byte[] replaceToken(String newToken) {
-		return "eyJhbGciOiJIUzI1NiJ9.e30.4E_Bsx-pJi3kOW9wVXN8CgbATwP09D9V5gxh9-9zSZ0".getBytes();
+		return "e30=.e30=.".getBytes();
 	}
 }

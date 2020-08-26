@@ -18,10 +18,10 @@ import com.auth0.jwt.interfaces.Claim;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import app.helpers.Minify;
 import app.helpers.Output;
 
 /* 
@@ -149,40 +149,11 @@ public class CustomJWToken extends JWT {
 		}
 	}
 
-	public JsonNode getPayloadJsonNode() {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try {
-			return objectMapper.readTree(getPayloadJson());
-		} catch (IOException e) {
-			return null;
-		}
-	}
-
-	public void setHeaderJsonNode(JsonNode headerPayloadJson) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try {
-			this.headerJson = objectMapper.writeValueAsString(headerPayloadJson);
-		} catch (JsonProcessingException e) {
-			Output.outputError("Setting header for json failed (" + e.getMessage() + ")");
-		}
-	}
-
-	public void setPayloadJsonNode(JsonNode payloadJsonNode) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		try {
-			this.payloadJson = objectMapper.writeValueAsString(payloadJsonNode);
-		} catch (JsonProcessingException e) {
-			Output.outputError("Setting payload for json failed (" + e.getMessage() + ")");
-		}
-	}
-
 	private String jsonMinify(String json) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonNode = null; 
 		try {
-			jsonNode = objectMapper.readValue(json, JsonNode.class);
-			return (jsonNode.toString());
-		} catch (IOException e) {
+			String jsonMinify = new Minify().minify(json);
+			return jsonMinify;
+		} catch (Exception e) {
 			Output.outputError("Could not minify json: " + e.getMessage());
 			return null;
 		}

@@ -1,14 +1,11 @@
 package app.controllers;
 
-import java.io.IOException;
-
-import app.helpers.Lf2SpacesIndenter;
 import model.CustomJWToken;
 
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 public class ReadableTokenFormat {
 	private static final String newline = System.getProperty("line.separator");
@@ -59,27 +56,11 @@ public class ReadableTokenFormat {
 		return new CustomJWToken(header, payload, signature);
 	}
    
-    private static class PrettyPrinter extends DefaultPrettyPrinter {
-		private static final long serialVersionUID = 1L;
-		public static final PrettyPrinter instance = new PrettyPrinter();
-        public PrettyPrinter() {
-            _arrayIndenter = Lf2SpacesIndenter.getInstance();
-        }
-    }
-
 	private static String jsonBeautify(String input) {
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-	    objectMapper.setDefaultPrettyPrinter(PrettyPrinter.instance);		
-		JsonNode tree;
-		String output;
-		try {
-			tree = objectMapper.readTree(input);
-			output = objectMapper.writeValueAsString(tree);
-		} catch (IOException e) {
-			return input;
-		}
-		return output;
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		JsonElement je = JsonParser.parseString(input);
+		String prettyJsonString = gson.toJson(je);
+		return prettyJsonString;
 	}
 	
 	public static class InvalidTokenFormat extends Exception {
