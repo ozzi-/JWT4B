@@ -208,7 +208,6 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		jwtIM.setProblemDetail("");
 		radioButtonChanged(true, false, false, false, false);
 		jwtST.getCVEAttackCheckBox().setSelected(false);
-
 		CustomJWToken token = null;
 		try {
 			token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
@@ -264,6 +263,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 				e.printStackTrace();
 			}
 		}
+
 		// token may be null, if it is invalid JSON, if so, don't try changing anything
 		if(token.getToken()!=null) {
 			this.message = this.tokenPosition.replaceToken(token.getToken());
