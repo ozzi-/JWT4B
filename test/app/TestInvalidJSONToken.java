@@ -17,7 +17,7 @@ public class TestInvalidJSONToken {
 		Algorithm algo = Algorithm.HMAC256("test");
 		CustomJWToken cjt = new CustomJWToken(token);
 		cjt.calculateAndSetSignature(algo);
-		String getToken = cjt.getToken();
+		String getToken = cjt.getToken(false);
 		// we now assume that invalid tokens will be returned as received
 		assertEquals(getToken, getToken);
 	}
