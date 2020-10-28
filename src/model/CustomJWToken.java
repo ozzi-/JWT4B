@@ -159,7 +159,6 @@ public class CustomJWToken extends JWT {
 		}
 	}
 
-	@Override
 	public String getToken() {
 		if (jsonMinify(getHeaderJson())!=null && jsonMinify(getPayloadJson()) !=null){
 			String content = String.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify((getPayloadJson()))));
@@ -208,52 +207,42 @@ public class CustomJWToken extends JWT {
 		this.payloadJson = payloadJson;
 	}
 
-	@Override
 	public List<String> getAudience() {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public Claim getClaim(String arg0) {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public Map<String, Claim> getClaims() {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public Date getExpiresAt() {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public String getId() {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public Date getIssuedAt() {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public String getIssuer() {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public Date getNotBefore() {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public String getSubject() {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public String getAlgorithm() {
 		String algorithm = "";
 		try {
@@ -262,27 +251,22 @@ public class CustomJWToken extends JWT {
 		return algorithm;
 	}
 
-	@Override
 	public String getContentType() {
 		return getHeaderJsonNode().get("typ").asText();
 	}
 
-	@Override
 	public Claim getHeaderClaim(String arg0) {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public String getKeyId() {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public String getType() {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public String getSignature() {
 		return Base64.encodeBase64URLSafeString(this.signature);
 	}

@@ -14,8 +14,8 @@ import java.security.spec.EncodedKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.RandomStringUtils;
-import org.bouncycastle.util.encoders.Base64;
 
 import com.auth0.jwt.algorithms.Algorithm;
 
@@ -84,7 +84,7 @@ public class AlgorithmLinker {
 		if(key.length()>1){
 			key = cleanKey(key);
 			try {
-				byte[] keyByteArray = Base64.decode(key);
+				byte[] keyByteArray = Base64.decodeBase64(key);
 				KeyFactory kf = KeyFactory.getInstance(algorithm);
 				EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyByteArray);
 				privateKey = kf.generatePrivate(keySpec);
@@ -156,8 +156,9 @@ public class AlgorithmLinker {
 		if(algorithmType.equals(AlgorithmType.asymmetric) && algorithm.substring(0,2).equals("RS")) {
 			try {
 				KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
-				PublicKeyBroker.publicKey = Base64.toBase64String(keyPair.getPublic().getEncoded());
-				return Base64.toBase64String((keyPair.getPrivate().getEncoded()));
+				
+				PublicKeyBroker.publicKey = Base64.encodeBase64String(keyPair.getPublic().getEncoded());
+				return Base64.encodeBase64String(keyPair.getPrivate().getEncoded());
 			} catch (NoSuchAlgorithmException e) {
 				Output.outputError(e.getMessage());
 			}
@@ -165,7 +166,7 @@ public class AlgorithmLinker {
 		if (algorithmType.equals(AlgorithmType.asymmetric) && algorithm.substring(0,2).equals("ES")) {
 			try {
 				KeyPair keyPair = KeyPairGenerator.getInstance("EC").generateKeyPair();
-				return Base64.toBase64String(keyPair.getPrivate().getEncoded());
+				return Base64.encodeBase64String(keyPair.getPrivate().getEncoded());
 			} catch (NoSuchAlgorithmException e) {
 				Output.outputError(e.getMessage());
 			}
