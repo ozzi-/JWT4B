@@ -114,11 +114,11 @@ public class CustomJWToken extends JWT {
 		return utL; 
 	}
 
-	public CustomJWToken(String headerJson, String payloadJson, String signature) {
+	public CustomJWToken(String headerJson, String payloadJson, String signatureB64) {
 		//TODO check if valid json
 		this.headerJson = headerJson;
 		this.payloadJson = payloadJson;
-		this.signature = Base64.decodeBase64(signature);
+		this.signature = Base64.decodeBase64(signatureB64);
 	}
 
 	public String getHeaderJson() {
@@ -145,7 +145,7 @@ public class CustomJWToken extends JWT {
 			byte[] contentBytes = String
 					.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify(getPayloadJson())))
 					.getBytes(StandardCharsets.UTF_8);
-			signature = algorithm.sign(contentBytes);			
+			signature = algorithm.sign(contentBytes);
 		}
 	}
 
@@ -159,11 +159,17 @@ public class CustomJWToken extends JWT {
 		}
 	}
 
-	public String getToken() {
-		if (jsonMinify(getHeaderJson())!=null && jsonMinify(getPayloadJson()) !=null){
-			String content = String.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify((getPayloadJson()))));
+	public String getToken(boolean dontMinify) {
+		if(dontMinify) {
+			String content = String.format("%s.%s", b64((getHeaderJson())), b64(((getPayloadJson()))));
 			String signatureEncoded = Base64.encodeBase64URLSafeString(this.signature);
 			return String.format("%s.%s", content, signatureEncoded);
+		}else {
+			if (jsonMinify(getHeaderJson())!=null && jsonMinify(getPayloadJson()) !=null){
+				String content = String.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify((getPayloadJson()))));
+				String signatureEncoded = Base64.encodeBase64URLSafeString(this.signature);
+				return String.format("%s.%s", content, signatureEncoded);
+			}			
 		}
 		return null;
 	}

@@ -1,5 +1,7 @@
 package app;
 
+import model.CustomJWToken;
+
 public class JWT4B {
 	public static void main(String[] args){
 		// This solves the export warning concerning not finding a main method	

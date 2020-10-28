@@ -265,8 +265,8 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		}
 
 		// token may be null, if it is invalid JSON, if so, don't try changing anything
-		if(token.getToken()!=null) {
-			this.message = this.tokenPosition.replaceToken(token.getToken());
+		if(token.getToken(false)!=null) {
+			this.message = this.tokenPosition.replaceToken(token.getToken(dontModify));
 		}
 		return this.message;
 	}
