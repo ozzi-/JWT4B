@@ -337,6 +337,10 @@ public class JWTInterceptTab extends JPanel {
 		return jwtArea;
 	}
 	
+	public  RSyntaxTextArea getJwtAreaAsRSyntax() {
+		return jwtArea;
+	}
+	
 	public void setKeyFieldState(boolean state){
 		jwtKeyArea.setEnabled(state);
 	}

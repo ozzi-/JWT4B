@@ -203,8 +203,12 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
 	@Override
 	public byte[] getMessage() {
-		// TODO check if edits have been made, if not return this.message directly
 		// see https://github.com/PortSwigger/example-custom-editor-tab/blob/master/java/BurpExtender.java#L119		
+		boolean changesPerformed = jwtST.getJwtAreaAsRSyntax().canUndo();
+		if(!changesPerformed && !recalculateSignature && !randomKey && !chooseSignature && algAttackMode==null && !cveAttackMode) {
+			return this.message;
+		}
+		
 		jwtIM.setProblemDetail("");
 		radioButtonChanged(true, false, false, false, false);
 		jwtST.getCVEAttackCheckBox().setSelected(false);
@@ -262,11 +266,10 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 				Output.outputError("Failed to sign when using cve attack mode");
 				e.printStackTrace();
 			}
-		}
-
+		}		
 		// token may be null, if it is invalid JSON, if so, don't try changing anything
-		if(token.getToken(false)!=null) {
-			this.message = this.tokenPosition.replaceToken(token.getToken(dontModify));
+		if(token.getToken()!=null) {
+			this.message = this.tokenPosition.replaceToken(token.getToken());
 		}
 		return this.message;
 	}

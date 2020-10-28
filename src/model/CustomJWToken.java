@@ -34,8 +34,10 @@ public class CustomJWToken extends JWT {
 	private String payloadJson;
 	private byte[] signature;
 	private List<TimeClaim> timeClaimList = new ArrayList<TimeClaim>();
+	private String originalToken;
 
 	public CustomJWToken(String token) {
+		originalToken = token;
 		if (token != null) {
 			final String[] parts = splitToken(token);
 			try {
@@ -62,7 +64,7 @@ public class CustomJWToken extends JWT {
 			Output.output("Could not parse claims - " + e.getMessage());
 			return;
 		}
-		
+
 		JsonValue exp = object.get("exp");
 		long curUT = System.currentTimeMillis() / 1000L;
 		if (exp != null) {
@@ -73,7 +75,7 @@ public class CustomJWToken extends JWT {
 				boolean expValid = expUT > curUT;
 				timeClaimList.add(new TimeClaim("[exp] Expired", expDate, expUT, expValid));
 			} catch (Exception e) {
-				Output.output("Could not parse claim (exp) - " + e.getMessage()+" - "+e.getCause());
+				Output.output("Could not parse claim (exp) - " + e.getMessage() + " - " + e.getCause());
 			}
 		}
 
@@ -86,7 +88,7 @@ public class CustomJWToken extends JWT {
 				boolean nbfValid = nbfUT <= curUT;
 				timeClaimList.add(new TimeClaim("[nbf] Not before", nbfDate, nbfUT, nbfValid));
 			} catch (Exception e) {
-				Output.output("Could not parse claim (nbf) - " + e.getMessage()+" - "+e.getCause());
+				Output.output("Could not parse claim (nbf) - " + e.getMessage() + " - " + e.getCause());
 			}
 		}
 
@@ -98,7 +100,7 @@ public class CustomJWToken extends JWT {
 				String iatDate = time.toString();
 				timeClaimList.add(new TimeClaim("[iat] Issued at ", iatDate, iatUT));
 			} catch (Exception e) {
-				Output.output("Could not parse claim (iat) - " + e.getMessage()+" - "+e.getCause());
+				Output.output("Could not parse claim (iat) - " + e.getMessage() + " - " + e.getCause());
 			}
 		}
 	}
@@ -107,15 +109,15 @@ public class CustomJWToken extends JWT {
 		long utL;
 		try {
 			utL = jv.asLong();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			Double utD = jv.asDouble();
 			utL = utD.longValue();
 		}
-		return utL; 
+		return utL;
 	}
 
 	public CustomJWToken(String headerJson, String payloadJson, String signatureB64) {
-		//TODO check if valid json
+		// TODO check if valid json
 		this.headerJson = headerJson;
 		this.payloadJson = payloadJson;
 		this.signature = Base64.decodeBase64(signatureB64);
@@ -140,7 +142,7 @@ public class CustomJWToken extends JWT {
 	}
 
 	public void calculateAndSetSignature(Algorithm algorithm) {
-		if (jsonMinify(getHeaderJson())!=null && jsonMinify(getPayloadJson()) !=null){
+		if (jsonMinify(getHeaderJson()) != null && jsonMinify(getPayloadJson()) != null) {
 			byte[] payloadBytes = b64(jsonMinify(getPayloadJson())).getBytes(StandardCharsets.UTF_8);
 			byte[] headerBytes = b64(jsonMinify(getHeaderJson())).getBytes(StandardCharsets.UTF_8);
 			signature = algorithm.sign(headerBytes, payloadBytes);
@@ -157,17 +159,12 @@ public class CustomJWToken extends JWT {
 		}
 	}
 
-	public String getToken(boolean dontMinify) {
-		if(dontMinify) {
-			String content = String.format("%s.%s", b64((getHeaderJson())), b64(((getPayloadJson()))));
+	public String getToken() {
+		if (jsonMinify(getHeaderJson()) != null && jsonMinify(getPayloadJson()) != null) {
+			String content = String.format("%s.%s", b64(jsonMinify(getHeaderJson())),
+					b64(jsonMinify((getPayloadJson()))));
 			String signatureEncoded = Base64.encodeBase64URLSafeString(this.signature);
 			return String.format("%s.%s", content, signatureEncoded);
-		}else {
-			if (jsonMinify(getHeaderJson())!=null && jsonMinify(getPayloadJson()) !=null){
-				String content = String.format("%s.%s", b64(jsonMinify(getHeaderJson())), b64(jsonMinify((getPayloadJson()))));
-				String signatureEncoded = Base64.encodeBase64URLSafeString(this.signature);
-				return String.format("%s.%s", content, signatureEncoded);
-			}			
 		}
 		return null;
 	}
@@ -198,7 +195,8 @@ public class CustomJWToken extends JWT {
 			parts = new String[] { parts[0], parts[1], "" };
 		}
 		if (parts.length != 3) {
-			throw new JWTDecodeException(String.format("The token was expected to have 3 parts, but got %s.", parts.length));
+			throw new JWTDecodeException(
+					String.format("The token was expected to have 3 parts, but got %s.", parts.length));
 		}
 		return parts;
 	}
@@ -251,7 +249,8 @@ public class CustomJWToken extends JWT {
 		String algorithm = "";
 		try {
 			algorithm = getHeaderJsonNode().get("alg").asText();
-		} catch (Exception e) { }
+		} catch (Exception e) {
+		}
 		return algorithm;
 	}
 
@@ -277,5 +276,9 @@ public class CustomJWToken extends JWT {
 
 	public void setSignature(String signature) {
 		this.signature = Base64.decodeBase64(signature);
+	}
+
+	public String getOriginalToken() {
+		return originalToken;
 	}
 }

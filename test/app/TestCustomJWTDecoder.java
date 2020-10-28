@@ -10,6 +10,6 @@ public class TestCustomJWTDecoder {
 	@Test
 	public void testIfTokenCanbeDecoded() {
 		CustomJWToken reConstructedToken = new CustomJWToken(TestTokens.hs256_token);
-		assertEquals(TestTokens.hs256_token, reConstructedToken.getToken(false));
+		assertEquals(TestTokens.hs256_token, reConstructedToken.getToken());
 	}
 }
