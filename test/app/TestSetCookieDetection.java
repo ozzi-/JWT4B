@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import app.helpers.CookieFlagWrapper;
 import app.tokenposition.Cookie;
 
 public class TestSetCookieDetection {
