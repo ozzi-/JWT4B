@@ -204,8 +204,14 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	@Override
 	public byte[] getMessage() {
 		// see https://github.com/PortSwigger/example-custom-editor-tab/blob/master/java/BurpExtender.java#L119		
-		boolean changesPerformed = jwtST.getJwtAreaAsRSyntax().canUndo();
+		boolean changesPerformed = jwtST.jwtWasChanged();
+		
+		Output.output("changesPerformed? "+(changesPerformed?"YES":"NO"));
+		Output.output(recalculateSignature+"");
+		Output.output(randomKey+"");
+		Output.output(cveAttackMode+"");
 		if(!changesPerformed && !recalculateSignature && !randomKey && !chooseSignature && algAttackMode==null && !cveAttackMode) {
+			Output.output("YEETIN");
 			return this.message;
 		}
 		
