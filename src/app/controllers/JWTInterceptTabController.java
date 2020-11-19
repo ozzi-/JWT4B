@@ -223,7 +223,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		if ((recalculateSignature || randomKey || chooseSignature)) {
 			edited = true;
 			if (recalculateSignature) {
-				String cleanKey = jwtST.getKeyFieldValue().replaceAll("\\n", "").replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "");
+				String cleanKey = jwtST.getKeyFieldValue().replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "");
 				jwtIM.setJWTKey(cleanKey);
 			}
 			Algorithm algo;
