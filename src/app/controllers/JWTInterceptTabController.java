@@ -203,8 +203,12 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
 	@Override
 	public byte[] getMessage() {
-		// TODO check if edits have been made, if not return this.message directly
 		// see https://github.com/PortSwigger/example-custom-editor-tab/blob/master/java/BurpExtender.java#L119		
+		boolean changesPerformed = jwtST.jwtWasChanged();
+		if(!changesPerformed && !recalculateSignature && !randomKey && !chooseSignature && algAttackMode==null && !cveAttackMode) {
+			return this.message;
+		}
+		
 		jwtIM.setProblemDetail("");
 		radioButtonChanged(true, false, false, false, false);
 		jwtST.getCVEAttackCheckBox().setSelected(false);
@@ -219,7 +223,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		if ((recalculateSignature || randomKey || chooseSignature)) {
 			edited = true;
 			if (recalculateSignature) {
-				String cleanKey = jwtST.getKeyFieldValue().replaceAll("\\n", "").replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "");
+				String cleanKey = jwtST.getKeyFieldValue().replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "");
 				jwtIM.setJWTKey(cleanKey);
 			}
 			Algorithm algo;
@@ -262,8 +266,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 				Output.outputError("Failed to sign when using cve attack mode");
 				e.printStackTrace();
 			}
-		}
-
+		}		
 		// token may be null, if it is invalid JSON, if so, don't try changing anything
 		if(token.getToken()!=null) {
 			this.message = this.tokenPosition.replaceToken(token.getToken());

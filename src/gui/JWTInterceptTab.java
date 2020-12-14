@@ -42,6 +42,7 @@ public class JWTInterceptTab extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private JWTInterceptModel jwtIM;
 	private RSyntaxTextArea jwtArea;
+	private String jwtAreaOriginalContent = "none";
 	private JRadioButton rdbtnRecalculateSignature;
 	private JRadioButton rdbtnRandomKey;
 	private JRadioButton rdbtnOriginalSignature;
@@ -313,6 +314,7 @@ public class JWTInterceptTab extends JPanel {
 			public void run() {
 				if(!jwtArea.getText().equals(jwtIM.getJWTJSON())){
 					jwtArea.setText(jwtIM.getJWTJSON());
+					jwtAreaOriginalContent = jwtIM.getJWTJSON();
 				}
 				jwtKeyArea.setText(jwtIM.getJWTKey());
 				if(reset){
@@ -337,8 +339,19 @@ public class JWTInterceptTab extends JPanel {
 		return jwtArea;
 	}
 	
+	public  RSyntaxTextArea getJwtAreaAsRSyntax() {
+		return jwtArea;
+	}
+	
 	public void setKeyFieldState(boolean state){
 		jwtKeyArea.setEnabled(state);
+	}
+	
+	public boolean jwtWasChanged() {
+		if(jwtArea.getText()==null) {
+			return false;
+		}
+		return !jwtAreaOriginalContent.equals(jwtArea.getText());
 	}
 	
 	public String getJWTfromArea(){
