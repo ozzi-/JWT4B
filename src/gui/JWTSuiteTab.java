@@ -154,6 +154,7 @@ public class JWTSuiteTab extends JPanel {
 		add(configButton, gbc_configButton);
 
 		jwtInputField = new JTextArea();
+		jwtInputField.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
 		jwtInputField.setRows(2);
 		jwtInputField.setLineWrap(true);
 		jwtInputField.setWrapStyleWord(true);
@@ -175,6 +176,7 @@ public class JWTSuiteTab extends JPanel {
 		add(lblEnterSecret, gbc_lblEnterSecret);
 
 		jwtKeyArea = new JTextArea();
+		jwtKeyArea.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
 		GridBagConstraints gbc_jwtKeyField = new GridBagConstraints();
 		gbc_jwtKeyField.insets = new Insets(0, 0, 5, 5);
 		gbc_jwtKeyField.fill = GridBagConstraints.HORIZONTAL;
@@ -205,6 +207,7 @@ public class JWTSuiteTab extends JPanel {
 		UIManager.put("RSyntaxTextAreaUI.inputMap", null);
 		UIManager.put("RTextAreaUI.actionMap", null);
 		UIManager.put("RTextAreaUI.inputMap", null);
+		jwtOuputField.setWhitespaceVisible(true);
 		
 		SyntaxScheme scheme = jwtOuputField.getSyntaxScheme();
 		Style style = new Style();

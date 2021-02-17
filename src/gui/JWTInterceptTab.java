@@ -88,13 +88,12 @@ public class JWTInterceptTab extends JPanel {
 		
 		JTextComponent.removeKeymap("RTextAreaKeymap");
 		jwtArea = new RSyntaxTextArea(20,60);
-		jwtArea.setMarginLinePosition(70);
-		jwtArea.setEOLMarkersVisible(true);
-		jwtArea.setWhitespaceVisible(true);
 		UIManager.put("RSyntaxTextAreaUI.actionMap", null);
 		UIManager.put("RSyntaxTextAreaUI.inputMap", null);
 		UIManager.put("RTextAreaUI.actionMap", null);
 		UIManager.put("RTextAreaUI.inputMap", null);
+		jwtArea.setMarginLinePosition(70);
+		jwtArea.setWhitespaceVisible(true);
 		
 		jwtArea.setMinimumSize(new Dimension(300, 300));
 		SyntaxScheme scheme = jwtArea.getSyntaxScheme();
@@ -198,6 +197,7 @@ public class JWTInterceptTab extends JPanel {
 		jwtKeyArea = new JTextArea("");
 		jwtKeyArea.setRows(2);
 		jwtKeyArea.setLineWrap(false);
+		jwtArea.setWhitespaceVisible(true);
 		jwtKeyArea.setEnabled(false);
 
 		GridBagConstraints gbc_keyField = new GridBagConstraints();
