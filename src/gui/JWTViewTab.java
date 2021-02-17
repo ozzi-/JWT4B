@@ -14,7 +14,9 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 
 import model.JWTTabModel;
 
@@ -67,7 +69,13 @@ public class JWTViewTab extends JPanel{
 		gbc_inputLabel1.gridy = 1;
 		add(keyLabel, gbc_inputLabel1);
 
+		JTextComponent.removeKeymap("RTextAreaKeymap");
 		jwtKeyArea = new JTextArea();
+		UIManager.put("RSyntaxTextAreaUI.actionMap", null);
+		UIManager.put("RSyntaxTextAreaUI.inputMap", null);
+		UIManager.put("RTextAreaUI.actionMap", null);
+		UIManager.put("RTextAreaUI.inputMap", null);
+
 		GridBagConstraints gbc_inputField1 = new GridBagConstraints();
 		gbc_inputField1.insets = new Insets(0, 0, 5, 5);
 		gbc_inputField1.fill = GridBagConstraints.HORIZONTAL;
@@ -133,6 +141,7 @@ public class JWTViewTab extends JPanel{
 		gbc_outputfield.gridx = 1;
 		gbc_outputfield.gridy = 6;
 		add(sp, gbc_outputfield);
+		
 	}
 	
 

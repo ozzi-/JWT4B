@@ -25,6 +25,8 @@ import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.text.JTextComponent;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Style;
@@ -34,8 +36,8 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.helpers.Config;
-import model.Strings;
 import model.JWTInterceptModel;
+import model.Strings;
 
 public class JWTInterceptTab extends JPanel {
 
@@ -83,7 +85,13 @@ public class JWTInterceptTab extends JPanel {
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
+		JTextComponent.removeKeymap("RTextAreaKeymap");
 		jwtArea = new RSyntaxTextArea(20,60);
+		UIManager.put("RSyntaxTextAreaUI.actionMap", null);
+		UIManager.put("RSyntaxTextAreaUI.inputMap", null);
+		UIManager.put("RTextAreaUI.actionMap", null);
+		UIManager.put("RTextAreaUI.inputMap", null);
+		
 		jwtArea.setMinimumSize(new Dimension(300, 300));
 		jwtArea.setColumns(90);
 		SyntaxScheme scheme = jwtArea.getSyntaxScheme();

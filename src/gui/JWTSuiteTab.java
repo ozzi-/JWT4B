@@ -18,7 +18,9 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Style;
@@ -196,8 +198,14 @@ public class JWTSuiteTab extends JPanel {
 		gbc_jwtOuputField.fill = GridBagConstraints.BOTH;
 		gbc_jwtOuputField.gridx = 1;
 		gbc_jwtOuputField.gridy = 9;
-
+		
+		JTextComponent.removeKeymap("RTextAreaKeymap");
 		jwtOuputField = new RSyntaxTextArea();
+		UIManager.put("RSyntaxTextAreaUI.actionMap", null);
+		UIManager.put("RSyntaxTextAreaUI.inputMap", null);
+		UIManager.put("RTextAreaUI.actionMap", null);
+		UIManager.put("RTextAreaUI.inputMap", null);
+		
 		SyntaxScheme scheme = jwtOuputField.getSyntaxScheme();
 		Style style = new Style();
 		style.foreground = new Color(222, 133, 10);
