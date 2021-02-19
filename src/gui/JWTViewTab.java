@@ -7,6 +7,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -14,9 +16,9 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentListener;
-
-import model.JWTTabModel;
+import javax.swing.text.JTextComponent;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Style;
@@ -26,6 +28,7 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.algorithm.AlgorithmType;
+import model.JWTTabModel;
 
 public class JWTViewTab extends JPanel{
 
@@ -68,6 +71,7 @@ public class JWTViewTab extends JPanel{
 		add(keyLabel, gbc_inputLabel1);
 
 		jwtKeyArea = new JTextArea();
+		jwtKeyArea.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
 		GridBagConstraints gbc_inputField1 = new GridBagConstraints();
 		gbc_inputField1.insets = new Insets(0, 0, 5, 5);
 		gbc_inputField1.fill = GridBagConstraints.HORIZONTAL;
@@ -77,6 +81,11 @@ public class JWTViewTab extends JPanel{
 		jwtKeyArea.setColumns(10);
 		
 		verificationIndicator = new JButton("");
+		verificationIndicator.setText("No secret provided");
+		verificationIndicator.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		Dimension preferredSize = new Dimension(400, 30);
 		verificationIndicator.setPreferredSize(preferredSize);
 		GridBagConstraints gbc_validIndicator = new GridBagConstraints();
@@ -84,8 +93,15 @@ public class JWTViewTab extends JPanel{
 		gbc_validIndicator.gridx = 1;
 		gbc_validIndicator.gridy = 4;
 		add(verificationIndicator, gbc_validIndicator);
-
+		
+		JTextComponent.removeKeymap("RTextAreaKeymap");
 		outputField = new RSyntaxTextArea();
+		UIManager.put("RSyntaxTextAreaUI.actionMap", null);
+		UIManager.put("RSyntaxTextAreaUI.inputMap", null);
+		UIManager.put("RTextAreaUI.actionMap", null);
+		UIManager.put("RTextAreaUI.inputMap", null);
+		
+		outputField.setWhitespaceVisible(true);
 		SyntaxScheme scheme = outputField.getSyntaxScheme();
 		Style style = new Style();
 		style.foreground = new Color(222,133,10);
@@ -133,6 +149,7 @@ public class JWTViewTab extends JPanel{
 		gbc_outputfield.gridx = 1;
 		gbc_outputfield.gridy = 6;
 		add(sp, gbc_outputfield);
+		
 	}
 	
 
@@ -181,7 +198,12 @@ public class JWTViewTab extends JPanel{
 					verificationIndicator.setBackground(jwtTM.getVerificationColor());
 				}
 				if(!jwtTM.getVerificationLabel().equals(verificationIndicator.getText())){
-					verificationIndicator.setText(jwtTM.getVerificationLabel());
+					if(jwtTM.getVerificationLabel().equals("")) {
+						verificationIndicator.setText("No secret provided");
+					}else {
+						verificationIndicator.setText(jwtTM.getVerificationLabel());						
+					}
+					
 				}
 				if(algorithmType.equals(AlgorithmType.symmetric)){
 					keyLabel.setText("Secret");

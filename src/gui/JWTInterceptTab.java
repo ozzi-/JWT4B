@@ -25,6 +25,8 @@ import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.text.JTextComponent;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Style;
@@ -34,8 +36,9 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.helpers.Config;
-import model.Strings;
 import model.JWTInterceptModel;
+import model.Strings;
+import javax.swing.ScrollPaneConstants;
 
 public class JWTInterceptTab extends JPanel {
 
@@ -77,15 +80,22 @@ public class JWTInterceptTab extends JPanel {
 	
 	private void drawGui() {	
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] {0, 0, 0, 0, 0};
-		gridBagLayout.rowHeights = new int[]{10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.columnWidths = new int[] {0, 100, 250, 0, 0};
+		gridBagLayout.rowHeights = new int[]{10, 0, 0, 0, 0, 0, 0, 30, 0, 0, 0, 0, 0, 0, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
+		JTextComponent.removeKeymap("RTextAreaKeymap");
 		jwtArea = new RSyntaxTextArea(20,60);
+		UIManager.put("RSyntaxTextAreaUI.actionMap", null);
+		UIManager.put("RSyntaxTextAreaUI.inputMap", null);
+		UIManager.put("RTextAreaUI.actionMap", null);
+		UIManager.put("RTextAreaUI.inputMap", null);
+		jwtArea.setMarginLinePosition(70);
+		jwtArea.setWhitespaceVisible(true);
+		
 		jwtArea.setMinimumSize(new Dimension(300, 300));
-		jwtArea.setColumns(90);
 		SyntaxScheme scheme = jwtArea.getSyntaxScheme();
 		Style style = new Style();
 		style.foreground = new Color(222,133,10);
@@ -97,10 +107,11 @@ public class JWTInterceptTab extends JPanel {
 		jwtArea.setEditable(true);
 		jwtArea.setPopupMenu(new JPopupMenu()); 
 		RTextScrollPane sp = new RTextScrollPane(jwtArea);
+		sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		sp.setLineNumbersEnabled(false);
 		
 		GridBagConstraints gbc_jwtArea = new GridBagConstraints();
-		gbc_jwtArea.gridheight = 7;
+		gbc_jwtArea.gridheight = 12;
 		gbc_jwtArea.gridwidth = 1;
 		gbc_jwtArea.insets = new Insets(0, 0, 5, 5);
 		gbc_jwtArea.fill = GridBagConstraints.BOTH;
@@ -184,22 +195,20 @@ public class JWTInterceptTab extends JPanel {
 		add(lblSecretKey, gbc_lblSecretKey);
 		
 		jwtKeyArea = new JTextArea("");
+		jwtKeyArea.setRows(2);
+		jwtKeyArea.setLineWrap(false);
+		jwtArea.setWhitespaceVisible(true);
 		jwtKeyArea.setEnabled(false);
 
 		GridBagConstraints gbc_keyField = new GridBagConstraints();
-		gbc_keyField.anchor = GridBagConstraints.NORTH;
 		gbc_keyField.insets = new Insets(0, 0, 5, 5);
 		gbc_keyField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_keyField.gridx = 2;
 		gbc_keyField.gridy = 7;
-		jwtKeyArea.setRows(5);
 		
         JScrollPane jp = new JScrollPane(jwtKeyArea);
-		
+        jp.setMinimumSize(new Dimension(100, 70));
 		add(jp, gbc_keyField);
-		jwtKeyArea.setColumns(2);
-		jwtKeyArea.setRows(2);
-		jwtKeyArea.setLineWrap(false);
 		
 		lblProblem = new JLabel("");
 		GridBagConstraints gbc_lblProblem = new GridBagConstraints();
@@ -226,8 +235,8 @@ public class JWTInterceptTab extends JPanel {
 		
 		noneAttackComboBox = new JComboBox<String>();
 		GridBagConstraints gbc_noneAttackComboBox = new GridBagConstraints();
+		gbc_noneAttackComboBox.anchor = GridBagConstraints.WEST;
 		gbc_noneAttackComboBox.insets = new Insets(0, 0, 5, 5);
-		gbc_noneAttackComboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_noneAttackComboBox.gridx = 2;
 		gbc_noneAttackComboBox.gridy = 10;
 		add(noneAttackComboBox, gbc_noneAttackComboBox);
