@@ -91,7 +91,6 @@ public class JWTSuiteTabController implements ITab {
 			jwtSTM.setVerificationLabel(Strings.verificationValid);
 			test.getAlgorithm();
 		} catch (JWTVerificationException e) {
-			Output.output(e.getClass().getTypeName());
 			Output.output("Verification failed (" + e.getMessage() + ")");
 			jwtSTM.setVerificationResult(e.getMessage());
 
