@@ -1,7 +1,6 @@
 package app.controllers;
 
 import app.helpers.Config;
-import app.helpers.Output;
 import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
