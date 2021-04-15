@@ -1,5 +1,7 @@
 package model;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -7,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
@@ -42,8 +45,29 @@ public class CustomJWToken extends JWT {
 			final String[] parts = splitToken(token);
 			try {
 				headerJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[0]));
-				payloadJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[1]));
+				byte[] payloadBase64 = Base64.decodeBase64(parts[1]);
+				payloadJson = StringUtils.newStringUtf8(payloadBase64);
+
+				JsonObject headerObject;
+				try {
+					headerObject = Json.parse(headerJson).asObject();
+					if (headerObject.getString("zip", "").equalsIgnoreCase("GZIP")) {
+						GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(payloadBase64));
+						ByteArrayOutputStream buf = new ByteArrayOutputStream();
+						for (int result = gis.read(); result != -1; result = gis.read()) {
+							buf.write((byte) result);
+						}
+						payloadJson = buf.toString("UTF-8");
+					}
+				} catch (IOException e) {
+					Output.output("Could not gunzip JSON - " + e.getMessage());
+				} catch (Exception e) {
+					Output.output("Could not parse header - " + e.getMessage());
+					return;
+				}
+
 				checkRegisteredClaims(payloadJson);
+
 			} catch (NullPointerException e) {
 				Output.outputError("The UTF-8 Charset isn't initialized (" + e.getMessage() + ")");
 			}
@@ -178,7 +202,11 @@ public class CustomJWToken extends JWT {
 			return false;
 		}
 		try {
-			JWT.decode(token);
+			String tok = new CustomJWToken(token).getToken();
+			if (tok == null) {
+				return false;
+			}
+			JWT.decode(tok);
 			return true;
 		} catch (JWTDecodeException exception) {
 		}

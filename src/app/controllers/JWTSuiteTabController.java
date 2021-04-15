@@ -83,9 +83,10 @@ public class JWTSuiteTabController implements ITab {
 		jwtSTM.setJwtKey(key);
 		jwtSTM.setVerificationResult("");
 		try {
-			String curAlgo = new CustomJWToken(jwtSTM.getJwtInput()).getAlgorithm();
+			CustomJWToken token = new CustomJWToken(jwtSTM.getJwtInput());
+			String curAlgo = token.getAlgorithm();
 			JWTVerifier verifier = JWT.require(AlgorithmLinker.getVerifierAlgorithm(curAlgo, key)).build();
-			DecodedJWT test = verifier.verify(jwtSTM.getJwtInput());
+			DecodedJWT test = verifier.verify(token.getToken());
 			jwtSTM.setJwtSignatureColor(Settings.colorValid);
 			jwtSTM.setVerificationLabel(Strings.verificationValid);
 			test.getAlgorithm();
