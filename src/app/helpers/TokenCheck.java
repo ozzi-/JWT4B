@@ -7,8 +7,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 
 public class TokenCheck {
 	public static boolean isValidJWT(String jwt) {
-		 
-		if (StringUtils.countMatches(jwt, ".") != 2) {
+		int dotCount = StringUtils.countMatches(jwt, ".");
+		if (dotCount !=2) {
 			return false;
 		}
 		
@@ -18,9 +18,7 @@ public class TokenCheck {
 		}
 
 		String[] sArray=StringUtils.split(jwt,".");
-		if(sArray.length < 3){
-			return false;
-		}
+
 		for(String value:sArray){
 			if(!value.matches("[A-Za-z0-9+/=_-]+")){
 				return false;
