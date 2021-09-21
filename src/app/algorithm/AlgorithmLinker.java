@@ -15,6 +15,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.RandomStringUtils;
@@ -33,6 +34,12 @@ public class AlgorithmLinker {
 	
 	public static final app.algorithm.AlgorithmWrapper none = 
 			new app.algorithm.AlgorithmWrapper("none",AlgorithmType.none);
+	public static final app.algorithm.AlgorithmWrapper None =
+			new app.algorithm.AlgorithmWrapper("None",AlgorithmType.none);
+	public static final app.algorithm.AlgorithmWrapper nOnE =
+			new app.algorithm.AlgorithmWrapper("nOnE",AlgorithmType.none);
+	public static final app.algorithm.AlgorithmWrapper NONE =
+			new app.algorithm.AlgorithmWrapper("NONE",AlgorithmType.none);
 	public static final app.algorithm.AlgorithmWrapper HS256 = 
 			new app.algorithm.AlgorithmWrapper("HS256",AlgorithmType.symmetric);
 	public static final app.algorithm.AlgorithmWrapper HS384 =
@@ -54,8 +61,13 @@ public class AlgorithmLinker {
 	public static final app.algorithm.AlgorithmWrapper ES512 = 
 			new app.algorithm.AlgorithmWrapper("ES512",AlgorithmType.asymmetric);
 
-	private static final app.algorithm.AlgorithmWrapper[] supportedAlgorithms = { 
-			none, HS256, HS384, HS512, RS256, RS384, RS512, ES256, ES256K, ES384, ES512 };
+	public static final app.algorithm.AlgorithmWrapper[] supportedAlgorithms = {
+			none, None, nOnE, NONE, HS256, HS384, HS512, RS256, RS384, RS512, ES256, ES256K, ES384, ES512
+	};
+
+	public static final app.algorithm.AlgorithmWrapper[] noneAlgorithms = {
+			none, None, nOnE, NONE
+	};
 
 	private static PublicKey generatePublicKeyFromString(String key, String algorithm) {
 		PublicKey publicKey = null;
@@ -236,5 +248,9 @@ public class AlgorithmLinker {
 
 	public static app.algorithm.AlgorithmWrapper[] getSupportedAlgorithms() {
 		return supportedAlgorithms;
+	}
+
+	public static boolean isNoneAlgorithm(String algorithm) {
+		return Arrays.stream(noneAlgorithms).anyMatch(aw -> aw.getAlgorithm().equals(algorithm));
 	}
 }
