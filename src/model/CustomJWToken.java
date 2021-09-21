@@ -278,6 +278,7 @@ public class CustomJWToken extends JWT {
 		try {
 			algorithm = getHeaderJsonNode().get("alg").asText();
 		} catch (Exception e) {
+			Output.outputError("Token getAlgorithm failed");
 		}
 		return algorithm;
 	}

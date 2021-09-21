@@ -10,6 +10,8 @@ public class Strings {
 	public static final String tokenStateOriginal = "Original";
 	public static final String tokenStateUpdated = "Token updated";
 
+	public static final String createKey = "Create Key";
+	public static final String loadKey = "Load Key";
 	public static final String acceptChanges = "Accept Changes";
 	public static final String recalculateSignature = "Recalculate Signature";
 	public static final String originalToken = "Original Token";
@@ -23,7 +25,8 @@ public class Strings {
 	public static final String verificationInvalidClaim = "Not all Claims accepted";
 	public static final String verificationError = "Invalid Signature / wrong key / claim failed";
 
-	public static final String interceptRecalculationKey = "Secret / Key for Signature recalculation:";
+	public static final String keyTextBoxHeader = "Secret/Key to recalculate signature:";
+	public static final String keyTextBoxToolTip = "Edit or copy/paste key here or use the create or load key buttons.";
 
 	public static final String dontModify = "Do not automatically modify signature";
 	public static final String keepOriginalSignature ="Keep original signature";
