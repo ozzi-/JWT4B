@@ -62,3 +62,7 @@ lib/
 
 # Intellij
 .idea/
+
+# Burp Interfaces
+src/burp
+!src/burp/BurpExtender.java
