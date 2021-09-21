@@ -59,3 +59,6 @@ lib/
 
 # ignore debug output
 *log
+
+# Intellij
+.idea/
