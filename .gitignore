@@ -59,3 +59,10 @@ lib/
 
 # ignore debug output
 *log
+
+# Intellij
+.idea/
+
+# Burp Interfaces
+src/burp
+!src/burp/BurpExtender.java

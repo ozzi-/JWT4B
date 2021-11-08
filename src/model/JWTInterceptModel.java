@@ -49,14 +49,14 @@ public class JWTInterceptModel {
 		this.jwtJSON = jwtJSON;
 	}
 
-	public void setJWT(String jwt) {
-		this.jwt = jwt;
-
-	}
-
-	public String getJWT() {
-		return this.jwt;
-	}
+//	public void setJWT(String jwt) {
+//		this.jwt = jwt;
+//
+//	}
+//
+//	public String getJWT() {
+//		return this.jwt;
+//	}
 
 	public String getSignature() {
 		return this.signature;

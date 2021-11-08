@@ -11,23 +11,19 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.*;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
+import app.algorithm.AlgorithmLinker;
+import app.algorithm.AlgorithmWrapper;
+import app.controllers.JWTInterceptTabController;
+import app.controllers.ReadableTokenFormat;
+import app.helpers.Output;
+import model.CustomJWToken;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Style;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -38,28 +34,30 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import app.helpers.Config;
 import model.JWTInterceptModel;
 import model.Strings;
-import javax.swing.ScrollPaneConstants;
 
 public class JWTInterceptTab extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JWTInterceptModel jwtIM;
-	private RSyntaxTextArea jwtArea;
-	private String jwtAreaOriginalContent = "none";
-	private JRadioButton rdbtnRecalculateSignature;
-	private JRadioButton rdbtnRandomKey;
-	private JRadioButton rdbtnOriginalSignature;
-	private JRadioButton rdbtnChooseSignature;
 
-	private JTextArea jwtKeyArea;
+	private RSyntaxTextArea jwtArea;
+
+	private JLabel algorithmLabel;
+	private JComboBox<String> algorithmComboBox;
+
+	private JButton createKeyButton;
+	private JButton loadKeyButton;
+
 	private JLabel lblSecretKey;
 	private JSeparator separator;
-	private JRadioButton rdbtnDontModifySignature;
+	private JTextArea jwtKeyArea;
+
+	private JButton updateSignatureButton;
+
 	private JLabel lblProblem;
-	private JComboBox<String> noneAttackComboBox;
-	private JLabel lblNewLabel;
 	private JLabel lblCookieFlags;
 	private JLabel lbRegisteredClaims;
+
 	private JCheckBox chkbxCVEAttack;
 	private JButton btnCopyPubPrivKeyCVEAttack;
 
@@ -68,33 +66,39 @@ public class JWTInterceptTab extends JPanel {
 		drawGui();
 	}
 	
-	public void registerActionListeners(ActionListener dontMofiy, ActionListener randomKeyListener, ActionListener originalSignatureListener, ActionListener recalculateSignatureListener, ActionListener chooseSignatureListener, ActionListener algAttackListener, ActionListener cveAttackListener){
-		rdbtnDontModifySignature.addActionListener(dontMofiy);
-		rdbtnRecalculateSignature.addActionListener(randomKeyListener);
-		rdbtnOriginalSignature.addActionListener(originalSignatureListener);
-		rdbtnChooseSignature.addActionListener(chooseSignatureListener);
-		rdbtnRandomKey.addActionListener(recalculateSignatureListener);
-		noneAttackComboBox.addActionListener(algAttackListener);
-		chkbxCVEAttack.addActionListener(cveAttackListener);
+	public void registerActionListeners(
+			ActionListener changeAlgorithmListener,
+			ActionListener createKeyListener,
+			ActionListener updateSignatureListener,
+			DocumentListener jwtChangedListener,
+			DocumentListener keyChangedListener) {
+		algorithmComboBox.addActionListener(changeAlgorithmListener);
+		createKeyButton.addActionListener(createKeyListener);
+		updateSignatureButton.addActionListener(updateSignatureListener);
+
+		// listen for changes to text in JWT and Key TextAreas
+		jwtArea.getDocument().addDocumentListener(jwtChangedListener);
+		jwtKeyArea.getDocument().addDocumentListener(keyChangedListener);
 	}
 	
-	private void drawGui() {	
+	private void drawGui() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] {0, 100, 250, 0, 0};
+		gridBagLayout.columnWidths = new int[] {0, 250, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{10, 0, 0, 0, 0, 0, 0, 30, 0, 0, 0, 0, 0, 0, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.01, 0.01};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
-		
+
 		JTextComponent.removeKeymap("RTextAreaKeymap");
-		jwtArea = new RSyntaxTextArea(20,60);
+		jwtArea = new RSyntaxTextArea(20,100);
+		//jwtArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		UIManager.put("RSyntaxTextAreaUI.actionMap", null);
 		UIManager.put("RSyntaxTextAreaUI.inputMap", null);
 		UIManager.put("RTextAreaUI.actionMap", null);
 		UIManager.put("RTextAreaUI.inputMap", null);
 		jwtArea.setMarginLinePosition(70);
 		jwtArea.setWhitespaceVisible(true);
-		
+
 		jwtArea.setMinimumSize(new Dimension(300, 300));
 		SyntaxScheme scheme = jwtArea.getSyntaxScheme();
 		Style style = new Style();
@@ -105,161 +109,138 @@ public class JWTInterceptTab extends JPanel {
 		jwtArea.setCurrentLineHighlightColor(Color.WHITE);
 		jwtArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
 		jwtArea.setEditable(true);
-		jwtArea.setPopupMenu(new JPopupMenu()); 
+		jwtArea.setPopupMenu(new JPopupMenu());
 		RTextScrollPane sp = new RTextScrollPane(jwtArea);
 		sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		sp.setLineNumbersEnabled(false);
-		
-		GridBagConstraints gbc_jwtArea = new GridBagConstraints();
-		gbc_jwtArea.gridheight = 12;
-		gbc_jwtArea.gridwidth = 1;
-		gbc_jwtArea.insets = new Insets(0, 0, 5, 5);
-		gbc_jwtArea.fill = GridBagConstraints.BOTH;
-		gbc_jwtArea.gridx = 1;
-		gbc_jwtArea.gridy = 1;
-		add(sp, gbc_jwtArea);
 
-		
-		rdbtnDontModifySignature = new JRadioButton(Strings.dontModify);
-		rdbtnDontModifySignature.setToolTipText(Strings.dontModifyToolTip);
-		rdbtnDontModifySignature.setSelected(true);
-		rdbtnDontModifySignature.setHorizontalAlignment(SwingConstants.LEFT);
-		GridBagConstraints gbc_rdbtnDontModifySignature = new GridBagConstraints();
-		gbc_rdbtnDontModifySignature.anchor = GridBagConstraints.WEST;
-		gbc_rdbtnDontModifySignature.insets = new Insets(0, 0, 5, 5);
-		gbc_rdbtnDontModifySignature.gridx = 2;
-		gbc_rdbtnDontModifySignature.gridy = 1;
-		add(rdbtnDontModifySignature, gbc_rdbtnDontModifySignature);
-		
-		rdbtnRecalculateSignature = new JRadioButton(Strings.recalculateSignature);
-		rdbtnRecalculateSignature.setToolTipText(Strings.recalculateSignatureToolTip);
-		rdbtnRecalculateSignature.setHorizontalAlignment(SwingConstants.LEFT);
-		GridBagConstraints gbc_rdbtnRecalculateSignature = new GridBagConstraints();
-		gbc_rdbtnRecalculateSignature.anchor = GridBagConstraints.WEST;
-		gbc_rdbtnRecalculateSignature.insets = new Insets(0, 0, 5, 5);
-		gbc_rdbtnRecalculateSignature.gridx = 2;
-		gbc_rdbtnRecalculateSignature.gridy = 2;
-		add(rdbtnRecalculateSignature, gbc_rdbtnRecalculateSignature);
-		
-		rdbtnOriginalSignature = new JRadioButton(Strings.keepOriginalSignature);
-		rdbtnOriginalSignature.setToolTipText(Strings.keepOriginalSignatureToolTip);
-		rdbtnOriginalSignature.setHorizontalAlignment(SwingConstants.LEFT);
-		GridBagConstraints gbc_rdbtnNewRadioButton_1 = new GridBagConstraints();
-		gbc_rdbtnNewRadioButton_1.insets = new Insets(0, 0, 5, 5);
-		gbc_rdbtnNewRadioButton_1.anchor = GridBagConstraints.WEST;
-		gbc_rdbtnNewRadioButton_1.gridx = 2;
-		gbc_rdbtnNewRadioButton_1.gridy = 3;
-		add(rdbtnOriginalSignature, gbc_rdbtnNewRadioButton_1);
-		
-		rdbtnRandomKey = new JRadioButton(Strings.randomKey);
-		rdbtnRandomKey.setToolTipText(Strings.randomKeyToolTip);
-		rdbtnRandomKey.setHorizontalAlignment(SwingConstants.LEFT);
-		GridBagConstraints gbc_rdbtnNewRadioButton = new GridBagConstraints();
-		gbc_rdbtnNewRadioButton.anchor = GridBagConstraints.WEST;
-		gbc_rdbtnNewRadioButton.insets = new Insets(0, 0, 5, 5);
-		gbc_rdbtnNewRadioButton.gridx = 2;
-		gbc_rdbtnNewRadioButton.gridy = 4;
-		add(rdbtnRandomKey, gbc_rdbtnNewRadioButton);
-		
-		
-		rdbtnChooseSignature = new JRadioButton(Strings.chooseSignature);
-		rdbtnChooseSignature.setToolTipText(Strings.chooseSignatureToolTip);
-		rdbtnChooseSignature.setHorizontalAlignment(SwingConstants.LEFT);
-		GridBagConstraints gbc_rdbtnNewRadioButton1 = new GridBagConstraints();
-		gbc_rdbtnNewRadioButton1.anchor = GridBagConstraints.WEST;
-		gbc_rdbtnNewRadioButton1.insets = new Insets(0, 0, 5, 5);
-		gbc_rdbtnNewRadioButton1.gridx = 2;
-		gbc_rdbtnNewRadioButton1.gridy = 5;
-		add(rdbtnChooseSignature, gbc_rdbtnNewRadioButton1);
-		
-		ButtonGroup btgrp = new ButtonGroup();
-		btgrp.add(rdbtnDontModifySignature);
-		btgrp.add(rdbtnOriginalSignature);
-		btgrp.add(rdbtnRandomKey);
-		btgrp.add(rdbtnRecalculateSignature);
-		btgrp.add(rdbtnChooseSignature);
+		GridBagConstraints gbcLeft = new GridBagConstraints();
+		gbcLeft.insets = new Insets(5, 5, 5, 5);
+		gbcLeft.fill = GridBagConstraints.BOTH;
+		gbcLeft.gridheight = 12;
+		gbcLeft.gridwidth = 1;
+		gbcLeft.gridx = 1;
+		gbcLeft.gridy = 1;
+		add(sp, gbcLeft);
 
-		separator = new JSeparator();
-		GridBagConstraints gbc_separator = new GridBagConstraints();
-		gbc_separator.insets = new Insets(0, 0, 5, 5);
-		gbc_separator.gridx = 2;
-		gbc_separator.gridy = 5;
-		add(separator, gbc_separator);
-		
-		lblSecretKey = new JLabel(Strings.interceptRecalculationKey);
-		GridBagConstraints gbc_lblSecretKey = new GridBagConstraints();
-		gbc_lblSecretKey.insets = new Insets(0, 0, 5, 5);
-		gbc_lblSecretKey.anchor = GridBagConstraints.SOUTHWEST;
-		gbc_lblSecretKey.gridx = 2;
-		gbc_lblSecretKey.gridy = 6;
-		add(lblSecretKey, gbc_lblSecretKey);
-		
+		// Algorithm Dropdown
+		algorithmLabel = new JLabel("Algorithm:");
+		GridBagConstraints gbcRight = new GridBagConstraints();
+		gbcRight.insets = new Insets(5, 5, 5, 5);
+		gbcRight.anchor = GridBagConstraints.WEST;
+		gbcRight.gridx = 2;
+		gbcRight.gridy = 1;
+		gbcRight.gridheight = 1;
+		add(algorithmLabel, gbcRight);
+
+		algorithmComboBox = new JComboBox<String>();
+		for(final AlgorithmWrapper alg: AlgorithmLinker.getSupportedAlgorithms()){
+			algorithmComboBox.addItem(alg.getAlgorithm());
+		}
+		//		algorithmComboBox.setToolTipText("TODO");
+		//algorithmComboBox.setHorizontalAlignment(SwingConstants.LEFT);
+		//GridBagConstraints gbc_noneAttackComboBox = new GridBagConstraints();
+		gbcRight.gridx = 3;
+		gbcRight.gridy = 1;
+		gbcRight.anchor = GridBagConstraints.EAST;
+		add(algorithmComboBox, gbcRight);
+
+
+		separator = new JSeparator(SwingConstants.HORIZONTAL);
+		separator.setPreferredSize(new Dimension(100, 1));
+		GridBagConstraints gbcSeparators = new GridBagConstraints();
+		gbcSeparators.insets = new Insets(5, 5, 5, 5);
+		gbcSeparators.fill = GridBagConstraints.BOTH;
+		gbcSeparators.gridx = 2;
+		gbcSeparators.gridy = 2;
+		//gbcSeparators.weighty = 0.1;
+		gbcSeparators.gridwidth = 2;
+		add(separator, gbcSeparators);
+
+		lblSecretKey = new JLabel(Strings.keyTextBoxHeader);
+		gbcRight.gridx = 2;
+		gbcRight.gridy = 3;
+		gbcRight.gridwidth = 2;
+		gbcRight.anchor = GridBagConstraints.WEST;
+		add(lblSecretKey, gbcRight);
+
+		createKeyButton = new JButton(Strings.createKey);
+		createKeyButton.setVisible(true);
+		createKeyButton.setHorizontalAlignment(SwingConstants.LEFT);
+		gbcRight.anchor = GridBagConstraints.WEST;
+		gbcRight.gridx = 2;
+		gbcRight.gridy = 4;
+		gbcRight.gridwidth = 1;
+		add(createKeyButton, gbcRight);
+
+		loadKeyButton = new JButton(Strings.loadKey);
+		loadKeyButton.setVisible(true);
+		// TODO: reenable
+		loadKeyButton.setEnabled(false);
+		loadKeyButton.setHorizontalAlignment(SwingConstants.LEFT);
+		gbcRight.anchor = GridBagConstraints.EAST;
+		gbcRight.gridx = 3;
+		gbcRight.gridy = 4;
+		add(loadKeyButton, gbcRight);
+
+
 		jwtKeyArea = new JTextArea("");
+		jwtKeyArea.setToolTipText(Strings.keyTextBoxToolTip);
 		jwtKeyArea.setRows(2);
 		jwtKeyArea.setLineWrap(false);
-		jwtArea.setWhitespaceVisible(true);
-		jwtKeyArea.setEnabled(false);
+		jwtKeyArea.setEditable(true);
+		jwtKeyArea.setEnabled(true);
+		JScrollPane jp = new JScrollPane(jwtKeyArea);
+		jp.setMinimumSize(new Dimension(50, 50));
+		gbcRight.anchor = GridBagConstraints.WEST;
+		gbcRight.gridwidth = 2;
+		gbcRight.gridx = 2;
+		gbcRight.gridy = 6;
+		gbcRight.fill = GridBagConstraints.BOTH;
+		add(jp, gbcRight);
 
-		GridBagConstraints gbc_keyField = new GridBagConstraints();
-		gbc_keyField.insets = new Insets(0, 0, 5, 5);
-		gbc_keyField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_keyField.gridx = 2;
-		gbc_keyField.gridy = 7;
-		
-        JScrollPane jp = new JScrollPane(jwtKeyArea);
-        jp.setMinimumSize(new Dimension(100, 70));
-		add(jp, gbc_keyField);
-		
-		lblProblem = new JLabel("");
-		GridBagConstraints gbc_lblProblem = new GridBagConstraints();
-		gbc_lblProblem.insets = new Insets(0, 0, 5, 5);
-		gbc_lblProblem.gridx = 1;
-		gbc_lblProblem.gridy = 8;
-		add(lblProblem, gbc_lblProblem);
-		
-		lblNewLabel = new JLabel("Alg None Attack:");
-		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
-		gbc_lblNewLabel.anchor = GridBagConstraints.WEST;
-		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel.gridx = 2;
-		gbc_lblNewLabel.gridy = 9;
-		add(lblNewLabel, gbc_lblNewLabel);
-		
+		updateSignatureButton = new JButton("Re-sign");
+		updateSignatureButton.setVisible(true);
+		gbcRight.gridwidth = 1;
+		gbcRight.gridx = 2;
+		gbcRight.gridy = 7;
+		gbcRight.fill = GridBagConstraints.NONE;
+		add(updateSignatureButton, gbcRight);
+
+		chkbxCVEAttack = new JCheckBox("CVE-2018-0114 Attack");
+		// TODO: re-enable
+		chkbxCVEAttack.setEnabled(false);
+		chkbxCVEAttack.setToolTipText("The public and private key used can be found in src/app/helpers/Strings.java");
+		chkbxCVEAttack.setHorizontalAlignment(SwingConstants.LEFT);
+		gbcRight.anchor = GridBagConstraints.WEST;
+		gbcRight.gridwidth = 2;
+		gbcRight.fill = GridBagConstraints.HORIZONTAL;
+		gbcRight.gridx = 2;
+		gbcRight.gridy = 8;
+		add(chkbxCVEAttack, gbcRight);
+
+
+		//TODO: remaining GridBagConstraints
 		lblCookieFlags = new JLabel("");
 		GridBagConstraints gbc_lblCookieFlag = new GridBagConstraints();
 		gbc_lblCookieFlag.insets = new Insets(0, 0, 5, 5);
 		gbc_lblCookieFlag.anchor = GridBagConstraints.WEST;
 		gbc_lblCookieFlag.gridx = 1;
-		gbc_lblCookieFlag.gridy = 10;
+		gbc_lblCookieFlag.gridy = 9;
+		gbc_lblCookieFlag.gridwidth = 2;
 		add(lblCookieFlags, gbc_lblCookieFlag);
-		
-		noneAttackComboBox = new JComboBox<String>();
-		GridBagConstraints gbc_noneAttackComboBox = new GridBagConstraints();
-		gbc_noneAttackComboBox.anchor = GridBagConstraints.WEST;
-		gbc_noneAttackComboBox.insets = new Insets(0, 0, 5, 5);
-		gbc_noneAttackComboBox.gridx = 2;
-		gbc_noneAttackComboBox.gridy = 10;
-		add(noneAttackComboBox, gbc_noneAttackComboBox);
-		
-		chkbxCVEAttack = new JCheckBox("CVE-2018-0114 Attack");
-		chkbxCVEAttack.setToolTipText("The public and private key used can be found in src/app/helpers/Strings.java");
-		chkbxCVEAttack.setHorizontalAlignment(SwingConstants.LEFT);
-		GridBagConstraints gbc_chkbxCVEAttack = new GridBagConstraints();
-		gbc_chkbxCVEAttack.anchor = GridBagConstraints.WEST;
-		gbc_chkbxCVEAttack.insets = new Insets(0, 0, 5, 5);
-		gbc_chkbxCVEAttack.gridx = 2;
-		gbc_chkbxCVEAttack.gridy = 11;
-		add(chkbxCVEAttack, gbc_chkbxCVEAttack);
-		
+
+
 		lbRegisteredClaims = new JLabel();
 		lbRegisteredClaims.setBackground(SystemColor.controlHighlight);
 		GridBagConstraints gbc_lbRegisteredClaims = new GridBagConstraints();
-		gbc_lbRegisteredClaims.insets = new Insets(0, 0, 5, 5);
+		gbc_lbRegisteredClaims.insets = new Insets(5, 5, 5, 5);
 		gbc_lbRegisteredClaims.fill = GridBagConstraints.BOTH;
 		gbc_lbRegisteredClaims.gridx = 2;
-		gbc_lbRegisteredClaims.gridy = 12;
+		gbc_lbRegisteredClaims.gridy = 10;
+		gbc_lbRegisteredClaims.gridwidth = 2;
 		add(lbRegisteredClaims, gbc_lbRegisteredClaims);
-		
+
 		btnCopyPubPrivKeyCVEAttack = new JButton("Copy used public &private key to clipboard used in CVE attack");
 		btnCopyPubPrivKeyCVEAttack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -274,72 +255,108 @@ public class JWTInterceptTab extends JPanel {
 		btnCopyPubPrivKeyCVEAttack.setVisible(false);
 		GridBagConstraints gbc_button = new GridBagConstraints();
 		gbc_button.insets = new Insets(0, 0, 0, 5);
-		gbc_button.gridx = 2;
+		gbc_button.gridx = 1;
 		gbc_button.gridy = 13;
+		gbc_button.gridwidth = 3;
 		add(btnCopyPubPrivKeyCVEAttack, gbc_button);
-		
-		noneAttackComboBox.addItem("  -");
-		noneAttackComboBox.addItem("Alg: none");
-		noneAttackComboBox.addItem("Alg: None");
-		noneAttackComboBox.addItem("Alg: nOnE");
-		noneAttackComboBox.addItem("Alg: NONE");
-		
+
+		lblProblem = new JLabel("");
+		GridBagConstraints gbc_lblProblem = new GridBagConstraints();
+		gbc_lblProblem.insets = new Insets(0, 0, 5, 5);
+		gbc_lblProblem.gridx = 1;
+		gbc_lblProblem.gridy = 12;
+		gbc_lblProblem.gridwidth = 3;
+		add(lblProblem, gbc_lblProblem);
 	}
+
 	
-	public AbstractButton getRdbtnDontModify() {
-		return rdbtnDontModifySignature;
-	}
-	
-	public JRadioButton getRdbtnChooseSignature() {
-		return rdbtnChooseSignature;
-	}
-	
-	public JRadioButton getRdbtnRecalculateSignature() {
-		return rdbtnRecalculateSignature;
-	}
-	
-	public JComboBox<String> getNoneAttackComboBox() {
-		return noneAttackComboBox;
+	public JComboBox<String> getAlgorithmComboBox() {
+		return algorithmComboBox;
 	}
 	
 	public JCheckBox getCVEAttackCheckBox() {
 		return chkbxCVEAttack;
 	}
 
-	public JRadioButton getRdbtnRandomKey() {
-		return rdbtnRandomKey;
-	}
-
 	public JButton getCVECopyBtn(){
 		return btnCopyPubPrivKeyCVEAttack;
 	}
-	
-	public JRadioButton getRdbtnOriginalSignature() {
-		return rdbtnOriginalSignature;
+
+	private void setJWTAreaText() {
+		// Remove and re-add ChangeListeners to avoid triggering an ChangeEvent
+		AbstractDocument document = (AbstractDocument) jwtArea.getDocument();
+		final DocumentListener[] documentListeners = document.getDocumentListeners();
+		for (final DocumentListener listener : documentListeners) {
+			document.removeDocumentListener(listener);
+		}
+
+		if(!jwtArea.getText().equals(jwtIM.getJWTJSON())){
+			jwtArea.setText(jwtIM.getJWTJSON());
+			//jwtAreaOriginalContent = jwtIM.getJWTJSON();
+		}
+
+		for (final DocumentListener listener : documentListeners) {
+			document.addDocumentListener(listener);
+		}
+	}
+
+	private void setKeyAreaText() {
+		// Remove and re-add ChangeListeners to avoid triggering an ChangeEvent
+		AbstractDocument document = (AbstractDocument) jwtKeyArea.getDocument();
+		final DocumentListener[] documentListeners = document.getDocumentListeners();
+		for (final DocumentListener listener : documentListeners) {
+			document.removeDocumentListener(listener);
+		}
+
+		jwtKeyArea.setText(jwtIM.getJWTKey());
+
+		for (final DocumentListener listener : documentListeners) {
+			document.addDocumentListener(listener);
+		}
+	}
+
+	private void setAlgorithmComboBox () {
+		String algorithm = null;
+		try {
+			algorithm = ReadableTokenFormat.getTokenFromReadableFormat(jwtIM.getJWTJSON()).getAlgorithm();
+			// Remove and re-add ActionListeners to avoid triggering an ActionEvent
+			final ActionListener[] actionListeners = algorithmComboBox.getActionListeners();
+			for (final ActionListener listener : actionListeners) {
+				algorithmComboBox.removeActionListener(listener);
+			}
+
+			algorithmComboBox.setSelectedItem(algorithm);
+
+			for (final ActionListener listener : actionListeners) {
+				algorithmComboBox.addActionListener(listener);
+			}
+		} catch (ReadableTokenFormat.InvalidTokenFormat e) {
+			Output.outputError("Exception while setting AlgorithmDropdown: " + e.getMessage());
+			e.printStackTrace();
+		}
+
 	}
 
 	public void updateSetView(final boolean reset) {
+		Output.output("updateSetView()");
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				if(!jwtArea.getText().equals(jwtIM.getJWTJSON())){
-					jwtArea.setText(jwtIM.getJWTJSON());
-					jwtAreaOriginalContent = jwtIM.getJWTJSON();
-				}
-				jwtKeyArea.setText(jwtIM.getJWTKey());
-				if(reset){
-					rdbtnDontModifySignature.setSelected(true);
-					jwtKeyArea.setText("");
-					jwtKeyArea.setEnabled(false);
-				}
-				jwtArea.setCaretPosition(0);
+
+				setJWTAreaText();
+				setAlgorithmComboBox();
+				setKeyAreaText();
+
 				lblProblem.setText(jwtIM.getProblemDetail());
-				
+
 				if(jwtIM.getcFW().isCookie()){
 					lblCookieFlags.setText(jwtIM.getcFW().toHTMLString());
 				}else{
 					lblCookieFlags.setText("");
 				}
 				lbRegisteredClaims.setText(jwtIM.getTimeClaimsAsText());
+
+				// force repaint to update all elements (i.e. JWT text)
+				repaint();
 			}
 		});
 	}
@@ -356,13 +373,13 @@ public class JWTInterceptTab extends JPanel {
 		jwtKeyArea.setEnabled(state);
 	}
 	
-	public boolean jwtWasChanged() {
-		if(jwtArea.getText()==null) {
-			return false;
-		}
-		return !jwtAreaOriginalContent.equals(jwtArea.getText());
-	}
-	
+//	public boolean jwtWasChanged() {
+//		if(jwtArea.getText()==null) {
+//			return false;
+//		}
+//		return !jwtAreaOriginalContent.equals(jwtArea.getText());
+//	}
+//
 	public String getJWTfromArea(){
 		return jwtArea.getText();
 	}
