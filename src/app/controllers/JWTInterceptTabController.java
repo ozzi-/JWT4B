@@ -286,7 +286,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
 	@Override
 	public String getTabCaption() {
-		return Settings.tabname;
+		return Settings.TAB_NAME;
 	}
 
 	@Override
