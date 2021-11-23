@@ -1,0 +1,117 @@
+package app.helpers;
+
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.EncodedKeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.RandomStringUtils;
+
+import app.algorithm.AlgorithmLinker;
+import app.algorithm.AlgorithmType;
+
+public class KeyHelper {
+
+  public static final String[] keyHeaderBeginMarkers = new String[]{"-----BEGIN PUBLIC KEY-----",
+      "-----BEGIN CERTIFICATE-----"};
+  public static final String[] keyFooterBeingMarkers = new String[]{"-----END PUBLIC KEY-----",
+      "-----END CERTIFICATE-----"};
+
+  public static String getRandomKey(String algorithm) {
+    String algorithmType = AlgorithmLinker.getTypeOf(algorithm);
+
+    if (algorithmType.equals(AlgorithmType.symmetric)) {
+      return RandomStringUtils.randomAlphanumeric(6);
+    }
+    if (algorithmType.equals(AlgorithmType.asymmetric) && algorithm.substring(0, 2).equals("RS")) {
+      try {
+        KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
+
+        PublicKeyBroker.publicKey = Base64.encodeBase64String(keyPair.getPublic().getEncoded());
+        return Base64.encodeBase64String(keyPair.getPrivate().getEncoded());
+      } catch (NoSuchAlgorithmException e) {
+        Output.outputError(e.getMessage());
+      }
+    }
+    if (algorithmType.equals(AlgorithmType.asymmetric) && algorithm.substring(0, 2).equals("ES")) {
+      try {
+        KeyPair keyPair = KeyPairGenerator.getInstance("EC").generateKeyPair();
+        return Base64.encodeBase64String(keyPair.getPrivate().getEncoded());
+      } catch (NoSuchAlgorithmException e) {
+        Output.outputError(e.getMessage());
+      }
+    }
+    throw new RuntimeException("Cannot get random key of provided algorithm as it does not seem valid HS, RS or ES");
+  }
+
+  public static PrivateKey generatePrivateKeyFromString(String key, String algorithm) {
+    PrivateKey privateKey = null;
+    if (key.length() > 1) {
+      key = cleanKey(key);
+      try {
+        byte[] keyByteArray = Base64.decodeBase64(key);
+        KeyFactory kf = KeyFactory.getInstance(algorithm);
+        EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyByteArray);
+        privateKey = kf.generatePrivate(keySpec);
+      } catch (Exception e) {
+        Output.outputError(
+            "Error generating private key with input string '" + key + "' and algorithm '" + algorithm + "' - "
+                + e.getMessage() + " - ");
+      }
+    }
+    return privateKey;
+  }
+
+  public static String cleanKey(String key) {
+    for (String keyBeginMarker : keyHeaderBeginMarkers) {
+      key = key.replace(keyBeginMarker, "");
+    }
+    for (String keyEndMarker : keyFooterBeingMarkers) {
+      key = key.replace(keyEndMarker, "");
+    }
+    key = key.replaceAll("\\s+", "").replaceAll("\\r+", "").replaceAll("\\n+", "");
+
+    return key;
+  }
+
+  public static PublicKey generatePublicKeyFromString(String key, String algorithm) {
+    PublicKey publicKey = null;
+    if (key.length() > 1) {
+      key = KeyHelper.cleanKey(key);
+      byte[] keyByteArray = java.util.Base64.getDecoder().decode(key);
+      try {
+        KeyFactory kf = KeyFactory.getInstance(algorithm);
+        EncodedKeySpec keySpec = new X509EncodedKeySpec(keyByteArray);
+        publicKey = kf.generatePublic(keySpec);
+      } catch (Exception e) {
+        Output.outputError(e.getMessage());
+      }
+    }
+    return publicKey;
+  }
+
+  public static RSAPublicKey loadPublicKey() {
+    String publicPEM = Config.cveAttackModePublicKey.replaceAll("\\n", "")
+        .replace("-----BEGIN PUBLIC KEY-----", "")
+        .replace("-----END PUBLIC KEY-----", "");
+    ;
+    KeyFactory kf;
+    try {
+      kf = KeyFactory.getInstance("RSA");
+      X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(java.util.Base64.getDecoder().decode(publicPEM));
+      return (RSAPublicKey) kf.generatePublic(keySpecX509);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+
+}

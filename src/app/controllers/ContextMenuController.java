@@ -19,7 +19,7 @@ import model.Strings;
 
 public class ContextMenuController implements IContextMenuFactory{
 
-	private MenuItemListener menuItemListener;
+	private final MenuItemListener menuItemListener;
 	private String selectedText = null;
 	
 	public ContextMenuController(JWTSuiteTabController jstC) {	

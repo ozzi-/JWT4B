@@ -36,7 +36,7 @@ public class CustomJWToken extends JWT {
 	private String headerJson;
 	private String payloadJson;
 	private byte[] signature;
-	private List<TimeClaim> timeClaimList = new ArrayList<TimeClaim>();
+	private final List<TimeClaim> timeClaimList = new ArrayList<>();
 	private String originalToken;
 
 	public CustomJWToken(String token) {
@@ -208,7 +208,8 @@ public class CustomJWToken extends JWT {
 			}
 			JWT.decode(tok);
 			return true;
-		} catch (JWTDecodeException exception) {
+		} catch (JWTDecodeException ignored) {
+			// ignored
 		}
 		return false;
 	}

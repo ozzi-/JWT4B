@@ -87,7 +87,7 @@ public class JWTSuiteTabController implements ITab {
 			String curAlgo = token.getAlgorithm();
 			JWTVerifier verifier = JWT.require(AlgorithmLinker.getVerifierAlgorithm(curAlgo, key)).build();
 			DecodedJWT test = verifier.verify(token.getToken());
-			jwtSTM.setJwtSignatureColor(Settings.colorValid);
+			jwtSTM.setJwtSignatureColor(Settings.COLOR_VALID);
 			jwtSTM.setVerificationLabel(Strings.verificationValid);
 			test.getAlgorithm();
 		} catch (JWTVerificationException e) {
@@ -95,19 +95,19 @@ public class JWTSuiteTabController implements ITab {
 			jwtSTM.setVerificationResult(e.getMessage());
 
 			if (e instanceof SignatureVerificationException) {
-				jwtSTM.setJwtSignatureColor(Settings.colorInvalid);
+				jwtSTM.setJwtSignatureColor(Settings.COLOR_INVALID);
 				jwtSTM.setVerificationLabel(Strings.verificationInvalidSignature);
 			} else if(e instanceof InvalidClaimException) {
-				jwtSTM.setJwtSignatureColor(Settings.colorProblemInvalid);
+				jwtSTM.setJwtSignatureColor(Settings.COLOR_PROBLEM_INVALID);
 				jwtSTM.setVerificationLabel(Strings.verificationInvalidClaim);
 			}else {
-				jwtSTM.setJwtSignatureColor(Settings.colorProblemInvalid);
+				jwtSTM.setJwtSignatureColor(Settings.COLOR_PROBLEM_INVALID);
 				jwtSTM.setVerificationLabel(Strings.verificationError);
 			}
 
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			Output.output("Verification failed (" + e.getMessage() + ")");
-			jwtSTM.setJwtSignatureColor(Settings.colorProblemInvalid);
+			jwtSTM.setJwtSignatureColor(Settings.COLOR_PROBLEM_INVALID);
 			jwtSTM.setVerificationResult(e.getMessage());
 			jwtSTM.setVerificationLabel(Strings.verificationInvalidKey);
 		}
@@ -116,7 +116,7 @@ public class JWTSuiteTabController implements ITab {
 	
 	@Override
 	public String getTabCaption() {
-		return Settings.tabname;
+		return Settings.TAB_NAME;
 	}
 
 	@Override

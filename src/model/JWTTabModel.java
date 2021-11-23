@@ -22,7 +22,7 @@ public class JWTTabModel {
 	public JWTTabModel(String keyValue, byte[] content) {
 		this.key = keyValue;
 		this.hashCode = new String(content).hashCode();
-		this.verificationColor = Settings.colorUndefined;
+		this.verificationColor = Settings.COLOR_UNDEFINED;
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class JWTTabModel {
 	}
 
 	public Color getVerificationColor() {
-		return key.equals("") ? Settings.colorUndefined : verificationColor;
+		return key.equals("") ? Settings.COLOR_UNDEFINED : verificationColor;
 	}
 
 	public void setVerificationColor(Color verificationColor) {
@@ -112,6 +112,6 @@ public class JWTTabModel {
 	}
 
 	public String getTimeClaimsAsText() {
-		return TimeClaim.getTimeClaimsAsText(tcl);
+		return TimeClaim.getTimeClaimsAsHTML(tcl);
 	}
 }

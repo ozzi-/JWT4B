@@ -1,9 +1,9 @@
 package app.helpers;
 
 public class CookieFlagWrapper {
-	private boolean secureFlag;
-	private boolean httpOnlyFlag;
-	private boolean isCookie;
+	private final boolean secureFlag;
+	private final boolean httpOnlyFlag;
+	private final boolean isCookie;
 
 	public CookieFlagWrapper(boolean isCookie, boolean secureFlag, boolean httpOnlyFlag) {
 		this.isCookie = isCookie;

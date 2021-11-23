@@ -10,7 +10,7 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 
 	private String selectedKeyword;
 	private Integer headerIndex;
-	private List<String> headers;
+	private final List<String> headers;
 	
 	public AuthorizationBearerHeader(List<String> headers, String bodyP) {
 		this.headers=headers;
@@ -18,7 +18,7 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 	
 	public boolean positionFound() {
 		for(int counter = 0; counter<headers.size(); counter++) { 
-			if(headerContainsaKeyWordAndIsJWT(headers.get(counter), Config.jwtKeywords)) {
+			if(headerContainsKeyWordAndIsJWT(headers.get(counter), Config.jwtKeywords)) {
 				this.headerIndex = counter;
 				return true;
 			}
@@ -26,7 +26,7 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 		return false;
 	}
 	
-	private boolean headerContainsaKeyWordAndIsJWT(String header, List<String> jwtKeywords) {
+	private boolean headerContainsKeyWordAndIsJWT(String header, List<String> jwtKeywords) {
 		for(String keyword : jwtKeywords){
 			if(header.startsWith(keyword)){ 
 				String jwt = header.replace(keyword, "").trim();

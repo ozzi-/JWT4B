@@ -36,7 +36,7 @@ public class PostBody extends ITokenPosition {
 	
 	public KeyValuePair getJWTFromPostBody() {
 		int from = 0;
-		int index = body.indexOf("&") == -1 ? body.length() : body.indexOf("&");
+		int index = body.contains("&") ? body.indexOf("&"): body.length();
 		int parameterCount = StringUtils.countMatches(body, "&") + 1;
 
 		List<KeyValuePair> postParameterList = new ArrayList<KeyValuePair>();

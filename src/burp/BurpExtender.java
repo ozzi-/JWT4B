@@ -28,7 +28,7 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
 
 		Output.output("JWT4B says hi!");
 		
-		callbacks.setExtensionName(Settings.extensionName);
+		callbacks.setExtensionName(Settings.EXTENSION_NAME);
 		callbacks.registerMessageEditorTabFactory(this);
 		
 		Config.loadConfig();

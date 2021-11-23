@@ -98,7 +98,7 @@ public class JWTTabController implements IMessageEditorTab {
 			// default
 		} else {
 			modelStateList.add(current);
-			jwtTM.setVerificationColor(Settings.colorUndefined);
+			jwtTM.setVerificationColor(Settings.COLOR_UNDEFINED);
 			jwtTM.setVerificationResult("");
 			jwtTM.setKey("");
 		}
@@ -124,18 +124,18 @@ public class JWTTabController implements IMessageEditorTab {
 			JWTVerifier verifier = JWT.require(AlgorithmLinker.getVerifierAlgorithm(curAlgo, key)).build();
 			DecodedJWT test = verifier.verify(jwtTM.getJWT());
 			jwtTM.setVerificationLabel(Strings.verificationValid);
-			jwtTM.setVerificationColor(Settings.colorValid);
+			jwtTM.setVerificationColor(Settings.COLOR_VALID);
 			test.getAlgorithm();
 			jwtVT.updateSetView(algoType);
 		} catch (JWTVerificationException e) {
 			if (e instanceof SignatureVerificationException) {
-				jwtTM.setVerificationColor(Settings.colorInvalid);
+				jwtTM.setVerificationColor(Settings.COLOR_INVALID);
 				jwtTM.setVerificationLabel(Strings.verificationInvalidSignature);
 			} else if(e instanceof InvalidClaimException) {
-				jwtTM.setVerificationColor(Settings.colorProblemInvalid);
+				jwtTM.setVerificationColor(Settings.COLOR_PROBLEM_INVALID);
 				jwtTM.setVerificationLabel(Strings.verificationInvalidClaim);
 			}else {
-				jwtTM.setVerificationColor(Settings.colorProblemInvalid);
+				jwtTM.setVerificationColor(Settings.COLOR_PROBLEM_INVALID);
 				jwtTM.setVerificationLabel(Strings.verificationError);
 			}
 			jwtTM.setVerificationResult(e.getMessage());
@@ -143,7 +143,7 @@ public class JWTTabController implements IMessageEditorTab {
 		} catch (IllegalArgumentException | UnsupportedEncodingException e) {
 			jwtTM.setVerificationResult(e.getMessage());
 			jwtTM.setVerificationLabel(Strings.verificationInvalidKey);
-			jwtTM.setVerificationColor(Settings.colorProblemInvalid);
+			jwtTM.setVerificationColor(Settings.COLOR_PROBLEM_INVALID);
 			jwtVT.updateSetView(algoType);
 		}
 		JWTTabModel current = new JWTTabModel(key, content);
@@ -163,7 +163,7 @@ public class JWTTabController implements IMessageEditorTab {
 
 	@Override
 	public String getTabCaption() {
-		return Settings.tabname;
+		return Settings.TAB_NAME;
 	}
 
 	@Override

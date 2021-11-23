@@ -1,8 +1,8 @@
 package app.algorithm;
 
 public class AlgorithmWrapper {
-	private String algorithm;
-	private String type;
+	private final String algorithm;
+	private final String type;
 
 	public AlgorithmWrapper(String algorithm, String none) {
 		this.algorithm = algorithm;

@@ -94,6 +94,6 @@ public class JWTInterceptModel {
 	}
 
 	public String getTimeClaimsAsText() {
-		return TimeClaim.getTimeClaimsAsText(tcl);
+		return TimeClaim.getTimeClaimsAsHTML(tcl);
 	}
 }

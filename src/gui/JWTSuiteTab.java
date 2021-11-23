@@ -40,10 +40,7 @@ public class JWTSuiteTab extends JPanel {
 	private RSyntaxTextArea jwtOuputField;
 	private JButton jwtSignatureButton;
 	private JTextArea jwtKeyArea;
-	private JLabel lblEnterSecret;
-	private JWTSuiteTabModel jwtSTM;
-	private JButton creditButton;
-	private JButton configButton;
+	private final JWTSuiteTabModel jwtSTM;
 	private JLabel lbRegisteredClaims;
 	private JLabel lblExtendedVerificationInfo;
 
@@ -103,7 +100,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lblPasteJwtToken.gridy = 1;
 		add(lblPasteJwtToken, gbc_lblPasteJwtToken);
 
-		creditButton = new JButton("About");
+		JButton creditButton = new JButton("About");
 		creditButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JLabelLink jLabelLink = new JLabelLink(Strings.creditTitle, 530, 555);
@@ -131,9 +128,9 @@ public class JWTSuiteTab extends JPanel {
 		gbc_creditButton.gridy = 1;
 		gbc_creditButton.fill = GridBagConstraints.HORIZONTAL;
 		add(creditButton, gbc_creditButton);
-		
-		
-		configButton = new JButton("Change Config");
+
+
+		JButton configButton = new JButton("Change Config");
 		configButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				File file = new File (Config.configPath);
@@ -166,7 +163,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_jwtInputField.gridy = 2;
 		add(jwtInputField, gbc_jwtInputField);
 
-		lblEnterSecret = new JLabel(Strings.enterSecretKey);
+		JLabel lblEnterSecret = new JLabel(Strings.enterSecretKey);
 		lblEnterSecret.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblEnterSecret = new GridBagConstraints();
 		gbc_lblEnterSecret.anchor = GridBagConstraints.WEST;

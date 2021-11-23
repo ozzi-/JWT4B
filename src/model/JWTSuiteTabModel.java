@@ -61,7 +61,7 @@ public class JWTSuiteTabModel {
 	}
 
 	public String getTimeClaimsAsText() {
-		return TimeClaim.getTimeClaimsAsText(tcl);
+		return TimeClaim.getTimeClaimsAsHTML(tcl);
 	}
 
 	public String getVerificationResult() {

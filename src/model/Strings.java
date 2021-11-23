@@ -14,6 +14,7 @@ public class Strings {
 	public static final String recalculateSignature = "Recalculate Signature";
 	public static final String originalToken = "Original Token";
 	public static final String updateAlgorithmSignature = "Update Algorithm / Signature";
+	public static final String noSecretsProvided = "No secret provided";
 	public static final String decodedJWT = "Decoded JWT";	
 	public static final String enterJWT = "Enter JWT";
 	
