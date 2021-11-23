@@ -260,7 +260,7 @@ public class JWTInterceptTab extends JPanel {
 		gbc_lbRegisteredClaims.gridy = 12;
 		add(lbRegisteredClaims, gbc_lbRegisteredClaims);
 		
-		btnCopyPubPrivKeyCVEAttack = new JButton("Copy used public &private key to clipboard used in CVE attack");
+		btnCopyPubPrivKeyCVEAttack = new JButton("Copy used public & private\r\nkey to clipboard used in CVE attack");
 		btnCopyPubPrivKeyCVEAttack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Toolkit.getDefaultToolkit()
@@ -378,4 +378,8 @@ public class JWTInterceptTab extends JPanel {
 	public void setKeyFieldValue(String string) {
 		jwtKeyArea.setText(string);
 	}
+
+  public JComboBox<String> getAlgorithmComboBox() {
+		return noneAttackComboBox;
+  }
 }

@@ -55,16 +55,20 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 	private String algAttackMode;
 	private boolean cveAttackMode;
 	private boolean edited;
+	private CustomJWToken originalToken;
+	private String signatureBeforeCVEAttack;
+	private String originalSignature;
+
 
 	public JWTInterceptTabController(IBurpExtenderCallbacks callbacks, JWTInterceptModel jwIM, JWTInterceptTab jwtST) {
 		this.jwtIM = jwIM;
 		this.jwtST = jwtST;
 		this.helpers = callbacks.getHelpers();
-		
+
 		createAndRegisterActionListeners(jwtST);
 	}
 
-	private void cveAttackChanged() {
+	private void cveAttackChanged()  {
 		JCheckBox jcb = jwtST.getCVEAttackCheckBox();
 		cveAttackMode = jcb.isSelected();
 		jwtST.getNoneAttackComboBox().setEnabled(!cveAttackMode);
@@ -79,6 +83,42 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			jwtST.getRdbtnOriginalSignature().setSelected(false);
 			jwtST.getRdbtnRandomKey().setSelected(false);
 			jwtST.getRdbtnRecalculateSignature().setSelected(false);
+
+			/// *** NEW - doesn't work yet
+			edited = true;
+			String algorithm = (String)jwtST.getAlgorithmComboBox().getSelectedItem();
+			CustomJWToken token = null;
+			try {
+				token = ReadableTokenFormat.getTokenFromReadableFormat(jwtIM.getJWTJSON());
+			} catch (InvalidTokenFormat e) {
+				// TODO display message to users
+				Output.outputError("Failed to get token in readable format: "+e.getMessage());
+			}
+			String header = token.getHeaderJson();
+			token.setHeaderJson(header.replace(token.getAlgorithm(), algorithm));
+
+			String headerJSON = token.getHeaderJson();
+			JsonObject headerJSONObj = Json.parse(headerJSON).asObject();
+			headerJSONObj.set("alg", "RS256");
+			JsonObject jwk = new JsonObject();
+			jwk.add("kty", "RSA");
+			jwk.add("kid", "jwt4b@portswigger.net");
+			jwk.add("use", "sig");
+			RSAPublicKey pk = loadPublicKey();
+			jwk.add("n", Base64.getUrlEncoder().encodeToString(pk.getPublicExponent().toByteArray()));
+			jwk.add("e", Base64.getUrlEncoder().encodeToString(pk.getModulus().toByteArray()));
+			headerJSONObj.add("jwk", jwk);
+			token.setHeaderJson(headerJSONObj.toString());
+			Algorithm algo;
+			try {
+				algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), Config.cveAttackModePrivateKey);
+				token.calculateAndSetSignature(algo);
+			} catch (UnsupportedEncodingException e) {
+				Output.outputError("Failed to sign when using cve attack mode");
+				e.printStackTrace();
+			}
+			/// *** NEW END
+
 		} else {
 			jwtST.setKeyFieldValue("");
 			jwtST.setKeyFieldState(false);
@@ -105,6 +145,28 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 			algAttackMode = "NONE";
 			break;
 		}
+
+		edited = true;
+		CustomJWToken token = null;
+		try {
+			token = ReadableTokenFormat.getTokenFromReadableFormat(jwtIM.getJWTJSON());
+		} catch (InvalidTokenFormat e) {
+			// TODO display message to users
+			Output.outputError("Failed to get token in readable format: "+e.getMessage());
+		}
+		String header = token.getHeaderJson();
+		if (algAttackMode != null) {
+			edited = true;
+			token.setSignature("");
+			token.setHeaderJson(header.replace(token.getAlgorithm(), algAttackMode));
+		}else{
+			token.setHeaderJson(header.replace(token.getAlgorithm(), originalToken.getAlgorithm()));
+			token.setSignature(originalSignature);
+		}
+
+		jwtIM.setJWTJSON(ReadableTokenFormat.getReadableFormat(token));
+		jwtIM.setSignature(token.getSignature());
+		jwtST.updateSetView(false);
 	}
 
 	private void radioButtonChanged(boolean cDM, boolean cRK, boolean cOS, boolean cRS, boolean cCS) {
@@ -188,10 +250,12 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		} else {
 			jwtIM.setJWT(tokenPosition.getToken());
 			CustomJWToken cJWT = new CustomJWToken(jwtIM.getJWT());
+			originalToken = cJWT;
 			List<TimeClaim> tcl = cJWT.getTimeClaimList();
 			jwtIM.setTimeClaims(tcl);
 			jwtIM.setJWTJSON(ReadableTokenFormat.getReadableFormat(cJWT));
 			jwtIM.setSignature(cJWT.getSignature());
+			originalSignature = cJWT.getSignature();
 			jwtST.updateSetView(Config.resetEditor);
 			algAttackMode = null;
 			if(Config.resetEditor) {
@@ -238,35 +302,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 		} else if (keepOriginalSignature) {
 			jwtIM.setSignature(jwtIM.getOriginalSignature());
 		}
-		if (algAttackMode != null) {
-			edited = true;
-			String header = token.getHeaderJson();
-			token.setHeaderJson(header.replace(token.getAlgorithm(), algAttackMode));
-			token.setSignature("");
-		}
-		if (cveAttackMode) {
-			edited = true;
-			String headerJSON = token.getHeaderJson();
-			JsonObject headerJSONObj = Json.parse(headerJSON).asObject();
-			headerJSONObj.set("alg", "RS256");
-			JsonObject jwk = new JsonObject();
-			jwk.add("kty", "RSA");
-			jwk.add("kid", "jwt4b@portswigger.net");
-			jwk.add("use", "sig");
-			RSAPublicKey pk = loadPublicKey();
-			jwk.add("n", Base64.getUrlEncoder().encodeToString(pk.getPublicExponent().toByteArray()));
-			jwk.add("e", Base64.getUrlEncoder().encodeToString(pk.getModulus().toByteArray()));
-			headerJSONObj.add("jwk", jwk);
-			token.setHeaderJson(headerJSONObj.toString());
-			Algorithm algo;
-			try {
-				algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), Config.cveAttackModePrivateKey);
-				token.calculateAndSetSignature(algo);
-			} catch (UnsupportedEncodingException e) {
-				Output.outputError("Failed to sign when using cve attack mode");
-				e.printStackTrace();
-			}
-		}		
+
 		// token may be null, if it is invalid JSON, if so, don't try changing anything
 		if(token.getToken()!=null) {
 			this.message = this.tokenPosition.replaceToken(token.getToken());
@@ -286,7 +322,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
 	@Override
 	public String getTabCaption() {
-		return Settings.tabname;
+		return Settings.TAB_NAME;
 	}
 
 	@Override
