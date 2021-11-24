@@ -97,17 +97,15 @@ public class KeyHelper {
     return publicKey;
   }
 
-  public static RSAPublicKey loadPublicKey() {
-    String publicPEM = Config.cveAttackModePublicKey.replaceAll("\\n", "")
-        .replace("-----BEGIN PUBLIC KEY-----", "")
-        .replace("-----END PUBLIC KEY-----", "");
-    ;
+  public static RSAPublicKey loadCVEAttackPublicKey() {
+    String publicPEM = KeyHelper.cleanKey(Config.cveAttackModePublicKey);
     KeyFactory kf;
     try {
       kf = KeyFactory.getInstance("RSA");
       X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(java.util.Base64.getDecoder().decode(publicPEM));
       return (RSAPublicKey) kf.generatePublic(keySpecX509);
     } catch (Exception e) {
+      Output.outputError("Could not load public key - " + e.getMessage());
       e.printStackTrace();
     }
     return null;

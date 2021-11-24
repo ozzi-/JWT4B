@@ -37,10 +37,8 @@ public class CustomJWToken extends JWT {
 	private String payloadJson;
 	private byte[] signature;
 	private final List<TimeClaim> timeClaimList = new ArrayList<>();
-	private String originalToken;
 
 	public CustomJWToken(String token) {
-		originalToken = token;
 		if (token != null) {
 			final String[] parts = splitToken(token);
 			try {
@@ -230,12 +228,14 @@ public class CustomJWToken extends JWT {
 		return parts;
 	}
 
-	public void setHeaderJson(String headerJson) {
+	public CustomJWToken setHeaderJson(String headerJson) {
 		this.headerJson = headerJson;
+		return this;
 	}
 
-	public void setPayloadJson(String payloadJson) {
+	public CustomJWToken setPayloadJson(String payloadJson) {
 		this.payloadJson = payloadJson;
+		return this;
 	}
 
 	public List<String> getAudience() {
@@ -303,11 +303,8 @@ public class CustomJWToken extends JWT {
 		return Base64.encodeBase64URLSafeString(this.signature);
 	}
 
-	public void setSignature(String signature) {
+	public CustomJWToken setSignature(String signature) {
 		this.signature = Base64.decodeBase64(signature);
-	}
-
-	public String getOriginalToken() {
-		return originalToken;
+		return this;
 	}
 }

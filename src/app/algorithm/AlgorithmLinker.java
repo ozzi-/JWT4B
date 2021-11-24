@@ -164,12 +164,12 @@ public class AlgorithmLinker {
 		RSAKeyProvider keyProviderRSA = new RSAKeyProvider() {
 		    @Override
 		    public RSAPublicKey getPublicKeyById(String kid) {
-		        return (RSAPublicKey) getKeyInstance(key, "EC", false);
+		        return (RSAPublicKey) getKeyInstance(key, "RSA", false);
 		    }
 
 		    @Override
 		    public RSAPrivateKey getPrivateKey() {
-		        return (RSAPrivateKey) getKeyInstance(key, "EC", true);
+		        return (RSAPrivateKey) getKeyInstance(key, "RSA", true);
 		    }
 
 		    @Override
