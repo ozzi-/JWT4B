@@ -68,7 +68,6 @@ public class JWTInterceptTab extends JPanel {
 	private JLabel lbRegisteredClaims;
 	private JCheckBox chkbxCVEAttack;
 	private JButton btnCopyPubPrivKeyCVEAttack;
-	private JButton signBtn;
 
 	public JWTInterceptTab(JWTInterceptModel jwtIM) {
 		this.jwtIM = jwtIM;
@@ -82,7 +81,6 @@ public class JWTInterceptTab extends JPanel {
       ActionListener chooseSignatureListener,
       ActionListener algAttackListener,
       ActionListener cveAttackListener,
-      ActionListener manualSignListener,
       DocumentListener syncKey,
       KeyListener jwtAreaTyped){
 		rdbtnDontModifySignature.addActionListener(dontMofiy);
@@ -92,7 +90,6 @@ public class JWTInterceptTab extends JPanel {
 		rdbtnRandomKey.addActionListener(recalculateSignatureListener);
 		noneAttackComboBox.addActionListener(algAttackListener);
 		chkbxCVEAttack.addActionListener(cveAttackListener);
-		signBtn.addActionListener(manualSignListener);
 		jwtKeyArea.getDocument().addDocumentListener(syncKey);
 		jwtArea.addKeyListener(jwtAreaTyped);
 	}
@@ -235,21 +232,14 @@ public class JWTInterceptTab extends JPanel {
 		gbc_lblProblem.gridy = 8;
 		add(lblProblem, gbc_lblProblem);
 
-		signBtn = new JButton("Sign");
-		signBtn.setEnabled(false);
-		GridBagConstraints gbc_lblSignBtn = new GridBagConstraints();
-		gbc_lblSignBtn.anchor = GridBagConstraints.WEST;
-		gbc_lblSignBtn.insets = new Insets(0, 0, 5, 5);
-		gbc_lblSignBtn.gridx = 2;
-		gbc_lblSignBtn.gridy = 9;
-		add(signBtn, gbc_lblSignBtn);
+
 
 		lblNewLabel = new JLabel("Alg None Attack:");
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 		gbc_lblNewLabel.anchor = GridBagConstraints.WEST;
 		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel.gridx = 2;
-		gbc_lblNewLabel.gridy = 10;
+		gbc_lblNewLabel.gridy = 9;
 		add(lblNewLabel, gbc_lblNewLabel);
 		
 		lblCookieFlags = new JLabel("");
@@ -257,7 +247,7 @@ public class JWTInterceptTab extends JPanel {
 		gbc_lblCookieFlag.insets = new Insets(0, 0, 5, 5);
 		gbc_lblCookieFlag.anchor = GridBagConstraints.WEST;
 		gbc_lblCookieFlag.gridx = 1;
-		gbc_lblCookieFlag.gridy = 11;
+		gbc_lblCookieFlag.gridy = 10;
 		add(lblCookieFlags, gbc_lblCookieFlag);
 		
 		noneAttackComboBox = new JComboBox<String>();
@@ -265,7 +255,7 @@ public class JWTInterceptTab extends JPanel {
 		gbc_noneAttackComboBox.anchor = GridBagConstraints.WEST;
 		gbc_noneAttackComboBox.insets = new Insets(0, 0, 5, 5);
 		gbc_noneAttackComboBox.gridx = 2;
-		gbc_noneAttackComboBox.gridy = 11;
+		gbc_noneAttackComboBox.gridy = 10;
 		add(noneAttackComboBox, gbc_noneAttackComboBox);
 		
 		chkbxCVEAttack = new JCheckBox("CVE-2018-0114 Attack");
@@ -275,7 +265,7 @@ public class JWTInterceptTab extends JPanel {
 		gbc_chkbxCVEAttack.anchor = GridBagConstraints.WEST;
 		gbc_chkbxCVEAttack.insets = new Insets(0, 0, 5, 5);
 		gbc_chkbxCVEAttack.gridx = 2;
-		gbc_chkbxCVEAttack.gridy = 12;
+		gbc_chkbxCVEAttack.gridy = 11;
 		add(chkbxCVEAttack, gbc_chkbxCVEAttack);
 		
 		lbRegisteredClaims = new JLabel();
@@ -284,7 +274,7 @@ public class JWTInterceptTab extends JPanel {
 		gbc_lbRegisteredClaims.insets = new Insets(0, 0, 5, 5);
 		gbc_lbRegisteredClaims.fill = GridBagConstraints.BOTH;
 		gbc_lbRegisteredClaims.gridx = 2;
-		gbc_lbRegisteredClaims.gridy = 13;
+		gbc_lbRegisteredClaims.gridy = 12;
 		add(lbRegisteredClaims, gbc_lbRegisteredClaims);
 		
 		btnCopyPubPrivKeyCVEAttack = new JButton("Copy used public & private\r\nkey to clipboard used in CVE attack");
@@ -302,7 +292,7 @@ public class JWTInterceptTab extends JPanel {
 		GridBagConstraints gbc_button = new GridBagConstraints();
 		gbc_button.insets = new Insets(0, 0, 0, 5);
 		gbc_button.gridx = 2;
-		gbc_button.gridy = 14;
+		gbc_button.gridy = 13;
 		add(btnCopyPubPrivKeyCVEAttack, gbc_button);
 		
 		noneAttackComboBox.addItem("  -");
@@ -346,6 +336,9 @@ public class JWTInterceptTab extends JPanel {
 	}
 
 	public void updateSetView(final boolean reset) {
+		updateSetView(reset,false);
+	}
+	public void updateSetView(final boolean reset, final boolean noKeyUpdate) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				Output.output("Updating view - reset: "+reset);
@@ -356,7 +349,9 @@ public class JWTInterceptTab extends JPanel {
 					jwtKeyArea.setEnabled(false);
 				}else{
 					jwtArea.setText(ReadableTokenFormat.getReadableFormat(jwtIM.getJwToken()));
-					jwtKeyArea.setText(jwtIM.getJWTKey());
+					if(noKeyUpdate){
+						jwtKeyArea.setText(jwtIM.getJWTKey());
+					}
 				}
 
 				jwtArea.setCaretPosition(0);
@@ -412,7 +407,4 @@ public class JWTInterceptTab extends JPanel {
 		return noneAttackComboBox;
   }
 
-	public JButton getSignBtn(){
-		return signBtn;
-	}
 }

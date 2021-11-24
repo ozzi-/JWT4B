@@ -3,6 +3,7 @@ package model;
 import java.util.List;
 
 import app.helpers.CookieFlagWrapper;
+import app.helpers.Output;
 
 public class JWTInterceptModel {
 
