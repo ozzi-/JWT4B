@@ -299,8 +299,9 @@ public class JWTInterceptTabController implements IMessageEditorTab {
   private void replaceTokenInMessage() {
     CustomJWToken token = null;
     try {
-      token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
-    } catch (InvalidTokenFormat e) {
+      // token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
+      // TODO build token from three areas array list!
+    } catch (Exception e) {
       // TODO is this visible to user?
       jwtIM.setProblemDetail(e.getMessage());
     }
@@ -331,8 +332,9 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       Output.output("Recalculating signature as key typed");
       CustomJWToken token = null;
       try {
-        token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJwtArea().getText());
-      } catch (InvalidTokenFormat e) {
+        // TODO handle three areas
+        // token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJwtArea().getText());
+      } catch (Exception e) {
         // TODO show user
         Output.outputError("JWT cannot be parsed - " + e.getMessage());
       }
@@ -374,7 +376,8 @@ public class JWTInterceptTabController implements IMessageEditorTab {
   }
 
   private void createAndRegisterActionListeners(JWTInterceptTab jwtST) {
-    jwtST.getJwtArea().addKeyListener(new KeyListener() {
+    // TODO add listener for three areas
+   /* jwtST.getJwtArea().addKeyListener(new KeyListener() {
 
       @Override
       public void keyTyped(KeyEvent arg0) {
@@ -388,7 +391,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       public void keyPressed(KeyEvent arg0) {
         edited = true;
       }
-    });
+    });*/
 
     ActionListener dontModifyListener = new ActionListener() {
 
