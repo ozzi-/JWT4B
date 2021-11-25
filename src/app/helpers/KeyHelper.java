@@ -8,6 +8,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.EncodedKeySpec;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
@@ -51,7 +52,8 @@ public class KeyHelper {
     throw new RuntimeException("Cannot get random key of provided algorithm as it does not seem valid HS, RS or ES");
   }
 
-  public static PrivateKey generatePrivateKeyFromString(String key, String algorithm) {
+  public static PrivateKey generatePrivateKeyFromString(String key, String algorithm)
+      throws NoSuchAlgorithmException, InvalidKeySpecException {
     PrivateKey privateKey = null;
     if (key.length() > 1) {
       key = cleanKey(key);
@@ -64,6 +66,7 @@ public class KeyHelper {
         Output.outputError(
             "Error generating private key with input string '" + key + "' and algorithm '" + algorithm + "' - "
                 + e.getMessage() + " - ");
+        throw e;
       }
     }
     return privateKey;

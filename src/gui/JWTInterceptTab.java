@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
@@ -12,6 +13,7 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
 import javax.swing.AbstractButton;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -36,6 +38,7 @@ import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
+import app.controllers.ReadableTokenFormat;
 import app.helpers.Config;
 import app.helpers.Output;
 import model.JWTInterceptModel;
@@ -91,15 +94,13 @@ public class JWTInterceptTab extends JPanel {
 		noneAttackComboBox.addActionListener(algAttackListener);
 		chkbxCVEAttack.addActionListener(cveAttackListener);
 		jwtKeyArea.getDocument().addDocumentListener(syncKey);
-		// TODO do we need the listener for all 3?
-		jwtSignatureArea.addKeyListener(jwtAreaTyped);
 		jwtHeaderArea.addKeyListener(jwtAreaTyped);
 		jwtPayloadArea.addKeyListener(jwtAreaTyped);
 	}
 	
 	private void drawGui() {
 
-		setLayout(new GridLayout(1, 2,2,2));
+		setLayout(new GridLayout(1, 2,5,5));
 		JPanel areasPanel = new JPanel();
 		JPanel actionPanel = new JPanel();
 
@@ -107,7 +108,7 @@ public class JWTInterceptTab extends JPanel {
 
 		fixSyntaxArea();
 
-		jwtHeaderArea = new RSyntaxTextArea(20,20);
+		jwtHeaderArea = new RSyntaxTextArea(10,20);
 		jwtHeaderArea.setMarginLinePosition(70);
 		jwtHeaderArea.setWhitespaceVisible(true);
 		//area.setMinimumSize(new Dimension(300, 300));
@@ -126,7 +127,7 @@ public class JWTInterceptTab extends JPanel {
 		headerPane.setLineNumbersEnabled(false);
 
 
-		jwtPayloadArea = new RSyntaxTextArea(20,20);
+		jwtPayloadArea = new RSyntaxTextArea(10,20);
 		jwtPayloadArea.setMarginLinePosition(70);
 		jwtPayloadArea.setWhitespaceVisible(true);
 		//area.setMinimumSize(new Dimension(300, 300));
@@ -144,8 +145,9 @@ public class JWTInterceptTab extends JPanel {
 		payloadPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		payloadPane.setLineNumbersEnabled(false);
 
-		jwtSignatureArea = new RSyntaxTextArea(20,10);
+		jwtSignatureArea = new RSyntaxTextArea(10,10);
 		jwtSignatureArea.setMarginLinePosition(70);
+		jwtSignatureArea.setLineWrap(true);
 		jwtSignatureArea.setWhitespaceVisible(true);
 		//area.setMinimumSize(new Dimension(300, 300));
 		scheme = jwtSignatureArea.getSyntaxScheme();
@@ -155,7 +157,7 @@ public class JWTInterceptTab extends JPanel {
 		jwtSignatureArea.revalidate();
 		jwtSignatureArea.setHighlightCurrentLine(false);
 		jwtSignatureArea.setCurrentLineHighlightColor(Color.WHITE);
-		jwtSignatureArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
+		jwtSignatureArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
 		jwtSignatureArea.setEditable(true);
 		jwtSignatureArea.setPopupMenu(new JPopupMenu());
 		RTextScrollPane signaturePane = new RTextScrollPane(jwtSignatureArea);
@@ -208,15 +210,24 @@ public class JWTInterceptTab extends JPanel {
 		actionPanel.add(jp);
 
 		lblProblem = new JLabel("");
+		lblProblem.setForeground(Color.RED);
 		actionPanel.add(lblProblem);
 
-		lblNewLabel = new JLabel("Alg None Attack:");
-		actionPanel.add(lblNewLabel);
+
+		JPanel algAttackPanel = new JPanel();
+		//algAttackPanel.setLayout(new BoxLayout(algAttackPanel, BoxLayout.PAGE_AXIS));
+		algAttackPanel.setLayout(new FlowLayout());
 
 		lblCookieFlags = new JLabel("");
 		actionPanel.add(lblCookieFlags);
 
-		noneAttackComboBox = new JComboBox<String>();
+		lblNewLabel = new JLabel("Alg None Attack:");
+		algAttackPanel.add(lblNewLabel);
+		actionPanel.add(algAttackPanel);
+
+		noneAttackComboBox = new JComboBox<>();
+		noneAttackComboBox.setMaximumSize(new Dimension(100,50));
+		noneAttackComboBox.setPreferredSize(new Dimension(100,50));
 		actionPanel.add(noneAttackComboBox);
 
 		chkbxCVEAttack = new JCheckBox("CVE-2018-0114 Attack");
@@ -277,6 +288,10 @@ public class JWTInterceptTab extends JPanel {
 		UIManager.put("RTextAreaUI.inputMap", null);
 	}
 
+	public void setProblemLbl(String txt){
+		lblProblem.setText(txt);
+	}
+
 
 
 	public AbstractButton getRdbtnDontModify() {
@@ -325,9 +340,9 @@ public class JWTInterceptTab extends JPanel {
 					jwtKeyArea.setEnabled(false);
 				}else{
 					// jwtArea.setText(ReadableTokenFormat.getReadableFormat(jwtIM.getJwToken()));
-					jwtHeaderArea.setText(jwtIM.getJwToken().getHeaderJson());
-					jwtPayloadArea.setText(jwtIM.getJwToken().getPayloadJson());
-					jwtSignatureArea.setText(jwtIM.getJwToken().getSignature());
+					jwtHeaderArea.setText(ReadableTokenFormat.jsonBeautify(jwtIM.getJwToken().getHeaderJson()));
+					jwtPayloadArea.setText(ReadableTokenFormat.jsonBeautify(jwtIM.getJwToken().getPayloadJson()));
+					jwtSignatureArea.setText(ReadableTokenFormat.jsonBeautify(jwtIM.getJwToken().getSignature()));
 					if(noKeyUpdate){
 						jwtKeyArea.setText(jwtIM.getJWTKey());
 					}
@@ -335,7 +350,7 @@ public class JWTInterceptTab extends JPanel {
 
 				// TODO where to reset caret? ? jwtArea.setCaretPosition(0);
 				lblProblem.setText(jwtIM.getProblemDetail());
-
+				// TODO are cookie flag wrappers displayed?
 				if(jwtIM.getcFW().isCookie()){
 					lblCookieFlags.setText(jwtIM.getcFW().toHTMLString());
 				}else{

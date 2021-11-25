@@ -21,6 +21,7 @@ import com.auth0.jwt.interfaces.Claim;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,6 +34,8 @@ import app.helpers.Output;
  */
 
 public class CustomJWToken extends JWT {
+
+	private boolean isMinified;
 	private String headerJson;
 	private String payloadJson;
 	private byte[] signature;
@@ -45,7 +48,7 @@ public class CustomJWToken extends JWT {
 				headerJson = StringUtils.newStringUtf8(Base64.decodeBase64(parts[0]));
 				byte[] payloadBase64 = Base64.decodeBase64(parts[1]);
 				payloadJson = StringUtils.newStringUtf8(payloadBase64);
-
+				isMinified=(isMinified(payloadJson) && isMinified(headerJson));
 				JsonObject headerObject;
 				try {
 					headerObject = Json.parse(headerJson).asObject();
@@ -71,6 +74,18 @@ public class CustomJWToken extends JWT {
 			}
 			signature = Base64.decodeBase64(parts[2]);
 		}
+	}
+
+	// TODO unit test
+	private boolean isMinified(String json) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonNode = null;
+		try {
+			jsonNode = objectMapper.readValue(json, JsonNode.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return(jsonNode.toString().equals(json));
 	}
 
 	public List<TimeClaim> getTimeClaimList() {
@@ -188,6 +203,7 @@ public class CustomJWToken extends JWT {
 			String signatureEncoded = Base64.encodeBase64URLSafeString(this.signature);
 			return String.format("%s.%s", content, signatureEncoded);
 		}
+		Output.outputError("Could not get token as some parts are to be null");
 		return null;
 	}
 
@@ -274,6 +290,10 @@ public class CustomJWToken extends JWT {
 		throw new UnsupportedOperationException();
 	}
 
+	public boolean isMinified() {
+		return isMinified;
+	}
+
 	public String getAlgorithm() {
 		String algorithm = "";
 		try {
@@ -307,4 +327,5 @@ public class CustomJWToken extends JWT {
 		this.signature = Base64.decodeBase64(signature);
 		return this;
 	}
+
 }

@@ -23,8 +23,8 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
 import app.algorithm.AlgorithmLinker;
-import app.controllers.ReadableTokenFormat.InvalidTokenFormat;
 import app.helpers.Config;
+import app.helpers.DelayedDocumentListener;
 import app.helpers.KeyHelper;
 import app.helpers.Output;
 import app.helpers.PublicKeyBroker;
@@ -57,6 +57,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
   private boolean cveAttackMode;
   private boolean edited;
   private String originalSignature;
+  private boolean addMetaHeader;
 
 
   public JWTInterceptTabController(IBurpExtenderCallbacks callbacks, JWTInterceptModel jwIM, JWTInterceptTab jwtST) {
@@ -97,6 +98,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
     this.message = content;
   }
 
+  // TODO payload was returned as string??
   @Override
   public byte[] getMessage() {
     // see https://github.com/PortSwigger/example-custom-editor-tab/blob/master/java/BurpExtender.java#L119
@@ -106,15 +108,16 @@ public class JWTInterceptTabController implements IMessageEditorTab {
     if (nothingChanged) {
       return this.message;
     }
-
-    jwtIM.setProblemDetail("");
+    clearError();
     radioButtonChanged(true, false, false, false, false);
     jwtST.getCVEAttackCheckBox().setSelected(false);
+    addLogHeadersToRequest();
     replaceTokenInMessage();
     return this.message;
   }
 
   private void cveAttackChanged() {
+    edited = true;
     JCheckBox jcb = jwtST.getCVEAttackCheckBox();
     cveAttackMode = jcb.isSelected();
     jwtST.getNoneAttackComboBox().setEnabled(!cveAttackMode);
@@ -124,13 +127,12 @@ public class JWTInterceptTabController implements IMessageEditorTab {
     jwtST.getRdbtnRecalculateSignature().setEnabled(!cveAttackMode);
     jwtST.setKeyFieldState(!cveAttackMode);
     jwtST.getCVECopyBtn().setVisible(cveAttackMode);
-    // TODO disable load secret / key from file when doing CVE or just allow provided key material?
+
     if (cveAttackMode) {
       jwtST.getRdbtnDontModify().setSelected(true);
       jwtST.getRdbtnOriginalSignature().setSelected(false);
       jwtST.getRdbtnRandomKey().setSelected(false);
       jwtST.getRdbtnRecalculateSignature().setSelected(false);
-      edited = true;
       CustomJWToken token = jwtIM.getJwToken();
       String headerJSON = token.getHeaderJson();
       JsonObject headerJSONObj = Json.parse(headerJSON).asObject();
@@ -144,15 +146,12 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       jwk.add("e", Base64.getUrlEncoder().encodeToString(pk.getModulus().toByteArray()));
       headerJSONObj.add("jwk", jwk);
       token.setHeaderJson(headerJSONObj.toString());
-      Output.output("CVE JWK: " + jwk.toString());
       try {
         Algorithm algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), Config.cveAttackModePrivateKey);
         token.calculateAndSetSignature(algo);
         reflectChangeToView(token, true);
       } catch (Exception e) {
-        // TODO display to user
-        Output.outputError("Failed to sign when using cve attack mode - " + e.getMessage());
-        e.printStackTrace();
+        reportError("Failed to sign when using cve attack mode - " + e.getMessage());
       }
     } else {
       jwtST.setKeyFieldValue("");
@@ -169,22 +168,27 @@ public class JWTInterceptTabController implements IMessageEditorTab {
     try {
       if (jwtIM.getJWTKey() != null && jwtIM.getJWTKey().length() > 0) {
         Output.output("Signing with manually entered key - " + jwtIM.getJWTKey());
-        CustomJWToken token = jwtIM.getJwToken();
-        Algorithm algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), jwtIM.getJWTKey());
-        Output.output(token.getSignature());
-        token.calculateAndSetSignature(algo);
-        Output.output(token.getSignature());
-        reflectChangeToView(token, false);
+        CustomJWToken token;
+        try {
+          token = ReadableTokenFormat.getTokenFromView(jwtST);
+          Algorithm algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), jwtIM.getJWTKey());
+          token.calculateAndSetSignature(algo);
+          reflectChangeToView(token, false);
+          clearError();
+        } catch (Exception e) {
+          reportError("JWT can't be parsed - " + e.getMessage());
+        }
       }
     } catch (Exception e) {
-      // TODO show user properly?!
-      jwtIM.setProblemDetail("Failed to sign with manually entered key - " + e.getMessage());
-      Output.outputError("Failed to sign with manually entered key - " + e.getMessage());
+      int len = 8;
+      String key = jwtST.getKeyFieldValue();
+      key = key.length() > len ? key.substring(0, len) + "..." : key;
+      reportError("Cannot sign with key " + key + " - " + e.getMessage());
     }
   }
 
-  // TODO when extension is reloaded, alg will  wrongly  be NONE
   private void algAttackChanged() {
+    edited = true;
     JComboBox<String> jCB = jwtST.getNoneAttackComboBox();
     switch (jCB.getSelectedIndex()) {
       default:
@@ -205,7 +209,6 @@ public class JWTInterceptTabController implements IMessageEditorTab {
         break;
     }
 
-    edited = true;
     CustomJWToken token = jwtIM.getJwToken();
     String header = token.getHeaderJson();
     if (algAttackMode == null) {
@@ -222,8 +225,10 @@ public class JWTInterceptTabController implements IMessageEditorTab {
   }
 
   private void radioButtonChanged(boolean cDM, boolean cRK, boolean cOS, boolean cRS, boolean cCS) {
+    clearError();
     boolean oldRandomKey = randomKey;
-
+    edited = true;
+    addMetaHeader = false;
     dontModifySignature = jwtST.getRdbtnDontModify().isSelected();
     randomKey = jwtST.getRdbtnRandomKey().isSelected();
     keepOriginalSignature = jwtST.getRdbtnOriginalSignature().isSelected();
@@ -254,27 +259,36 @@ public class JWTInterceptTabController implements IMessageEditorTab {
         jwtST.updateSetView(false);
       }
     } else if ((recalculateSignature || chooseSignature)) {
-      edited = true;
       if (recalculateSignature) {
         String cleanKey = KeyHelper.cleanKey(jwtST.getKeyFieldValue());
         jwtIM.setJWTSignatureKey(cleanKey);
       }
       Algorithm algo;
       try {
-        CustomJWToken token = jwtIM.getJwToken();
-        Output.output("Recalculating Signature with Secret - '" + jwtIM.getJWTKey() + "'");
-        algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), jwtIM.getJWTKey());
-        token.calculateAndSetSignature(algo);
-        addLogHeadersToRequest();
-        reflectChangeToView(token, true);
+        if (jwtIM.getJWTKey().length() > 0) {
+          CustomJWToken token = jwtIM.getJwToken();
+          Output.output("Recalculating Signature with Secret - '" + jwtIM.getJWTKey() + "'");
+          algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), jwtIM.getJWTKey());
+          token.calculateAndSetSignature(algo);
+          reflectChangeToView(token, true);
+          addMetaHeader = true;
+        }
       } catch (IllegalArgumentException | UnsupportedEncodingException e) {
-        String error = "Exception while recalculating signature - " + e.getMessage();
-        Output.outputError(error);
-        jwtIM.setProblemDetail(error);
+        reportError("Exception while recalculating signature - " + e.getMessage());
       }
     }
   }
 
+  private void clearError() {
+    jwtIM.setProblemDetail("");
+    jwtST.setProblemLbl("");
+  }
+
+  private void reportError(String error) {
+    Output.outputError(error);
+    jwtIM.setProblemDetail(error);
+    jwtST.setProblemLbl(jwtIM.getProblemDetail());
+  }
 
   private void generateRandomKey() {
     SwingUtilities.invokeLater(() -> {
@@ -289,36 +303,42 @@ public class JWTInterceptTabController implements IMessageEditorTab {
         jwtST.setKeyFieldValue(randomKey);
         jwtST.updateSetView(false);
       } catch (UnsupportedEncodingException e) {
-        // TODO display error
-        Output.outputError("Exception during random key generation & signing: " + e.getMessage());
-        e.printStackTrace();
+        reportError("Exception during random key generation & signing: " + e.getMessage());
       }
     });
   }
 
   private void replaceTokenInMessage() {
     CustomJWToken token = null;
+    if (!jwtInUIisValid()) {
+      Output.outputError("Wont replace JWT as invalid");
+      edited = false;
+      return;
+    }
     try {
-      // token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJWTfromArea());
-      // TODO build token from three areas array list!
+      token = ReadableTokenFormat.getTokenFromView(jwtST);
+      Output.output("Replacing token: " + token.getToken());
+      // token may be null, if it is invalid JSON, if so, don't try changing anything
+      if (token.getToken() != null) {
+        this.message = this.tokenPosition.replaceToken(token.getToken());
+      }
     } catch (Exception e) {
       // TODO is this visible to user?
-      jwtIM.setProblemDetail(e.getMessage());
-    }
-
-    // token may be null, if it is invalid JSON, if so, don't try changing anything
-    if (token.getToken() != null) {
-      this.message = this.tokenPosition.replaceToken(token.getToken());
+      reportError("Could not replace token in message: " + e.getMessage());
     }
   }
 
+  // TODO this does not seem to work anymore?
   private void addLogHeadersToRequest() {
-    this.tokenPosition.cleanJWTHeaders();
-    this.tokenPosition.addHeader(Strings.JWTHeaderInfo);
-    this.tokenPosition.addHeader(Strings.JWTHeaderPrefix + "SIGNER-KEY " + jwtIM.getJWTKey());
-    if (PublicKeyBroker.publicKey != null) {
-      this.tokenPosition.addHeader(Strings.JWTHeaderPrefix + "SIGNER-PUBLIC-KEY " + PublicKeyBroker.publicKey);
-      PublicKeyBroker.publicKey = null;
+    if (addMetaHeader) {
+      Output.output("Adding Signing Header Info");
+      this.tokenPosition.cleanJWTHeaders();
+      this.tokenPosition.addHeader(Strings.JWTHeaderInfo);
+      this.tokenPosition.addHeader(Strings.JWTHeaderPrefix + "SIGNER-KEY " + jwtIM.getJWTKey());
+      if (PublicKeyBroker.publicKey != null) {
+        this.tokenPosition.addHeader(Strings.JWTHeaderPrefix + "SIGNER-PUBLIC-KEY " + PublicKeyBroker.publicKey);
+        PublicKeyBroker.publicKey = null;
+      }
     }
   }
 
@@ -332,27 +352,38 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       Output.output("Recalculating signature as key typed");
       CustomJWToken token = null;
       try {
-        // TODO handle three areas
-        // token = ReadableTokenFormat.getTokenFromReadableFormat(jwtST.getJwtArea().getText());
+        token = ReadableTokenFormat.getTokenFromView(jwtST);
       } catch (Exception e) {
-        // TODO show user
-        Output.outputError("JWT cannot be parsed - " + e.getMessage());
+        reportError("JWT can't be parsed - " + e.getMessage());
       }
       Algorithm algo = null;
       if (jwtIM.getJWTKey().length() == 0) {
-        // TODO UX show user to enter a key!
+        reportError("Can't resign with an empty key");
       }
       try {
         algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), jwtIM.getJWTKey());
         Output.output(token.getSignature());
         token.calculateAndSetSignature(algo);
         Output.output(token.getSignature());
-        reflectChangeToView(token, true);
+        //reflectChangeToView(token, false);
+        jwtIM.setJwToken(token);
+        jwtST.getJwtSignatureArea().setText(jwtIM.getJwToken().getSignature());
       } catch (UnsupportedEncodingException e) {
-        // TODO view user
-        Output.outputError("Could not resign: " + e.getMessage());
+        reportError("Could not resign: " + e.getMessage());
       }
     }
+  }
+
+  // TODO when should this be called?
+  public boolean jwtInUIisValid() {
+    boolean valid = false;
+    try {
+      CustomJWToken tokenFromView = ReadableTokenFormat.getTokenFromView(jwtST);
+      valid = CustomJWToken.isValidJWT(tokenFromView.getToken());
+    } catch (ReadableTokenFormat.InvalidTokenFormat ignroed) {
+      // ignored
+    }
+    return valid;
   }
 
   @Override
@@ -376,8 +407,8 @@ public class JWTInterceptTabController implements IMessageEditorTab {
   }
 
   private void createAndRegisterActionListeners(JWTInterceptTab jwtST) {
-    // TODO add listener for three areas
-   /* jwtST.getJwtArea().addKeyListener(new KeyListener() {
+
+    KeyListener editedKeyListener = new KeyListener() {
 
       @Override
       public void keyTyped(KeyEvent arg0) {
@@ -391,7 +422,9 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       public void keyPressed(KeyEvent arg0) {
         edited = true;
       }
-    });*/
+    };
+
+    jwtST.getJwtPayloadArea().addKeyListener(editedKeyListener);
 
     ActionListener dontModifyListener = new ActionListener() {
 
@@ -443,7 +476,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       }
     };
 
-    DocumentListener jwtKeyChanged = new DocumentListener() {
+    DocumentListener jwtKeyChanged = new DelayedDocumentListener(new DocumentListener() {
 
       @Override
       public void insertUpdate(DocumentEvent e) {
@@ -458,7 +491,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       @Override
       public void changedUpdate(DocumentEvent e) {
       }
-    };
+    });
 
     KeyListener jwtAreaTyped = new KeyListener() {
 

@@ -119,7 +119,10 @@ public abstract class ITokenPosition {
 			offset = responseInfo.getBodyOffset();
 		}
 		headers.add(headerToAdd);
+		// TODO this does not work anymore
+		Output.output("Added header: "+headerToAdd);
 		this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));
+		Output.output(new String(this.message));
 	}
 
 	public void cleanJWTHeaders() {
