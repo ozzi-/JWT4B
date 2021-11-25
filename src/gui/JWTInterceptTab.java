@@ -104,14 +104,13 @@ public class JWTInterceptTab extends JPanel {
 		JPanel areasPanel = new JPanel();
 		JPanel actionPanel = new JPanel();
 
-		areasPanel.setLayout(new GridLayout(3,1));
+		areasPanel.setLayout(new GridLayout(4,1));
 
 		fixSyntaxArea();
 
 		jwtHeaderArea = new RSyntaxTextArea(10,20);
 		jwtHeaderArea.setMarginLinePosition(70);
 		jwtHeaderArea.setWhitespaceVisible(true);
-		//area.setMinimumSize(new Dimension(300, 300));
 		SyntaxScheme scheme = jwtHeaderArea.getSyntaxScheme();
 		Style style = new Style();
 		style.foreground = new Color(222,133,10);
@@ -246,11 +245,7 @@ public class JWTInterceptTab extends JPanel {
 		add(areasPanel);
 		add(actionPanel);
 
-
 		setVisible(true);
-
-
-
 
 		ButtonGroup btgrp = new ButtonGroup();
 		btgrp.add(rdbtnDontModifySignature);
@@ -342,7 +337,7 @@ public class JWTInterceptTab extends JPanel {
 					// jwtArea.setText(ReadableTokenFormat.getReadableFormat(jwtIM.getJwToken()));
 					jwtHeaderArea.setText(ReadableTokenFormat.jsonBeautify(jwtIM.getJwToken().getHeaderJson()));
 					jwtPayloadArea.setText(ReadableTokenFormat.jsonBeautify(jwtIM.getJwToken().getPayloadJson()));
-					jwtSignatureArea.setText(ReadableTokenFormat.jsonBeautify(jwtIM.getJwToken().getSignature()));
+					jwtSignatureArea.setText(jwtIM.getJwToken().getSignature());
 					if(noKeyUpdate){
 						jwtKeyArea.setText(jwtIM.getJWTKey());
 					}

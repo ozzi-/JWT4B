@@ -26,6 +26,10 @@ public abstract class ITokenPosition {
 		this.isRequest = isRequest;
 	}
 
+	public void setMessage(byte[] message) {
+		this.message = message;
+	}
+
 	public void setHelpers(IExtensionHelpers helpers) {
 		this.helpers = helpers;
 	}
@@ -119,8 +123,6 @@ public abstract class ITokenPosition {
 			offset = responseInfo.getBodyOffset();
 		}
 		headers.add(headerToAdd);
-		// TODO this does not work anymore
-		Output.output("Added header: "+headerToAdd);
 		this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));
 		Output.output(new String(this.message));
 	}
@@ -149,6 +151,9 @@ public abstract class ITokenPosition {
 		this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));
 	}
 
+	public byte[] getMessage(){
+		return this.message;
+	}
 	public CookieFlagWrapper getcFW() {
 		return cookieFlagWrap;
 	}

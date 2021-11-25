@@ -21,6 +21,7 @@ import javax.swing.event.DocumentListener;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import app.algorithm.AlgorithmLinker;
 import app.helpers.Config;
@@ -46,7 +47,6 @@ public class JWTInterceptTabController implements IMessageEditorTab {
   private JWTInterceptModel jwtIM;
   private JWTInterceptTab jwtST;
   private IExtensionHelpers helpers;
-  private byte[] message;
   private ITokenPosition tokenPosition;
   private boolean dontModifySignature;
   private boolean randomKey;
@@ -95,10 +95,8 @@ public class JWTInterceptTabController implements IMessageEditorTab {
     } else {
       jwtST.updateSetView(true);
     }
-    this.message = content;
   }
 
-  // TODO payload was returned as string??
   @Override
   public byte[] getMessage() {
     // see https://github.com/PortSwigger/example-custom-editor-tab/blob/master/java/BurpExtender.java#L119
@@ -106,14 +104,14 @@ public class JWTInterceptTabController implements IMessageEditorTab {
         !jwtST.jwtWasChanged() && !recalculateSignature && !randomKey && !chooseSignature && algAttackMode == null
             && !cveAttackMode;
     if (nothingChanged) {
-      return this.message;
+      return tokenPosition.getMessage();
     }
     clearError();
     radioButtonChanged(true, false, false, false, false);
     jwtST.getCVEAttackCheckBox().setSelected(false);
-    addLogHeadersToRequest();
     replaceTokenInMessage();
-    return this.message;
+    addLogHeadersToRequest();
+    return tokenPosition.getMessage();
   }
 
   private void cveAttackChanged() {
@@ -292,17 +290,17 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
   private void generateRandomKey() {
     SwingUtilities.invokeLater(() -> {
-      CustomJWToken token = jwtIM.getJwToken();
-      String randomKey = AlgorithmLinker.getRandomKey(token.getAlgorithm());
-      Output.output("Generating Random Key for Signature Calculation: " + randomKey);
-      jwtIM.setJWTSignatureKey(randomKey);
       try {
+        CustomJWToken token = ReadableTokenFormat.getTokenFromView(jwtST);
+        String randomKey = AlgorithmLinker.getRandomKey(token.getAlgorithm());
+        Output.output("Generating Random Key for Signature Calculation: " + randomKey);
+        jwtIM.setJWTSignatureKey(randomKey);
         Algorithm algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), randomKey);
         token.calculateAndSetSignature(algo);
         jwtIM.setJwToken(token);
         jwtST.setKeyFieldValue(randomKey);
         jwtST.updateSetView(false);
-      } catch (UnsupportedEncodingException e) {
+      } catch (Exception e) {
         reportError("Exception during random key generation & signing: " + e.getMessage());
       }
     });
@@ -320,7 +318,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       Output.output("Replacing token: " + token.getToken());
       // token may be null, if it is invalid JSON, if so, don't try changing anything
       if (token.getToken() != null) {
-        this.message = this.tokenPosition.replaceToken(token.getToken());
+        this.tokenPosition.setMessage(this.tokenPosition.replaceToken(token.getToken()));
       }
     } catch (Exception e) {
       // TODO is this visible to user?
@@ -328,7 +326,6 @@ public class JWTInterceptTabController implements IMessageEditorTab {
     }
   }
 
-  // TODO this does not seem to work anymore?
   private void addLogHeadersToRequest() {
     if (addMetaHeader) {
       Output.output("Adding Signing Header Info");
@@ -348,6 +345,12 @@ public class JWTInterceptTabController implements IMessageEditorTab {
   }
 
   private void handleJWTAreaTyped() {
+    if(jwtInUIisValid()){
+      clearError();
+    }else{
+      reportError("invalid JWT");
+      return;
+    }
     if (recalculateSignature || randomKey) {
       Output.output("Recalculating signature as key typed");
       CustomJWToken token = null;
@@ -365,7 +368,6 @@ public class JWTInterceptTabController implements IMessageEditorTab {
         Output.output(token.getSignature());
         token.calculateAndSetSignature(algo);
         Output.output(token.getSignature());
-        //reflectChangeToView(token, false);
         jwtIM.setJwToken(token);
         jwtST.getJwtSignatureArea().setText(jwtIM.getJwToken().getSignature());
       } catch (UnsupportedEncodingException e) {
@@ -374,13 +376,14 @@ public class JWTInterceptTabController implements IMessageEditorTab {
     }
   }
 
-  // TODO when should this be called?
   public boolean jwtInUIisValid() {
     boolean valid = false;
     try {
       CustomJWToken tokenFromView = ReadableTokenFormat.getTokenFromView(jwtST);
-      valid = CustomJWToken.isValidJWT(tokenFromView.getToken());
-    } catch (ReadableTokenFormat.InvalidTokenFormat ignroed) {
+      if(tokenFromView.getHeaderJsonNode().get("alg")!=null){
+        valid = CustomJWToken.isValidJWT(tokenFromView.getToken());
+      }
+    } catch (ReadableTokenFormat.InvalidTokenFormat ignored) {
       // ignored
     }
     return valid;
@@ -513,6 +516,4 @@ public class JWTInterceptTabController implements IMessageEditorTab {
         recalculateSignatureListener, chooseSignatureListener, algAttackListener, cveAttackListener, jwtKeyChanged,
         jwtAreaTyped);
   }
-
-
 }

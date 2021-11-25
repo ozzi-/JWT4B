@@ -173,7 +173,7 @@ public class CustomJWToken extends JWT {
 		try {
 			return objectMapper.readTree(getHeaderJson());
 		} catch (IOException e) {
-			Output.outputError("IO exception reading json tree (" + e.getMessage() + ")");
+			//Output.outputError("IO exception reading json tree (" + e.getMessage() + ")");
 			return null;
 		}
 	}

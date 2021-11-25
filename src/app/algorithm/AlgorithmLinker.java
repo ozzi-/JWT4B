@@ -23,6 +23,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
+import app.helpers.KeyHelper;
 import app.helpers.Output;
 import app.helpers.PublicKeyBroker;
 
@@ -84,22 +85,7 @@ public class AlgorithmLinker {
 
 		return key;
 	}
-	
-	private static PrivateKey generatePrivateKeyFromString(String key, String algorithm) {
-		PrivateKey privateKey = null;
-		if(key.length()>1){
-			key = cleanKey(key);
-			try {
-				byte[] keyByteArray = Base64.decodeBase64(key);
-				KeyFactory kf = KeyFactory.getInstance(algorithm);
-				EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyByteArray);
-				privateKey = kf.generatePrivate(keySpec);
-			} catch (Exception e) {
-				Output.outputError("Error generating private key with input string '"+key+"' and algorithm '"+algorithm+"' - "+e.getMessage()+" - ");
-			}
-		}
-		return privateKey;
-	}
+
 	/**
 	 * @param algo
 	 * @param key - either the secret or the private key
@@ -192,7 +178,7 @@ public class AlgorithmLinker {
 	}
 
 	public static Key getKeyInstance(String key, String algorithm, boolean isPrivate) {
-		return isPrivate? generatePrivateKeyFromString(key, algorithm) : generatePublicKeyFromString(key, algorithm);
+		return isPrivate? KeyHelper.generatePrivateKeyFromString(key, algorithm) : generatePublicKeyFromString(key, algorithm);
 	}
 
 	public static String getRandomKey(String algorithm){
