@@ -64,7 +64,6 @@ public class CustomJWToken extends JWT {
 					Output.output("Could not gunzip JSON - " + e.getMessage());
 				} catch (Exception e) {
 					Output.output("Could not parse header - " + e.getMessage());
-					return;
 				}
 
 				checkRegisteredClaims(payloadJson);
@@ -154,7 +153,7 @@ public class CustomJWToken extends JWT {
 	}
 
 	public CustomJWToken(String headerJson, String payloadJson, String signatureB64) {
-		// TODO check if valid json
+		// TODO we might already want to check here if the json is valid?
 		this.headerJson = headerJson;
 		this.payloadJson = payloadJson;
 		this.signature = Base64.decodeBase64(signatureB64);

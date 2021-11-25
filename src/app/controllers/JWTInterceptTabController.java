@@ -237,12 +237,17 @@ public class JWTInterceptTabController implements IMessageEditorTab {
     if (keepOriginalSignature) {
       CustomJWToken origSignatureToken = jwtIM.getJwToken().setSignature(originalSignature);
       jwtIM.setJwToken(origSignatureToken);
+      jwtIM.setJWTSignatureKey("");
+      jwtST.setKeyFieldValue("");
       jwtST.updateSetView(false);
     } else if (dontModifySignature) {
       jwtIM.setJWTSignatureKey("");
       jwtST.setKeyFieldValue("");
-    } else if (randomKey && !oldRandomKey) {
-      generateRandomKey();
+    } else if (randomKey) {
+      addMetaHeader = true;
+      if(!oldRandomKey){
+        generateRandomKey();
+      }
     } else if (cCS) {
       FileDialog dialog = new FileDialog((Frame) null, "Select File to Open");
       dialog.setMode(FileDialog.LOAD);
@@ -348,6 +353,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
     if(jwtInUIisValid()){
       clearError();
     }else{
+      // TODO determine error more accuratly, what exactly is wrong with the jwt
       reportError("invalid JWT");
       return;
     }
@@ -383,7 +389,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       if(tokenFromView.getHeaderJsonNode().get("alg")!=null){
         valid = CustomJWToken.isValidJWT(tokenFromView.getToken());
       }
-    } catch (ReadableTokenFormat.InvalidTokenFormat ignored) {
+    } catch (Exception ignored) {
       // ignored
     }
     return valid;

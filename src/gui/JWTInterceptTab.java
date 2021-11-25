@@ -108,7 +108,7 @@ public class JWTInterceptTab extends JPanel {
 
 		fixSyntaxArea();
 
-		jwtHeaderArea = new RSyntaxTextArea(10,20);
+		jwtHeaderArea = new RSyntaxTextArea(3,20);
 		jwtHeaderArea.setMarginLinePosition(70);
 		jwtHeaderArea.setWhitespaceVisible(true);
 		SyntaxScheme scheme = jwtHeaderArea.getSyntaxScheme();
@@ -126,7 +126,7 @@ public class JWTInterceptTab extends JPanel {
 		headerPane.setLineNumbersEnabled(false);
 
 
-		jwtPayloadArea = new RSyntaxTextArea(10,20);
+		jwtPayloadArea = new RSyntaxTextArea(3,20);
 		jwtPayloadArea.setMarginLinePosition(70);
 		jwtPayloadArea.setWhitespaceVisible(true);
 		//area.setMinimumSize(new Dimension(300, 300));
@@ -144,7 +144,7 @@ public class JWTInterceptTab extends JPanel {
 		payloadPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		payloadPane.setLineNumbersEnabled(false);
 
-		jwtSignatureArea = new RSyntaxTextArea(10,10);
+		jwtSignatureArea = new RSyntaxTextArea(3,10);
 		jwtSignatureArea.setMarginLinePosition(70);
 		jwtSignatureArea.setLineWrap(true);
 		jwtSignatureArea.setWhitespaceVisible(true);
