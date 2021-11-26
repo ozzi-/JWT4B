@@ -46,7 +46,7 @@ public class Body extends ITokenPosition {
   }
 
   private KeyValuePair getJWTFromBodyWithoutParametersOrJSON() {
-    String split[] = StringUtils.split(body);
+    String[] split = StringUtils.split(body);
     for (String strg : split) {
       if (TokenCheck.isValidJWT(strg)) {
         return new KeyValuePair("", strg);

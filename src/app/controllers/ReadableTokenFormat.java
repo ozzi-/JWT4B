@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-import app.helpers.Output;
 import gui.JWTInterceptTab;
 import model.CustomJWToken;
 
@@ -53,10 +52,10 @@ public class ReadableTokenFormat {
   public static String jsonBeautify(String input) {
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     JsonElement je = JsonParser.parseString(input);
-		return gson.toJson(je);
+    return gson.toJson(je);
   }
 
-  public static CustomJWToken getTokenFromView(JWTInterceptTab jwtST) throws InvalidTokenFormat {
+  public static CustomJWToken getTokenFromView(JWTInterceptTab jwtST) {
     String header = jwtST.getJwtHeaderArea().getText();
     String payload = jwtST.getJwtPayloadArea().getText();
     String signature = jwtST.getJwtSignatureArea().getText();

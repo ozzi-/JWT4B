@@ -3,7 +3,6 @@ package model;
 import java.util.List;
 
 import app.helpers.CookieFlagWrapper;
-import app.helpers.Output;
 
 public class JWTInterceptModel {
 
@@ -12,7 +11,7 @@ public class JWTInterceptModel {
   private String originalJWT;
   private String problemDetail;
   private CookieFlagWrapper cFW;
-	private List<TimeClaim> tcl;
+  private List<TimeClaim> tcl;
   private CustomJWToken originalJWToken;
 
   public String getJWTKey() {
@@ -55,13 +54,13 @@ public class JWTInterceptModel {
     this.jwToken = jwToken;
   }
 
-  public void setOriginalJWT(String originalJWT){
-    this.originalJWT=originalJWT;
+  public void setOriginalJWT(String originalJWT) {
+    this.originalJWT = originalJWT;
   }
 
-	public String getOriginalJWT() {
-		return originalJWT;
-	}
+  public String getOriginalJWT() {
+    return originalJWT;
+  }
 
   public void setOriginalJWToken(CustomJWToken originalJWToken) {
     this.originalJWToken = originalJWToken;

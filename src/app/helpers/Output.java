@@ -7,7 +7,7 @@ import java.util.TimeZone;
 
 public class Output {
 
-  private static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+  private static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
 
   public static void output(String string) {
     Date cal = Calendar.getInstance(TimeZone.getDefault()).getTime();

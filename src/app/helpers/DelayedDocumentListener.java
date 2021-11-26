@@ -1,10 +1,11 @@
 package app.helpers;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 // Source: https://raw.githubusercontent.com/bonifaido/JIT-Tree/master/src/main/java/me/nandork/jittree/DelayedDocumentListener.java
 // License: MIT (https://opensource.org/licenses/MIT)
@@ -22,6 +23,7 @@ public class DelayedDocumentListener implements DocumentListener {
 
   public DelayedDocumentListener(final DocumentListener delegate, int delay) {
     timer = new Timer(delay, new ActionListener() {
+
       @Override
       public void actionPerformed(ActionEvent e) {
         timer.stop();

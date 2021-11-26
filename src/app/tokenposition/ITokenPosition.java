@@ -124,7 +124,6 @@ public abstract class ITokenPosition {
 		}
 		headers.add(headerToAdd);
 		this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));
-		Output.output(new String(this.message));
 	}
 
 	public void cleanJWTHeaders() {

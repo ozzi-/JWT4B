@@ -25,9 +25,7 @@ public class HighLightController implements IHttpListener {
       if (!Config.interceptComment.equals("")) {
         markRequestResponseWithComment(httpRequestResponse, Config.interceptComment);
       }
-      if (!isRequest) {
-        markRequestResponseWithColor(httpRequestResponse);
-      }
+      markRequestResponseWithColor(httpRequestResponse);
     }
   }
 
@@ -36,6 +34,8 @@ public class HighLightController implements IHttpListener {
   }
 
   private void markRequestResponseWithColor(IHttpRequestResponse httpRequestResponse) {
-    httpRequestResponse.setHighlight(Config.highlightColor);
+    if (!Config.highlightColor.equals("none")) {
+      httpRequestResponse.setHighlight(Config.highlightColor);
+    }
   }
 }
