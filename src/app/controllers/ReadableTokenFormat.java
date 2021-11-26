@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import gui.JWTInterceptTab;
 import model.CustomJWToken;
 
 public class ReadableTokenFormat {
@@ -31,27 +32,34 @@ public class ReadableTokenFormat {
       throw new InvalidTokenFormat("Cannot parse token");
     }
 
-    String[] splitted = token.split(titlePayload);
+    String[] split = token.split(titlePayload);
 
-    String header = splitted[0];
-    String payloadAndSignature = splitted[1];
+    String header = split[0];
+    String payloadAndSignature = split[1];
 
     if (!payloadAndSignature.contains(titleSignature)) {
       throw new InvalidTokenFormat("Cannot parse token");
     }
 
-    String[] splitted2 = payloadAndSignature.split(titleSignature);
+    String[] split2 = payloadAndSignature.split(titleSignature);
 
-    String payload = splitted2[0];
-    String signature = splitted2[1];
+    String payload = split2[0];
+    String signature = split2[1];
 
     return new CustomJWToken(header, payload, signature);
   }
 
-  private static String jsonBeautify(String input) {
+  public static String jsonBeautify(String input) {
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
     JsonElement je = JsonParser.parseString(input);
-		return gson.toJson(je);
+    return gson.toJson(je);
+  }
+
+  public static CustomJWToken getTokenFromView(JWTInterceptTab jwtST) {
+    String header = jwtST.getJwtHeaderArea().getText();
+    String payload = jwtST.getJwtPayloadArea().getText();
+    String signature = jwtST.getJwtSignatureArea().getText();
+    return new CustomJWToken(header, payload, signature);
   }
 
   public static class InvalidTokenFormat extends Exception {

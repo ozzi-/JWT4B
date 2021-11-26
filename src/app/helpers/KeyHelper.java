@@ -5,7 +5,6 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -30,7 +29,7 @@ public class KeyHelper {
     if (algorithmType.equals(AlgorithmType.symmetric)) {
       return RandomStringUtils.randomAlphanumeric(6);
     }
-    if (algorithmType.equals(AlgorithmType.asymmetric) && algorithm.substring(0, 2).equals("RS")) {
+    if (algorithmType.equals(AlgorithmType.asymmetric) && algorithm.startsWith("RS")) {
       try {
         KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
 
@@ -40,7 +39,7 @@ public class KeyHelper {
         Output.outputError(e.getMessage());
       }
     }
-    if (algorithmType.equals(AlgorithmType.asymmetric) && algorithm.substring(0, 2).equals("ES")) {
+    if (algorithmType.equals(AlgorithmType.asymmetric) && algorithm.startsWith("ES")) {
       try {
         KeyPair keyPair = KeyPairGenerator.getInstance("EC").generateKeyPair();
         return Base64.encodeBase64String(keyPair.getPrivate().getEncoded());
@@ -81,33 +80,15 @@ public class KeyHelper {
     return key;
   }
 
-  public static PublicKey generatePublicKeyFromString(String key, String algorithm) {
-    PublicKey publicKey = null;
-    if (key.length() > 1) {
-      key = KeyHelper.cleanKey(key);
-      byte[] keyByteArray = java.util.Base64.getDecoder().decode(key);
-      try {
-        KeyFactory kf = KeyFactory.getInstance(algorithm);
-        EncodedKeySpec keySpec = new X509EncodedKeySpec(keyByteArray);
-        publicKey = kf.generatePublic(keySpec);
-      } catch (Exception e) {
-        Output.outputError(e.getMessage());
-      }
-    }
-    return publicKey;
-  }
-
-  public static RSAPublicKey loadPublicKey() {
-    String publicPEM = Config.cveAttackModePublicKey.replaceAll("\\n", "")
-        .replace("-----BEGIN PUBLIC KEY-----", "")
-        .replace("-----END PUBLIC KEY-----", "");
-    ;
+  public static RSAPublicKey loadCVEAttackPublicKey() {
+    String publicPEM = KeyHelper.cleanKey(Config.cveAttackModePublicKey);
     KeyFactory kf;
     try {
       kf = KeyFactory.getInstance("RSA");
       X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(java.util.Base64.getDecoder().decode(publicPEM));
       return (RSAPublicKey) kf.generatePublic(keySpecX509);
     } catch (Exception e) {
+      Output.outputError("Could not load public key - " + e.getMessage());
       e.printStackTrace();
     }
     return null;

@@ -6,112 +6,113 @@ import java.util.List;
 import app.helpers.CookieFlagWrapper;
 
 public class JWTTabModel {
-	private String key = "";
-	private String keyLabel = "";
-	private int hashCode;
-	private String verificationLabel = "";
-	private Color verificationColor;
-	private String jwt;
-	private String jwtJSON;
-	private CookieFlagWrapper cFW;
-	private List<TimeClaim> tcl;
 
-	public JWTTabModel() {
-	}
+  private String key = "";
+  private String keyLabel = "";
+  private int hashCode;
+  private String verificationLabel = "";
+  private Color verificationColor;
+  private String jwt;
+  private String jwtJSON;
+  private CookieFlagWrapper cFW;
+  private List<TimeClaim> tcl;
 
-	public JWTTabModel(String keyValue, byte[] content) {
-		this.key = keyValue;
-		this.hashCode = new String(content).hashCode();
-		this.verificationColor = Settings.COLOR_UNDEFINED;
-	}
+  public JWTTabModel() {
+  }
 
-	@Override
-	public boolean equals(Object otherObj) {
-		if (otherObj instanceof JWTTabModel) {
-			JWTTabModel otherViewState = (JWTTabModel) otherObj;
-			return (otherViewState.getHashCode() == this.getHashCode());
-		}
-		return false;
-	}
+  public JWTTabModel(String keyValue, byte[] content) {
+    this.key = keyValue;
+    this.hashCode = new String(content).hashCode();
+    this.verificationColor = Settings.COLOR_UNDEFINED;
+  }
 
-	public String getKey() {
-		return key;
-	}
+  @Override
+  public boolean equals(Object otherObj) {
+    if (otherObj instanceof JWTTabModel) {
+      JWTTabModel otherViewState = (JWTTabModel) otherObj;
+      return (otherViewState.getHashCode() == this.getHashCode());
+    }
+    return false;
+  }
 
-	public int getHashCode() {
-		return hashCode;
-	}
+  public String getKey() {
+    return key;
+  }
 
-	public void setKeyValueAndHash(String keyValue, int hashCode) {
-		this.key = keyValue;
-		this.hashCode = hashCode;
-	}
+  public int getHashCode() {
+    return hashCode;
+  }
 
-	public void setVerificationResult(String verificationResult) {
-		this.verificationLabel = verificationResult;
-	}
+  public void setKeyValueAndHash(String keyValue, int hashCode) {
+    this.key = keyValue;
+    this.hashCode = hashCode;
+  }
 
-	public String getKeyLabel() {
-		return keyLabel;
-	}
+  public void setVerificationResult(String verificationResult) {
+    this.verificationLabel = verificationResult;
+  }
 
-	public void setKeyLabel(String keyLabel) {
-		this.keyLabel = keyLabel;
-	}
+  public String getKeyLabel() {
+    return keyLabel;
+  }
 
-	public String getVerificationLabel() {
-		return key.equals("") ? "" : verificationLabel;
-	}
+  public void setKeyLabel(String keyLabel) {
+    this.keyLabel = keyLabel;
+  }
 
-	public void setVerificationLabel(String verificationLabel) {
-		this.verificationLabel = verificationLabel;
-	}
+  public String getVerificationLabel() {
+    return key.equals("") ? "" : verificationLabel;
+  }
 
-	public Color getVerificationColor() {
-		return key.equals("") ? Settings.COLOR_UNDEFINED : verificationColor;
-	}
+  public void setVerificationLabel(String verificationLabel) {
+    this.verificationLabel = verificationLabel;
+  }
 
-	public void setVerificationColor(Color verificationColor) {
-		this.verificationColor = verificationColor;
-	}
+  public Color getVerificationColor() {
+    return key.equals("") ? Settings.COLOR_UNDEFINED : verificationColor;
+  }
 
-	public void setKey(String key) {
-		this.key = key;
-	}
+  public void setVerificationColor(Color verificationColor) {
+    this.verificationColor = verificationColor;
+  }
 
-	public void setHashCode(int hashCode) {
-		this.hashCode = hashCode;
-	}
+  public void setKey(String key) {
+    this.key = key;
+  }
 
-	public void setJWT(String token) {
-		this.jwt = token;
-	}
+  public void setHashCode(int hashCode) {
+    this.hashCode = hashCode;
+  }
 
-	public String getJWT() {
-		return jwt;
-	}
+  public void setJWT(String token) {
+    this.jwt = token;
+  }
 
-	public String getJWTJSON() {
-		return jwtJSON;
-	}
+  public String getJWT() {
+    return jwt;
+  }
 
-	public void setJWTJSON(String readableFormat) {
-		jwtJSON = readableFormat;
-	}
+  public String getJWTJSON() {
+    return jwtJSON;
+  }
 
-	public void setcFW(CookieFlagWrapper cFW) {
-		this.cFW = cFW;
-	}
+  public void setJWTJSON(String readableFormat) {
+    jwtJSON = readableFormat;
+  }
 
-	public CookieFlagWrapper getcFW() {
-		return cFW;
-	}
+  public void setcFW(CookieFlagWrapper cFW) {
+    this.cFW = cFW;
+  }
 
-	public void setTimeClaims(List<TimeClaim> tcl) {
-		this.tcl = tcl;
-	}
+  public CookieFlagWrapper getcFW() {
+    return cFW;
+  }
 
-	public String getTimeClaimsAsText() {
-		return TimeClaim.getTimeClaimsAsHTML(tcl);
-	}
+  public void setTimeClaims(List<TimeClaim> tcl) {
+    this.tcl = tcl;
+  }
+
+  public String getTimeClaimsAsText() {
+    return TimeClaim.getTimeClaimsAsHTML(tcl);
+  }
 }

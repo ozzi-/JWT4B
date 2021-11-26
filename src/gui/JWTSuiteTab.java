@@ -103,11 +103,11 @@ public class JWTSuiteTab extends JPanel {
 		JButton creditButton = new JButton("About");
 		creditButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				JLabelLink jLabelLink = new JLabelLink(Strings.creditTitle, 530, 555);
+				JLabelLink jLabelLink = new JLabelLink(Strings.creditTitle, 530, 565);
 
 				jLabelLink.addText("<h2>About JWT4B</h2>JSON Web Tokens (also known as JWT4B) is developed by Oussama Zgheb and Matthias Vetsch.<br>");
 				jLabelLink.addURL("<a href=\"https://zgheb.com/\">Mantainer Website</a>","zgheb.com");
-				jLabelLink.addURL("<a href=\"https://github.com/mvetsch/JWT4B\">GitHub Repository</a>","github.com/mvetsch/JWT4B");
+				jLabelLink.addURL("<a href=\"https://github.com/ozzi-/JWT4B\">GitHub Repository</a>","github.com/mvetsch/JWT4B");
 				jLabelLink.addText("<br><br>");
 				jLabelLink.addText("JWT4B, excluding the libraries mentioned below and the Burp extender classes, uses the GPL 3 license.");
 				jLabelLink.addURL("* <a href=\"https://github.com/bobbylight/RSyntaxTextArea/blob/master/src/main/dist/RSyntaxTextArea.License.txt\">RSyntaxTextArea</a>","github.com/bobbylight/RSyntaxTextArea");
