@@ -1,99 +1,72 @@
 package model;
 
-import java.awt.Color;
 import java.util.List;
 
 import app.helpers.CookieFlagWrapper;
 
 public class JWTInterceptModel {
-	private String jwtInput;
-	private String jwtKey;
-	private String jwt;
-	private Color jwtSignatureColor;
-	private String jwtJSON;
-	private String signature;
-	private String originalSignature;
-	private String problemDetail;
-	private CookieFlagWrapper cFW;
-	private List<TimeClaim> tcl;
 
-	public String getJWTInput() {
-		return jwtInput;
-	}
+  private String jwtSignatureKey;
+  private CustomJWToken jwToken;
+  private String originalJWT;
+  private String problemDetail;
+  private CookieFlagWrapper cFW;
+  private List<TimeClaim> tcl;
+  private CustomJWToken originalJWToken;
 
-	public void setJWTInput(String jwtInput) {
-		this.jwtInput = jwtInput;
-	}
+  public String getJWTKey() {
+    return jwtSignatureKey;
+  }
 
-	public String getJWTKey() {
-		return jwtKey;
-	}
+  public void setJWTSignatureKey(String jwtSignatureKey) {
+    this.jwtSignatureKey = jwtSignatureKey;
+  }
 
-	public void setJWTKey(String jwtKey) {
-		this.jwtKey = jwtKey;
-	}
+  public String getProblemDetail() {
+    return problemDetail;
+  }
 
-	public Color getJWTSignatureColor() {
-		return jwtSignatureColor;
-	}
+  public void setProblemDetail(String problemDetail) {
+    this.problemDetail = problemDetail;
+  }
 
-	public void setJWTSignatureColor(Color jwtSignatureColor) {
-		this.jwtSignatureColor = jwtSignatureColor;
-	}
+  public CookieFlagWrapper getcFW() {
+    return cFW;
+  }
 
-	public String getJWTJSON() {
-		return jwtJSON;
-	}
+  public void setcFW(CookieFlagWrapper cFW) {
+    this.cFW = cFW;
+  }
 
-	public void setJWTJSON(String jwtJSON) {
-		this.jwtJSON = jwtJSON;
-	}
+  public void setTimeClaims(List<TimeClaim> tcl) {
+    this.tcl = tcl;
+  }
 
-	public void setJWT(String jwt) {
-		this.jwt = jwt;
+  public String getTimeClaimsAsText() {
+    return TimeClaim.getTimeClaimsAsHTML(tcl);
+  }
 
-	}
+  public CustomJWToken getJwToken() {
+    return jwToken;
+  }
 
-	public String getJWT() {
-		return this.jwt;
-	}
+  public void setJwToken(CustomJWToken jwToken) {
+    this.jwToken = jwToken;
+  }
 
-	public String getSignature() {
-		return this.signature;
-	}
+  public void setOriginalJWT(String originalJWT) {
+    this.originalJWT = originalJWT;
+  }
 
-	public void setSignature(String signature) {
-		this.signature = signature;
-		if (this.signature != null && !this.signature.isEmpty()) {
-			this.originalSignature = signature;
-		}
-	}
+  public String getOriginalJWT() {
+    return originalJWT;
+  }
 
-	public String getOriginalSignature() {
-		return originalSignature;
-	}
+  public void setOriginalJWToken(CustomJWToken originalJWToken) {
+    this.originalJWToken = originalJWToken;
+  }
 
-	public String getProblemDetail() {
-		return problemDetail;
-	}
-
-	public void setProblemDetail(String problemDetail) {
-		this.problemDetail = problemDetail;
-	}
-
-	public CookieFlagWrapper getcFW() {
-		return cFW;
-	}
-
-	public void setcFW(CookieFlagWrapper cFW) {
-		this.cFW = cFW;
-	}
-
-	public void setTimeClaims(List<TimeClaim> tcl) {
-		this.tcl = tcl;
-	}
-
-	public String getTimeClaimsAsText() {
-		return TimeClaim.getTimeClaimsAsText(tcl);
-	}
+  public CustomJWToken getOriginalJWToken() {
+    return originalJWToken;
+  }
 }

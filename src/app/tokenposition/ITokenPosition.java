@@ -19,11 +19,15 @@ public abstract class ITokenPosition {
 	public abstract boolean positionFound();
 	public abstract String getToken();
 	public abstract byte[] replaceToken(String newToken);
-	private static CookieFlagWrapper cFW;
+	private static CookieFlagWrapper cookieFlagWrap;
 
 	public void setMessage(byte[] message, boolean isRequest) {
 		this.message = message;
 		this.isRequest = isRequest;
+	}
+
+	public void setMessage(byte[] message) {
+		this.message = message;
 	}
 
 	public void setHelpers(IExtensionHelpers helpers) {
@@ -69,9 +73,9 @@ public abstract class ITokenPosition {
 				impl.setMessage(content, isRequest);
 				if (impl.positionFound()) {
 					if (impl instanceof Cookie) {
-						cFW = ((Cookie) impl).getcFW();
+						cookieFlagWrap = ((Cookie) impl).getcFW();
 					}else{
-						cFW = new CookieFlagWrapper(false,false,false);
+						cookieFlagWrap = new CookieFlagWrapper(false,false,false);
 					}
 					return impl;
 				}
@@ -146,7 +150,10 @@ public abstract class ITokenPosition {
 		this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));
 	}
 
+	public byte[] getMessage(){
+		return this.message;
+	}
 	public CookieFlagWrapper getcFW() {
-		return cFW;
+		return cookieFlagWrap;
 	}
 }

@@ -4,11 +4,14 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import app.helpers.CookieFlagWrapper;
+import app.helpers.Output;
 import app.helpers.TokenCheck;
 
 //finds and replaces JWT's in cookies
 public class Cookie extends ITokenPosition {
 
+	public static final String SET_COOKIE_HEADER = "Set-Cookie: ";
+	public static final String COOKIE_HEADER = "Cookie: ";
 	private boolean found;
 	private String token;
 	private List<String> headers;
@@ -32,11 +35,11 @@ public class Cookie extends ITokenPosition {
 	// finds the first jwt in the set-cookie or cookie header(s)
 	public String findJWTInHeaders(List<String> headers) {
 		// defaulting
-		cFW = new CookieFlagWrapper(false, false, false); 
+				cFW = new CookieFlagWrapper(false, false, false);
 
 		for (String header : headers) {
-			if(header.startsWith("Set-Cookie: ")) {
-				String cookie = header.replace("Set-Cookie: ", "");
+			if(header.startsWith(SET_COOKIE_HEADER)) {
+				String cookie = header.replace(SET_COOKIE_HEADER, "");
 				if(cookie.length()>1 && cookie.contains("=")) {
 					String value = cookie.split(Pattern.quote("="))[1];
 					int flagMarker = value.indexOf(";");
@@ -54,8 +57,8 @@ public class Cookie extends ITokenPosition {
 					}
 				}
 			}
-			if(header.startsWith("Cookie: ")) {
-				String cookieHeader = header.replace("Cookie: ","");
+			if(header.startsWith(COOKIE_HEADER)) {
+				String cookieHeader = header.replace(COOKIE_HEADER,"");
 				cookieHeader=cookieHeader.endsWith(";")?cookieHeader:cookieHeader+";";
 				int from = 0;
 				int index = cookieHeader.indexOf(";");

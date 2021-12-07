@@ -40,10 +40,7 @@ public class JWTSuiteTab extends JPanel {
 	private RSyntaxTextArea jwtOuputField;
 	private JButton jwtSignatureButton;
 	private JTextArea jwtKeyArea;
-	private JLabel lblEnterSecret;
-	private JWTSuiteTabModel jwtSTM;
-	private JButton creditButton;
-	private JButton configButton;
+	private final JWTSuiteTabModel jwtSTM;
 	private JLabel lbRegisteredClaims;
 	private JLabel lblExtendedVerificationInfo;
 
@@ -103,14 +100,14 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lblPasteJwtToken.gridy = 1;
 		add(lblPasteJwtToken, gbc_lblPasteJwtToken);
 
-		creditButton = new JButton("About");
+		JButton creditButton = new JButton("About");
 		creditButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				JLabelLink jLabelLink = new JLabelLink(Strings.creditTitle, 530, 555);
+				JLabelLink jLabelLink = new JLabelLink(Strings.creditTitle, 530, 565);
 
 				jLabelLink.addText("<h2>About JWT4B</h2>JSON Web Tokens (also known as JWT4B) is developed by Oussama Zgheb and Matthias Vetsch.<br>");
 				jLabelLink.addURL("<a href=\"https://zgheb.com/\">Mantainer Website</a>","zgheb.com");
-				jLabelLink.addURL("<a href=\"https://github.com/mvetsch/JWT4B\">GitHub Repository</a>","github.com/mvetsch/JWT4B");
+				jLabelLink.addURL("<a href=\"https://github.com/ozzi-/JWT4B\">GitHub Repository</a>","github.com/mvetsch/JWT4B");
 				jLabelLink.addText("<br><br>");
 				jLabelLink.addText("JWT4B, excluding the libraries mentioned below and the Burp extender classes, uses the GPL 3 license.");
 				jLabelLink.addURL("* <a href=\"https://github.com/bobbylight/RSyntaxTextArea/blob/master/src/main/dist/RSyntaxTextArea.License.txt\">RSyntaxTextArea</a>","github.com/bobbylight/RSyntaxTextArea");
@@ -131,9 +128,9 @@ public class JWTSuiteTab extends JPanel {
 		gbc_creditButton.gridy = 1;
 		gbc_creditButton.fill = GridBagConstraints.HORIZONTAL;
 		add(creditButton, gbc_creditButton);
-		
-		
-		configButton = new JButton("Change Config");
+
+
+		JButton configButton = new JButton("Change Config");
 		configButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				File file = new File (Config.configPath);
@@ -166,7 +163,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_jwtInputField.gridy = 2;
 		add(jwtInputField, gbc_jwtInputField);
 
-		lblEnterSecret = new JLabel(Strings.enterSecretKey);
+		JLabel lblEnterSecret = new JLabel(Strings.enterSecretKey);
 		lblEnterSecret.setFont(new Font("Tahoma", Font.BOLD, 12));
 		GridBagConstraints gbc_lblEnterSecret = new GridBagConstraints();
 		gbc_lblEnterSecret.anchor = GridBagConstraints.WEST;
