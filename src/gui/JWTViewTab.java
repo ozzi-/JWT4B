@@ -28,6 +28,7 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.algorithm.AlgorithmType;
+import app.helpers.ColorString;
 import model.JWTTabModel;
 import model.Strings;
 
@@ -221,7 +222,9 @@ public class JWTViewTab extends JPanel {
         }
 
         if (jwtTM.getcFW().isCookie()) {
-          lblCookieFlags.setText(jwtTM.getcFW().toHTMLString());
+          ColorString colorString = jwtTM.getcFW().toColorString();
+          lblCookieFlags.setText(colorString.getStrng());
+          lblCookieFlags.setForeground(colorString.getColor());
         } else {
           lblCookieFlags.setText("");
         }

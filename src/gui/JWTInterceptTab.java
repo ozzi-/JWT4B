@@ -39,6 +39,7 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.controllers.ReadableTokenFormat;
+import app.helpers.ColorString;
 import app.helpers.Config;
 import app.helpers.Output;
 import model.JWTInterceptModel;
@@ -365,7 +366,9 @@ public class JWTInterceptTab extends JPanel {
         lblProblem.setText(jwtIM.getProblemDetail());
         // -> response of https://oz-web.com/jwt/request_cookie.php
         if (jwtIM.getcFW().isCookie()) {
-          lblCookieFlags.setText(jwtIM.getcFW().toHTMLString());
+          ColorString colorString = jwtIM.getcFW().toColorString();
+          lblCookieFlags.setText(colorString.getStrng());
+          lblCookieFlags.setForeground(colorString.getColor());
         } else {
           lblCookieFlags.setText("");
         }

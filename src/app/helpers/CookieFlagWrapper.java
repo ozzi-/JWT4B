@@ -1,5 +1,7 @@
 package app.helpers;
 
+import java.awt.Color;
+
 public class CookieFlagWrapper {
 
   private final boolean secureFlag;
@@ -30,23 +32,28 @@ public class CookieFlagWrapper {
     return false;
   }
 
-  public String toHTMLString() {
+  public ColorString toColorString() {
     if (!isCookie) {
-      return "";
+      return new ColorString("", Color.WHITE);
     }
-    String returnString = "<html><div style=\"width:300px; max-height: 50px;\">";
+    Color color;
+    String returnString = "";
     if (!hasSecureFlag()) {
-      returnString += "<span style=\"color: red\">No secure flag set. Token may be transmitted by HTTP.</span><br>";
+      color = Color.RED;
+      returnString += "No secure flag set. Token may be transmitted by HTTP.\r\n";
     } else {
-      returnString += "<span style=\"color: green\">Secure Flag set.</span><br>";
+      color = Color.GREEN;
+      returnString += "Secure Flag set.\r\n";
     }
     if (!hasHttpOnlyFlag()) {
-      returnString += "<span style=\"color: red\">No HttpOnly flag set. Token may accessed by JavaScript (XSS).</span>";
+      color = Color.RED;
+      returnString += "No HttpOnly flag set. Token may accessed by JavaScript (XSS).";
     } else {
-      returnString += "<span style=\"color: green\">HttpOnly Flag set.</span>";
+      color = Color.GREEN;
+      returnString += "HttpOnly Flag set.";
     }
     returnString += "</div></html>";
-    return returnString;
+    return new ColorString(returnString, color);
   }
 
 }
