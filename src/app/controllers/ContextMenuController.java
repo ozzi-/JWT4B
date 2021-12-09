@@ -5,34 +5,27 @@ import java.util.List;
 
 import javax.swing.JMenuItem;
 
-import app.helpers.MessageBean;
 import app.helpers.Output;
 import burp.IContextMenuFactory;
 import burp.IContextMenuInvocation;
 import burp.IHttpRequestResponse;
 import model.Strings;
 
-// This controller handles the right-click context option "Send selected text to JWT4B Tab to decode
+// This controller handles the right-click context option "Send selected text to JWT4B Tab to decode"
 // which is available in the Raw view of the HTTP history tab
 
 public class ContextMenuController implements IContextMenuFactory {
 
-  private final MenuItemListener menuItemListener;
+  private final JWTSuiteTabController jstC;
   private String selectedText = null;
 
   public ContextMenuController(JWTSuiteTabController jstC) {
-    MessageBean bean = new MessageBean();
-    bean.addPropertyChangeListener(evt -> {
-      if (evt.getNewValue().equals("menuitem")) {
-        jstC.contextActionSendJWTtoSuiteTab(selectedText, true);
-      }
-    });
-    menuItemListener = new MenuItemListener(bean);
+    this.jstC = jstC;
   }
 
   @Override
   public List<JMenuItem> createMenuItems(IContextMenuInvocation invocation) {
-    List<JMenuItem> menuItems = new ArrayList<JMenuItem>();
+    List<JMenuItem> menuItems = new ArrayList<>();
     int[] selection = invocation.getSelectionBounds();
     byte iContext = invocation.getInvocationContext();
     if (selection != null) { // only if user currently is in an input field
@@ -49,13 +42,9 @@ public class ContextMenuController implements IContextMenuFactory {
       }
 
       JMenuItem item = new JMenuItem(Strings.contextMenuString);
-      item.addActionListener(menuItemListener);
+      item.addActionListener(e -> jstC.contextActionSendJWTtoSuiteTab(selectedText, true));
       menuItems.add(item);
     }
     return menuItems;
-  }
-
-  public String getSelectedText() {
-    return selectedText;
   }
 }
