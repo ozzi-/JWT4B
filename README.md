@@ -11,7 +11,7 @@ JSON Web Tokens (JWT) support for the Burp Interception Proxy. JWT4B will let yo
 # Screenshots
 ![Screenshot - Intercept View](https://i.imgur.com/VsbqoNL.png)
 
-![Screenshot - Decode View](https://i.imgur.com/LE98YJY.png)
+![Screenshot - Decode View](https://i.imgur.com/hsBNeE2.png)
 
 ![Screenshot - Suite Tab View](https://i.imgur.com/2HGOI27.png)
 
