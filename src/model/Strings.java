@@ -35,9 +35,9 @@ public class Strings {
 
 
   public static final String dontModifyToolTip = "The signature will be taken straight out of the editable field to the left";
-  public static final String recalculateSignatureToolTip = "<html>The signature will be recalculated depending<br> on the content and algorithm set</html>";
+  public static final String recalculateSignatureToolTip = "The signature will be recalculated depending<br> on the content and algorithm set";
   public static final String keepOriginalSignatureToolTip = "The signature originally sent will be preserved and sent unchanged";
-  public static final String randomKeyToolTip = "<html>The signature will be recalculated depending<br>on the content and algorithm set<br>by a random signature / key</html>";
+  public static final String randomKeyToolTip = "The signature will be recalculated depending on the content and algorithm set by a random signature / key";
   public static String chooseSignatureToolTip = "Load the secret / key from a file chosen by your OS file picker";
 
   public static final String creditTitle = "JSON Web Tokens - About";
