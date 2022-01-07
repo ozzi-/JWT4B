@@ -16,6 +16,8 @@ import org.apache.commons.lang.RandomStringUtils;
 import app.algorithm.AlgorithmLinker;
 import app.algorithm.AlgorithmType;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 public class KeyHelper {
 
   public static final String[] keyHeaderBeginMarkers = new String[]{"-----BEGIN PUBLIC KEY-----",
@@ -52,7 +54,7 @@ public class KeyHelper {
 
   public static PrivateKey generatePrivateKeyFromString(String key, String algorithm) {
     PrivateKey privateKey = null;
-    if (key.length() > 1) {
+    if (isNotEmpty(key)) {
       key = cleanKey(key);
       try {
         byte[] keyByteArray = Base64.decodeBase64(key);

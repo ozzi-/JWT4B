@@ -19,6 +19,8 @@ import com.auth0.jwt.interfaces.RSAKeyProvider;
 import app.helpers.KeyHelper;
 import app.helpers.Output;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 public class AlgorithmLinker {
 
   public static final String[] keyBeginMarkers = new String[]{"-----BEGIN PUBLIC KEY-----",
@@ -53,7 +55,7 @@ public class AlgorithmLinker {
 
   private static PublicKey generatePublicKeyFromString(String key, String algorithm) {
     PublicKey publicKey = null;
-    if (key.length() > 1) {
+    if (isNotEmpty(key)) {
       key = cleanKey(key);
       byte[] keyByteArray = java.util.Base64.getDecoder().decode(key);
       try {
