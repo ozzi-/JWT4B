@@ -47,7 +47,8 @@ import model.Strings;
 public class JWTInterceptTab extends JPanel {
 
   private static final long serialVersionUID = 1L;
-  private JWTInterceptModel jwtIM;
+  private final JWTInterceptModel jwtIM;
+  private final RSyntaxTextAreaFactory rSyntaxTextAreaFactory;
   private final String jwtAreaOriginalContent = "none";
   private JRadioButton rdbtnRecalculateSignature;
   private JRadioButton rdbtnRandomKey;
@@ -71,8 +72,9 @@ public class JWTInterceptTab extends JPanel {
   private JButton btnCopyPubPrivKeyCVEAttack;
   private ButtonGroup btgrp;
 
-  public JWTInterceptTab(JWTInterceptModel jwtIM) {
+  public JWTInterceptTab(JWTInterceptModel jwtIM, RSyntaxTextAreaFactory rSyntaxTextAreaFactory) {
     this.jwtIM = jwtIM;
+    this.rSyntaxTextAreaFactory = rSyntaxTextAreaFactory;
     drawGui();
   }
 
@@ -112,7 +114,7 @@ public class JWTInterceptTab extends JPanel {
 
     fixSyntaxArea();
 
-    jwtHeaderArea = new RSyntaxTextArea(3, 20);
+    jwtHeaderArea = rSyntaxTextAreaFactory.rSyntaxTextArea(3, 20);
     jwtHeaderArea.setMarginLinePosition(70);
     jwtHeaderArea.setWhitespaceVisible(true);
     SyntaxScheme scheme = jwtHeaderArea.getSyntaxScheme();
@@ -130,7 +132,7 @@ public class JWTInterceptTab extends JPanel {
     headerPane.setLineNumbersEnabled(false);
 
 
-    jwtPayloadArea = new RSyntaxTextArea(3, 20);
+    jwtPayloadArea = rSyntaxTextAreaFactory.rSyntaxTextArea(3, 20);
     jwtPayloadArea.setMarginLinePosition(70);
     jwtPayloadArea.setWhitespaceVisible(true);
     //area.setMinimumSize(new Dimension(300, 300));
@@ -148,7 +150,7 @@ public class JWTInterceptTab extends JPanel {
     payloadPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
     payloadPane.setLineNumbersEnabled(false);
 
-    jwtSignatureArea = new RSyntaxTextArea(3, 10);
+    jwtSignatureArea = rSyntaxTextAreaFactory.rSyntaxTextArea(3, 10);
     jwtSignatureArea.setMarginLinePosition(70);
     jwtSignatureArea.setLineWrap(true);
     jwtSignatureArea.setWhitespaceVisible(true);

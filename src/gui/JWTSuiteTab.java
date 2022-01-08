@@ -41,10 +41,12 @@ public class JWTSuiteTab extends JPanel {
 	private JButton jwtSignatureButton;
 	private JTextArea jwtKeyArea;
 	private final JWTSuiteTabModel jwtSTM;
+	private final RSyntaxTextAreaFactory rSyntaxTextAreaFactory;
 	private JLabel lbRegisteredClaims;
 	private JLabel lblExtendedVerificationInfo;
 
-	public JWTSuiteTab(JWTSuiteTabModel jwtSTM) {
+	public JWTSuiteTab(JWTSuiteTabModel jwtSTM, RSyntaxTextAreaFactory rSyntaxTextAreaFactory) {
+		this.rSyntaxTextAreaFactory = rSyntaxTextAreaFactory;
 		drawGui();
 		this.jwtSTM = jwtSTM;
 	}
@@ -199,7 +201,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_jwtOuputField.gridy = 9;
 		
 		JTextComponent.removeKeymap("RTextAreaKeymap");
-		jwtOuputField = new RSyntaxTextArea();
+		jwtOuputField = rSyntaxTextAreaFactory.rSyntaxTextArea();
 		UIManager.put("RSyntaxTextAreaUI.actionMap", null);
 		UIManager.put("RSyntaxTextAreaUI.inputMap", null);
 		UIManager.put("RTextAreaUI.actionMap", null);
