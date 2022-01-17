@@ -1,26 +1,25 @@
 package app;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import model.CustomJWToken;
+import org.junit.jupiter.api.Test;
 
-public class TestJWTValidCheck {
+import static app.TestTokens.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
+class TestJWTValidCheck {
 
 	@Test
-	public void testValid() {
-		assertEquals(true, CustomJWToken.isValidJWT(TestTokens.hs256_token));
+	void testValid() {
+		assertThat(CustomJWToken.isValidJWT(HS256_TOKEN)).isTrue();
 	}
 
 	@Test
-	public void testInValid() {
-		assertEquals(false, CustomJWToken.isValidJWT(TestTokens.invalid_token));
+	void testInValid() {
+		assertThat(CustomJWToken.isValidJWT(INVALID_TOKEN)).isFalse();
 	}
 
 	@Test
-	public void testInValid2() {
-		assertEquals(false, CustomJWToken.isValidJWT(TestTokens.invalid_token_2));
+	void testInValid2() {
+		assertThat(CustomJWToken.isValidJWT(INVALID_TOKEN_2)).isFalse();
 	}
-
 }

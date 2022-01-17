@@ -1,62 +1,65 @@
 package app;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
 
 import app.helpers.KeyValuePair;
 import app.tokenposition.PostBody;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-public class TestPostDetection {
-	@Test
-	public void testPostBody() {
-		String body = "test=best&token="+TestTokens.hs256_token;
-		PostBody pb = new PostBody(null,body);
-		KeyValuePair result = pb.getJWTFromPostBody();
-		assertEquals(TestTokens.hs256_token,result.getValue());	
+import java.util.stream.Stream;
+
+import static app.TestTokens.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+
+class TestPostDetection {
+
+	static Stream<Arguments> postDataAndDetectedTokens() {
+		return Stream.of(
+				arguments("test=best&token=" + HS256_TOKEN, HS256_TOKEN),
+				arguments("token=" + HS256_TOKEN, HS256_TOKEN),
+				arguments("token=" + HS256_TOKEN + "&test=best", HS256_TOKEN)
+		);
 	}
-	
-	@Test
-	public void testPostBodyAlone() {
-		String body = "token="+TestTokens.hs256_token;
-		PostBody pb = new PostBody(null,body);
+
+	@MethodSource("postDataAndDetectedTokens")
+	@ParameterizedTest
+	void testPostBody(String body, String bodyToken) {
+		PostBody pb = new PostBody(null, body);
+
 		KeyValuePair result = pb.getJWTFromPostBody();
-		assertEquals(TestTokens.hs256_token,result.getValue());	
+
+		assertThat(result.getValue()).isEqualTo(bodyToken);
 	}
-	
-	@Test
-	public void testPostBodyReversed() {
-		String body = "token="+TestTokens.hs256_token+"&test=best";
-		PostBody pb = new PostBody(null,body);
-		KeyValuePair result = pb.getJWTFromPostBody();
-		assertEquals(TestTokens.hs256_token,result.getValue());	
+
+	static Stream<Arguments> postDataWhereNoTokenDetected() {
+		return Stream.of(
+				arguments("token=" + INVALID_TOKEN + "&test=best"),
+				arguments("")
+		);
 	}
-	@Test
-	public void testPostBodyInvalid() {
-		String body = "token="+TestTokens.invalid_token+"&test=best";
-		PostBody pb = new PostBody(null,body);
+
+	@MethodSource("postDataWhereNoTokenDetected")
+	@ParameterizedTest
+	void testPostBody(String body) {
+		PostBody pb = new PostBody(null, body);
+
 		KeyValuePair result = pb.getJWTFromPostBody();
-		assertEquals(null,result);	
+
+		assertThat(result).isNull();
 	}
+
 	@Test
-	public void testPostBodyNone() {
-		String body = "";
-		PostBody pb = new PostBody(null,body);
-		KeyValuePair result = pb.getJWTFromPostBody();
-		assertEquals(null,result);	
-	}
-	
-	@Test
-	public void testPostBodyReplace() {
-		String body = "test=best&token="+TestTokens.hs256_token;
-		PostBody pb = new PostBody(null,body);
-		@SuppressWarnings("unused")
-		KeyValuePair result = pb.getJWTFromPostBody();
-		pb.getToken();
-		String replaced = pb.replaceTokenImpl(TestTokens.hs256_token_2,body);
-		PostBody pbR = new PostBody(null,replaced);
+	void testPostBodyReplace() {
+		String body = "test=best&token=" + HS256_TOKEN;
+		PostBody pb = new PostBody(null, body);
+
+		String replaced = pb.replaceTokenImpl(HS256_TOKEN_2, body);
+		PostBody pbR = new PostBody(null, replaced);
 		KeyValuePair resultR = pbR.getJWTFromPostBody();
-		assertEquals(resultR.getValue(),TestTokens.hs256_token_2);	
+
+		assertThat(resultR.getValue()).isEqualTo(HS256_TOKEN_2);
 	}
-	
 }
