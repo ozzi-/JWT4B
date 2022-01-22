@@ -23,14 +23,13 @@ public class BurpExtender implements IBurpExtender, IMessageEditorTabFactory {
   private IBurpExtenderCallbacks callbacks;
   private RSyntaxTextAreaFactory rSyntaxTextAreaFactory;
 
-  @Override
-  public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
-    this.callbacks = callbacks;
-    Config.stdout = new PrintWriter(callbacks.getStdout(), true);
-    Config.stderr = new PrintWriter(callbacks.getStderr(), true);
+	@Override
+	public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
+		this.callbacks = callbacks;
 
-    Output.output("JWT4B says hi!");
-    rSyntaxTextAreaFactory = new RSyntaxTextAreaFactory(callbacks);
+    Output.initialise(callbacks.getStdout(), callbacks.getStderr());
+		Output.output("JWT4B says hi!");
+		rSyntaxTextAreaFactory = new RSyntaxTextAreaFactory(callbacks);
 
 
     callbacks.setExtensionName(Settings.EXTENSION_NAME);

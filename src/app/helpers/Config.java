@@ -17,9 +17,6 @@ import com.eclipsesource.json.WriterConfig;
 
 public class Config {
 
-  public static PrintWriter stdout;
-  public static PrintWriter stderr;
-
   public static List<String> jwtKeywords = Arrays.asList("Authorization: Bearer", "Authorization: bearer",
       "authorization: Bearer", "authorization: bearer");
   public static List<String> tokenKeywords = Arrays.asList("id_token", "ID_TOKEN", "access_token", "token");
