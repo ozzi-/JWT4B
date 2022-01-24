@@ -1,61 +1,65 @@
 package app.controllers;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JMenuItem;
 
-import app.helpers.MessageBean;
 import app.helpers.Output;
 import burp.IContextMenuFactory;
 import burp.IContextMenuInvocation;
 import burp.IHttpRequestResponse;
 import model.Strings;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 // This controller handles the right-click context option "Send selected text to JWT4B Tab to decode
 // which is available in the Raw view of the HTTP history tab
 
 public class ContextMenuController implements IContextMenuFactory {
+    private final JWTSuiteTabController jstC;
 
-  private final MenuItemListener menuItemListener;
-  private String selectedText = null;
-
-  public ContextMenuController(JWTSuiteTabController jstC) {
-    MessageBean bean = new MessageBean();
-    bean.addPropertyChangeListener(evt -> {
-      if (evt.getNewValue().equals("menuitem")) {
-        jstC.contextActionSendJWTtoSuiteTab(selectedText, true);
-      }
-    });
-    menuItemListener = new MenuItemListener(bean);
-  }
-
-  @Override
-  public List<JMenuItem> createMenuItems(IContextMenuInvocation invocation) {
-    List<JMenuItem> menuItems = new ArrayList<JMenuItem>();
-    int[] selection = invocation.getSelectionBounds();
-    byte iContext = invocation.getInvocationContext();
-    if (selection != null) { // only if user currently is in an input field
-      IHttpRequestResponse ihrr = invocation.getSelectedMessages()[0];
-      // TODO https://github.com/ozzi-/JWT4B/issues/10 -> this issue needs to be fixed here
-      if (iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_REQUEST
-          || iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_REQUEST) {
-        selectedText = new String(ihrr.getRequest()).substring(selection[0], selection[1]);
-      } else if (iContext == IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_RESPONSE
-          || iContext == IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_RESPONSE) {
-        selectedText = new String(ihrr.getResponse()).substring(selection[0], selection[1]);
-      } else {
-        Output.outputError("This context menu case (" + iContext + ") has not been covered yet!");
-      }
-
-      JMenuItem item = new JMenuItem(Strings.contextMenuString);
-      item.addActionListener(menuItemListener);
-      menuItems.add(item);
+    public ContextMenuController(JWTSuiteTabController jstC) {
+        this.jstC = jstC;
     }
-    return menuItems;
-  }
 
-  public String getSelectedText() {
-    return selectedText;
-  }
+    @Override
+    public List<JMenuItem> createMenuItems(IContextMenuInvocation invocation) {
+        String selectedText = selectedText(invocation);
+        List<JMenuItem> menuItems = new LinkedList<>();
+
+        if (isNotEmpty(selectedText)) {
+            JMenuItem item = new JMenuItem(Strings.contextMenuString);
+            item.addActionListener(e -> jstC.contextActionSendJWTtoSuiteTab(selectedText, true));
+
+            menuItems.add(item);
+        }
+
+        return menuItems;
+    }
+
+    private static String selectedText(IContextMenuInvocation invocation) {
+        int[] selection = invocation.getSelectionBounds();
+
+        if (selection == null) { // only if user currently is in an input field
+            return "";
+        }
+
+        IHttpRequestResponse ihrr = invocation.getSelectedMessages()[0];
+        byte iContext = invocation.getInvocationContext();
+
+        switch (iContext) {
+            case IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_REQUEST:
+            case IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_REQUEST:
+                return new String(ihrr.getRequest()).substring(selection[0], selection[1]);
+
+            case IContextMenuInvocation.CONTEXT_MESSAGE_EDITOR_RESPONSE:
+            case IContextMenuInvocation.CONTEXT_MESSAGE_VIEWER_RESPONSE:
+                return new String(ihrr.getResponse()).substring(selection[0], selection[1]);
+
+            default:
+                Output.outputError("This context menu case (" + invocation + ") has not been covered yet!");
+                return "";
+        }
+    }
 }
