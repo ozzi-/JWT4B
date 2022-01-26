@@ -3,7 +3,7 @@ package model;
 import java.awt.Color;
 import java.util.List;
 
-import app.helpers.CookieFlagWrapper;
+import app.tokenposition.ITokenPosition;
 
 public class JWTTabModel {
 
@@ -14,7 +14,7 @@ public class JWTTabModel {
   private Color verificationColor;
   private String jwt;
   private String jwtJSON;
-  private CookieFlagWrapper cFW;
+  private ITokenPosition tokenPosition;
   private List<TimeClaim> tcl;
 
   public JWTTabModel() {
@@ -100,12 +100,12 @@ public class JWTTabModel {
     jwtJSON = readableFormat;
   }
 
-  public void setcFW(CookieFlagWrapper cFW) {
-    this.cFW = cFW;
+  public void setTokenPosition(ITokenPosition tokenPosition) {
+    this.tokenPosition = tokenPosition;
   }
 
-  public CookieFlagWrapper getcFW() {
-    return cFW;
+  public String getAdditionalDataAsHtml() {
+    return tokenPosition.toHTMLString();
   }
 
   public void setTimeClaims(List<TimeClaim> tcl) {

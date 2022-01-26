@@ -5,21 +5,23 @@ import java.util.Arrays;
 import java.util.List;
 
 import app.helpers.Output;
-import app.helpers.CookieFlagWrapper;
 import burp.IExtensionHelpers;
 import burp.IRequestInfo;
 import burp.IResponseInfo;
 import model.Strings;
 
 public abstract class ITokenPosition {
-	
 	protected IExtensionHelpers helpers;
 	protected byte[] message;
 	protected boolean isRequest;
+
 	public abstract boolean positionFound();
+
 	public abstract String getToken();
+
 	public abstract byte[] replaceToken(String newToken);
-	private static CookieFlagWrapper cookieFlagWrap;
+
+	public abstract String toHTMLString();
 
 	public void setMessage(byte[] message, boolean isRequest) {
 		this.message = message;
@@ -72,11 +74,6 @@ public abstract class ITokenPosition {
 				impl.setHelpers(helpers);
 				impl.setMessage(content, isRequest);
 				if (impl.positionFound()) {
-					if (impl instanceof Cookie) {
-						cookieFlagWrap = ((Cookie) impl).getcFW();
-					}else{
-						cookieFlagWrap = new CookieFlagWrapper(false,false,false);
-					}
 					return impl;
 				}
 			} catch (Exception e) {
@@ -86,9 +83,9 @@ public abstract class ITokenPosition {
 				if (!e.getMessage().equals("Request cannot be null") && !e.getMessage().equals("1")) {
 					Output.outputError(e.getMessage());
 				}
-				return null;
 			}
 		}
+
 		return null;
 	}
 
@@ -152,8 +149,5 @@ public abstract class ITokenPosition {
 
 	public byte[] getMessage(){
 		return this.message;
-	}
-	public CookieFlagWrapper getcFW() {
-		return cookieFlagWrap;
 	}
 }

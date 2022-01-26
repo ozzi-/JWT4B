@@ -52,4 +52,9 @@ public class AuthorizationBearerHeader extends ITokenPosition {
     }
     return getHelpers().buildHttpMessage(headers, getBody());
   }
+
+  @Override
+  public String toHTMLString() {
+    return "";
+  }
 }

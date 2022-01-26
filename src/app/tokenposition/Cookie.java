@@ -3,20 +3,20 @@ package app.tokenposition;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
-import app.helpers.CookieFlagWrapper;
-import app.helpers.Output;
 import app.helpers.TokenCheck;
 
 //finds and replaces JWT's in cookies
 public class Cookie extends ITokenPosition {
 
-	public static final String SET_COOKIE_HEADER = "Set-Cookie: ";
-	public static final String COOKIE_HEADER = "Cookie: ";
+	private static final String SET_COOKIE_HEADER = "Set-Cookie: ";
+	private static final String COOKIE_HEADER = "Cookie: ";
+
 	private boolean found;
 	private String token;
 	private List<String> headers;
-	private CookieFlagWrapper cFW = null;
-	
+	private boolean secureFlag;
+	private boolean httpOnlyFlag;
+
 	public Cookie(List<String> headersP, String bodyP) {
 		headers=headersP;
 	}
@@ -34,21 +34,19 @@ public class Cookie extends ITokenPosition {
 
 	// finds the first jwt in the set-cookie or cookie header(s)
 	public String findJWTInHeaders(List<String> headers) {
-		// defaulting
-				cFW = new CookieFlagWrapper(false, false, false);
-
 		for (String header : headers) {
 			if(header.startsWith(SET_COOKIE_HEADER)) {
 				String cookie = header.replace(SET_COOKIE_HEADER, "");
 				if(cookie.length()>1 && cookie.contains("=")) {
 					String value = cookie.split(Pattern.quote("="))[1];
 					int flagMarker = value.indexOf(";");
-					if(flagMarker!=-1){
+
+					if (flagMarker!=-1){
 						value=value.substring(0, flagMarker);
-						cFW = new CookieFlagWrapper(true, cookie.toLowerCase().contains("; secure"), cookie.toLowerCase().contains("; httponly")); 
-					}else{
-						cFW = new CookieFlagWrapper(true, false, false);
+						secureFlag = cookie.toLowerCase().contains("; secure");
+						httpOnlyFlag = cookie.toLowerCase().contains("; httponly");
 					}
+
 					TokenCheck.isValidJWT(value);
 					if(TokenCheck.isValidJWT(value)) {
 						found=true;
@@ -113,7 +111,32 @@ public class Cookie extends ITokenPosition {
 		return headers;
 	}
 
-	public CookieFlagWrapper getcFW(){
-		return cFW;
+	public boolean hasSecureFlag() {
+		return secureFlag;
+	}
+
+	public boolean hasHttpOnlyFlag() {
+		return httpOnlyFlag;
+	}
+
+	@Override
+	public String toHTMLString() {
+		StringBuilder html = new StringBuilder();
+
+		html.append("<html><div style=\"width:300px; max-height: 50px;\">");
+
+		String secureFlagHtml = secureFlag
+				? "<span style=\"color: green\">Secure Flag set.</span><br>"
+				: "<span style=\"color: red\">No secure flag set. Token may be transmitted by HTTP.</span><br>";
+		html.append(secureFlagHtml);
+
+		String httpOnlyHtml = httpOnlyFlag
+				? "<span style=\"color: green\">HttpOnly Flag set.</span>"
+				: "<span style=\"color: red\">No HttpOnly flag set. Token may accessed by JavaScript (XSS).</span>";
+		html.append(httpOnlyHtml);
+
+		html.append("</div></html>");
+
+		return html.toString();
 	}
 }

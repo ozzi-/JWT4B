@@ -18,4 +18,9 @@ public class Dummy extends ITokenPosition {
   public byte[] replaceToken(String newToken) {
     return (CURLY_BRACKET_B64 + CURLY_BRACKET_B64).getBytes();
   }
+
+  @Override
+  public String toHTMLString() {
+    return "";
+  }
 }

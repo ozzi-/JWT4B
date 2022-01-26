@@ -136,4 +136,9 @@ public class Body extends ITokenPosition {
     }
     return body;
   }
+
+  @Override
+  public String toHTMLString() {
+    return "";
+  }
 }

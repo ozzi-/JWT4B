@@ -171,7 +171,7 @@ class TestSetCookieDetection {
         Cookie cookie = new Cookie(headers, "");
         String result = cookie.findJWTInHeaders(headers);
         assertThat(result).isEqualTo(HS256_TOKEN);
-        assertThat(cookie.getcFW().hasSecureFlag()).isTrue();
+        assertThat(cookie.hasSecureFlag()).isTrue();
     }
 
     @Test
@@ -187,7 +187,7 @@ class TestSetCookieDetection {
         Cookie cookie = new Cookie(headers, "");
         String result = cookie.findJWTInHeaders(headers);
         assertThat(result).isEqualTo(HS256_TOKEN);
-        assertThat(cookie.getcFW().hasHttpOnlyFlag()).isTrue();
+        assertThat(cookie.hasHttpOnlyFlag()).isTrue();
     }
 
     @Test
@@ -203,8 +203,8 @@ class TestSetCookieDetection {
         Cookie cookie = new Cookie(headers, "");
         String result = cookie.findJWTInHeaders(headers);
         assertThat(result).isEqualTo(HS256_TOKEN);
-        assertThat(cookie.getcFW().hasHttpOnlyFlag()).isTrue();
-        assertThat(cookie.getcFW().hasSecureFlag()).isTrue();
+        assertThat(cookie.hasHttpOnlyFlag()).isTrue();
+        assertThat(cookie.hasSecureFlag()).isTrue();
     }
 
     @Test
@@ -221,7 +221,7 @@ class TestSetCookieDetection {
         String result = cookie.findJWTInHeaders(headers);
 
         assertThat(result).isEqualTo(HS256_TOKEN);
-        assertThat(cookie.getcFW().hasHttpOnlyFlag()).isFalse();
-        assertThat(cookie.getcFW().hasSecureFlag()).isFalse();
+        assertThat(cookie.hasHttpOnlyFlag()).isFalse();
+        assertThat(cookie.hasSecureFlag()).isFalse();
     }
 }

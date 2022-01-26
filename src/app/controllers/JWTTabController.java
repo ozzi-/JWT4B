@@ -88,7 +88,7 @@ public class JWTTabController implements IMessageEditorTab {
     jwtTM.setJWTJSON(ReadableTokenFormat.getReadableFormat(jwt));
     List<TimeClaim> tcl = jwt.getTimeClaimList();
     jwtTM.setTimeClaims(tcl);
-    jwtTM.setcFW(tokenPosition.getcFW());
+    jwtTM.setTokenPosition(tokenPosition);
 
     JWTTabModel current = new JWTTabModel(jwtTM.getKey(), content);
     int containsIndex = modelStateList.indexOf(current);

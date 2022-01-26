@@ -66,7 +66,7 @@ public class JWTInterceptTab extends JPanel {
   private JLabel lblProblem;
   private JComboBox<String> noneAttackComboBox;
   private JLabel lblNewLabel;
-  private JLabel lblCookieFlags;
+  private JLabel lblAdditionalData;
   private JLabel lbRegisteredClaims;
   private JCheckBox chkbxCVEAttack;
   private JButton btnCopyPubPrivKeyCVEAttack;
@@ -244,9 +244,9 @@ public class JWTInterceptTab extends JPanel {
     c.gridy = 11;
     actionPanel.add(chkbxCVEAttack, c);
 
-    lblCookieFlags = new JLabel("");
+    lblAdditionalData = new JLabel("");
     c.gridy = 12;
-    actionPanel.add(lblCookieFlags, c);
+    actionPanel.add(lblAdditionalData, c);
 
     lbRegisteredClaims = new JLabel();
     lbRegisteredClaims.setBackground(SystemColor.controlHighlight);
@@ -366,11 +366,8 @@ public class JWTInterceptTab extends JPanel {
         }
         lblProblem.setText(jwtIM.getProblemDetail());
         // -> response of https://oz-web.com/jwt/request_cookie.php
-        if (jwtIM.getcFW().isCookie()) {
-          lblCookieFlags.setText(jwtIM.getcFW().toHTMLString());
-        } else {
-          lblCookieFlags.setText("");
-        }
+
+        lblAdditionalData.setText(jwtIM.getAdditionalDataAsHtml());
         lbRegisteredClaims.setText(jwtIM.getTimeClaimsAsText());
       }
     });

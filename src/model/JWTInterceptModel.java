@@ -2,7 +2,7 @@ package model;
 
 import java.util.List;
 
-import app.helpers.CookieFlagWrapper;
+import app.tokenposition.ITokenPosition;
 
 public class JWTInterceptModel {
 
@@ -10,7 +10,7 @@ public class JWTInterceptModel {
   private CustomJWToken jwToken;
   private String originalJWT;
   private String problemDetail;
-  private CookieFlagWrapper cFW;
+  private ITokenPosition tokenPosition;
   private List<TimeClaim> tcl;
   private CustomJWToken originalJWToken;
 
@@ -30,12 +30,12 @@ public class JWTInterceptModel {
     this.problemDetail = problemDetail;
   }
 
-  public CookieFlagWrapper getcFW() {
-    return cFW;
+  public String getAdditionalDataAsHtml() {
+    return tokenPosition.toHTMLString();
   }
 
-  public void setcFW(CookieFlagWrapper cFW) {
-    this.cFW = cFW;
+  public void setTokenPosition(ITokenPosition tokenPosition) {
+    this.tokenPosition = tokenPosition;
   }
 
   public void setTimeClaims(List<TimeClaim> tcl) {
