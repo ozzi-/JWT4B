@@ -23,7 +23,8 @@ class TestBodyDetection {
                 arguments("{ \"bbbb\" : { \" cccc \": { \" dddd\":\"" + HS256_TOKEN + " \"}}}", HS256_TOKEN),
                 arguments("token=" + HS256_TOKEN, HS256_TOKEN),
                 arguments(HS256_TOKEN, HS256_TOKEN),
-                arguments("egg=" + HS256_TOKEN + "&test=best", HS256_TOKEN)
+                arguments("egg=" + HS256_TOKEN + "&test=best", HS256_TOKEN),
+                arguments("abc def " + HS256_TOKEN + " ghi jkl", HS256_TOKEN)
         );
     }
 
@@ -41,9 +42,12 @@ class TestBodyDetection {
         return Stream.of(
                 arguments("{ \"bbbb\" : { \" cccc \": { \" dddd\":" + HS256_TOKEN + " \"}}}"),
                 arguments("{}"),
+                arguments("{ \"abc\": \"def\"}"),
+                arguments("{ \"abc\": {\"def\" : \"ghi\"} }"),
                 arguments("yo=" + INVALID_TOKEN + "&test=best"),
                 arguments("ab " + INVALID_TOKEN + " de"),
                 arguments(HS256_TOKEN + "&"),
+                arguments("abc def ghi jkl"),
                 arguments("")
         );
     }
