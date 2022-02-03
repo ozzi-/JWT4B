@@ -45,6 +45,7 @@ public class JLabelLink extends JFrame {
 
   public void addURL(String content, String tooltip) {
     JLabel label = new JLabel("<html>" + content + "</html>");
+    label.putClientProperty("html.disable", null);
     label.setCursor(new Cursor(Cursor.HAND_CURSOR));
     label.setToolTipText(tooltip);
     addMouseHandler(label);
@@ -53,6 +54,7 @@ public class JLabelLink extends JFrame {
 
   public void addText(String content) {
     JLabel label = new JLabel("<html>" + content + "</html>");
+    label.putClientProperty("html.disable", null);
     pan.add(label);
   }
 

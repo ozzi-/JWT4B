@@ -180,6 +180,7 @@ public class JWTInterceptTab extends JPanel {
     actionPanel.add(rdbtnDontModifySignature, c);
 
     rdbtnRecalculateSignature = new JRadioButton(Strings.recalculateSignature);
+    rdbtnRecalculateSignature.putClientProperty("html.disable", null);
     rdbtnRecalculateSignature.setToolTipText(Strings.recalculateSignatureToolTip);
     rdbtnRecalculateSignature.setHorizontalAlignment(SwingConstants.LEFT);
     c.gridy = 2;
@@ -192,6 +193,7 @@ public class JWTInterceptTab extends JPanel {
     actionPanel.add(rdbtnOriginalSignature, c);
 
     rdbtnRandomKey = new JRadioButton(Strings.randomKey);
+    rdbtnRandomKey.putClientProperty("html.disable", null);
     rdbtnRandomKey.setToolTipText(Strings.randomKeyToolTip);
     rdbtnRandomKey.setHorizontalAlignment(SwingConstants.LEFT);
     c.gridy = 4;
@@ -247,6 +249,7 @@ public class JWTInterceptTab extends JPanel {
     actionPanel.add(lblCookieFlags, c);
 
     lbRegisteredClaims = new JLabel();
+    lbRegisteredClaims.putClientProperty("html.disable", null);
     lbRegisteredClaims.setBackground(SystemColor.controlHighlight);
     c.gridy = 13;
     actionPanel.add(lbRegisteredClaims, c);
