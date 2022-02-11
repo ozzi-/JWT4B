@@ -21,7 +21,7 @@ class TestAuthorizationDetection {
         "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "Accept-Language: en-US,en;q=0.5",
         "Authorization: Bearer " + HS256_TOKEN, "Connection: close", "Upgrade-Insecure-Requests: 1");
 
-    AuthorizationBearerHeader abh = new AuthorizationBearerHeader(headers);
+    AuthorizationBearerHeader abh = new AuthorizationBearerHeader(headers, "");
 
     assertThat(abh.positionFound()).isTrue();
     assertThat(abh.getToken()).isEqualTo(HS256_TOKEN);
@@ -33,7 +33,7 @@ class TestAuthorizationDetection {
         "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "Accept-Language: en-US,en;q=0.5",
         "Authorization: Bearer " + INVALID_TOKEN, "Connection: close", "Upgrade-Insecure-Requests: 1");
 
-    AuthorizationBearerHeader abh = new AuthorizationBearerHeader(headers);
+    AuthorizationBearerHeader abh = new AuthorizationBearerHeader(headers, "");
 
     assertThat(abh.positionFound()).isFalse();
   }
@@ -44,7 +44,7 @@ class TestAuthorizationDetection {
         "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "Accept-Language: en-US,en;q=0.5",
         "Authorization: Bearer topsecret123456789!", "Connection: close", "Upgrade-Insecure-Requests: 1");
 
-    AuthorizationBearerHeader abh = new AuthorizationBearerHeader(headers);
+    AuthorizationBearerHeader abh = new AuthorizationBearerHeader(headers, "");
 
     assertThat(abh.positionFound()).isFalse();
   }
