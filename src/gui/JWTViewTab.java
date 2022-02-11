@@ -39,10 +39,12 @@ public class JWTViewTab extends JPanel {
   private JLabel keyLabel;
   private JButton verificationIndicator;
   private final JWTTabModel jwtTM;
+  private final RSyntaxTextAreaFactory rSyntaxTextAreaFactory;
   private JLabel lblCookieFlags;
   private JLabel lbRegisteredClaims;
 
-  public JWTViewTab(JWTTabModel jwtTM) {
+  public JWTViewTab(JWTTabModel jwtTM, RSyntaxTextAreaFactory rSyntaxTextAreaFactory) {
+    this.rSyntaxTextAreaFactory = rSyntaxTextAreaFactory;
     drawPanel();
     this.jwtTM = jwtTM;
   }
@@ -96,7 +98,7 @@ public class JWTViewTab extends JPanel {
     add(verificationIndicator, gbc_validIndicator);
 
     JTextComponent.removeKeymap("RTextAreaKeymap");
-    outputField = new RSyntaxTextArea();
+    outputField = rSyntaxTextAreaFactory.rSyntaxTextArea();
     UIManager.put("RSyntaxTextAreaUI.actionMap", null);
     UIManager.put("RSyntaxTextAreaUI.inputMap", null);
     UIManager.put("RTextAreaUI.actionMap", null);
