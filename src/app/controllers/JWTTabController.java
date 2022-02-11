@@ -129,18 +129,18 @@ public class JWTTabController implements IMessageEditorTab {
       JWTVerifier verifier = JWT.require(AlgorithmLinker.getVerifierAlgorithm(curAlgo, key)).build();
       DecodedJWT test = verifier.verify(jwtTM.getJWT());
       jwtTM.setVerificationLabel(Strings.verificationValid);
-      jwtTM.setVerificationColor(Settings.COLOR_VALID);
+      jwtTM.setVerificationColor(Settings.getValidColor());
       test.getAlgorithm();
       jwtVT.updateSetView(algoType);
     } catch (JWTVerificationException e) {
       if (e instanceof SignatureVerificationException) {
-        jwtTM.setVerificationColor(Settings.COLOR_INVALID);
+        jwtTM.setVerificationColor(Settings.getInvalidColor());
         jwtTM.setVerificationLabel(Strings.verificationInvalidSignature);
       } else if (e instanceof InvalidClaimException) {
-        jwtTM.setVerificationColor(Settings.COLOR_PROBLEM_INVALID);
+        jwtTM.setVerificationColor(Settings.getProblemColor());
         jwtTM.setVerificationLabel(Strings.verificationInvalidClaim);
       } else {
-        jwtTM.setVerificationColor(Settings.COLOR_PROBLEM_INVALID);
+        jwtTM.setVerificationColor(Settings.getProblemColor());
         jwtTM.setVerificationLabel(Strings.verificationError);
       }
       jwtTM.setVerificationResult(e.getMessage());
@@ -148,7 +148,7 @@ public class JWTTabController implements IMessageEditorTab {
     } catch (IllegalArgumentException | UnsupportedEncodingException e) {
       jwtTM.setVerificationResult(e.getMessage());
       jwtTM.setVerificationLabel(Strings.verificationInvalidKey);
-      jwtTM.setVerificationColor(Settings.COLOR_PROBLEM_INVALID);
+      jwtTM.setVerificationColor(Settings.getProblemColor());
       jwtVT.updateSetView(algoType);
     }
     JWTTabModel current = new JWTTabModel(key, content);
