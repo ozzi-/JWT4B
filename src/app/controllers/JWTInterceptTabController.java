@@ -6,7 +6,6 @@ import java.awt.Frame;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.UnsupportedEncodingException;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 import java.util.List;
@@ -18,11 +17,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import app.algorithm.AlgorithmWrapper;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
-import app.algorithm.AlgorithmLinker;
 import app.helpers.Config;
 import app.helpers.DelayedDocumentListener;
 import app.helpers.KeyHelper;
@@ -142,7 +141,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       headerJSONObj.add("jwk", jwk);
       token.setHeaderJson(headerJSONObj.toString());
       try {
-        Algorithm algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), Config.cveAttackModePrivateKey);
+        Algorithm algo = AlgorithmWrapper.getSignerAlgorithm(token.getAlgorithm(), Config.cveAttackModePrivateKey);
         token.calculateAndSetSignature(algo);
         reflectChangeToView(token, true);
       } catch (Exception e) {
@@ -165,7 +164,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
         Output.output("Signing with manually entered key - " + jwtIM.getJWTKey());
         CustomJWToken token;
         token = ReadableTokenFormat.getTokenFromView(jwtST);
-        Algorithm algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), jwtIM.getJWTKey());
+        Algorithm algo = AlgorithmWrapper.getSignerAlgorithm(token.getAlgorithm(), jwtIM.getJWTKey());
         token.calculateAndSetSignature(algo);
         reflectChangeToView(token, false);
         clearError();
@@ -270,12 +269,12 @@ public class JWTInterceptTabController implements IMessageEditorTab {
         if (jwtIM.getJWTKey().length() > 0) {
           CustomJWToken token = jwtIM.getJwToken();
           Output.output("Recalculating Signature with Secret - '" + jwtIM.getJWTKey() + "'");
-          algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), jwtIM.getJWTKey());
+          algo = AlgorithmWrapper.getSignerAlgorithm(token.getAlgorithm(), jwtIM.getJWTKey());
           token.calculateAndSetSignature(algo);
           reflectChangeToView(token, true);
           addMetaHeader = true;
         }
-      } catch (IllegalArgumentException | UnsupportedEncodingException e) {
+      } catch (IllegalArgumentException e) {
         reportError("Exception while recalculating signature - " + e.getMessage());
       }
     }
@@ -299,7 +298,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
         String generatedRandomKey = KeyHelper.getRandomKey(token.getAlgorithm());
         Output.output("Generating Random Key for Signature Calculation: " + generatedRandomKey);
         jwtIM.setJWTSignatureKey(generatedRandomKey);
-        Algorithm algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), generatedRandomKey);
+        Algorithm algo = AlgorithmWrapper.getSignerAlgorithm(token.getAlgorithm(), generatedRandomKey);
         token.calculateAndSetSignature(algo);
         jwtIM.setJwToken(token);
         jwtST.setKeyFieldValue(generatedRandomKey);
@@ -367,7 +366,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
         reportError("Can't resign with an empty key");
       }
       try {
-        Algorithm algo = AlgorithmLinker.getSignerAlgorithm(Objects.requireNonNull(token).getAlgorithm(),
+        Algorithm algo = AlgorithmWrapper.getSignerAlgorithm(Objects.requireNonNull(token).getAlgorithm(),
             jwtIM.getJWTKey());
         token.calculateAndSetSignature(algo);
         jwtIM.setJwToken(token);
