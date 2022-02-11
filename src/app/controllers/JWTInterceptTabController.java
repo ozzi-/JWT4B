@@ -47,6 +47,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
   private final JWTInterceptTab jwtST;
   private final IExtensionHelpers helpers;
   private ITokenPosition tokenPosition;
+  private boolean resignOnType;
   private boolean randomKey;
   private boolean chooseSignature;
   private boolean recalculateSignature;
@@ -221,6 +222,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
   private void radioButtonChanged(boolean cDM, boolean cRK, boolean cOS, boolean cRS, boolean cCS) {
     clearError();
+    resignOnType = !cDM && !cOS;
     boolean oldRandomKey = randomKey;
     edited = true;
     addMetaHeader = false;
@@ -353,7 +355,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       reportError("invalid JWT");
       return;
     }
-    if ((recalculateSignature || randomKey) && jwtST.getKeyField().isEnabled()) {
+    if (resignOnType) {
       Output.output("Recalculating signature as key typed");
       CustomJWToken token = null;
       try {
