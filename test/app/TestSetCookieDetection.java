@@ -1,213 +1,227 @@
 package app;
 
-import static org.junit.Assert.assertEquals;
+import app.tokenposition.Cookie;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import static app.TestTokens.*;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import app.tokenposition.Cookie;
+class TestSetCookieDetection {
 
-public class TestSetCookieDetection {
+    @Test
+    void testCookieReversedOrder() {
+        List<String> headers = asList(
+                "GET /jwt/response_cookie.php HTTP/1.1",
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language: en-US,en;q=0.5",
+                "Set-Cookie: token=" + HS256_TOKEN,
+                "Set-Cookie: test=best",
+                "Connection: close",
+                "Upgrade-Insecure-Requests: 1"
+        );
+        Cookie cookie = new Cookie(headers, "");
+        String result = cookie.findJWTInHeaders(headers);
+        assertThat(result).isEqualTo(HS256_TOKEN);
+    }
 
-	@Test
-	public void testCookieReversedOrder() {
-		ArrayList<String> headers = new ArrayList<>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1"); 
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
-		headers.add("Accept-Language: en-US,en;q=0.5"); 
-		headers.add("Set-Cookie: token="+TestTokens.hs256_token);
-		headers.add("Set-Cookie: test=best");
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		Cookie cookie = new Cookie(headers,"");
-		String result = cookie.findJWTInHeaders(headers);
-		assertEquals(TestTokens.hs256_token,result);	
-	}
-	@Test
-	public void testCookieInvalidJWT() {
-		ArrayList<String> headers = new ArrayList<>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1"); 
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
-		headers.add("Accept-Language: en-US,en;q=0.5"); 
-		headers.add("Set-Cookie: token="+TestTokens.invalid_token);
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		Cookie cookie = new Cookie(headers,"");
-		String result = cookie.findJWTInHeaders(headers);
-		assertEquals(null,result);
-	}
-	@Test
-	public void testCookieNoJWT() {
-		ArrayList<String> headers = new ArrayList<>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1"); 		 
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
-		headers.add("Accept-Language: en-US,en;q=0.5"); 
-		headers.add("Cookie: test=besst"); 
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		Cookie cookie = new Cookie(headers,"");
-		String result = cookie.findJWTInHeaders(headers);
-		assertEquals(null,result);	
-	}
-	
-	
-	@Test
-	public void testSetCookieGetTokenInvalid() {
-		ArrayList<String> headers = new ArrayList<>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1"); 
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
-		headers.add("Accept-Language: en-US,en;q=0.5"); 
-		headers.add("Set-Cookie: token="+TestTokens.invalid_token); 
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		Cookie cookie = new Cookie(headers,"");
-		@SuppressWarnings("unused")
-		String result = cookie.findJWTInHeaders(headers);
-		assertEquals("",cookie.getToken());
-		assertEquals(cookie.positionFound(),false);
-	}
-		
-	@Test
-	public void testSetCookieInvalid() {
-		ArrayList<String> headers = new ArrayList<>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1"); 
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
-		headers.add("Accept-Language: en-US,en;q=0.5"); 
-		headers.add("Set-Cookie: token="+TestTokens.invalid_token); 
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		Cookie cookie = new Cookie(headers,"");
-		String result = cookie.findJWTInHeaders(headers);
-		assertEquals(null,result);	
-	}
-	
-	
-	@Test
-	public void testSetCookieSemicolon() {
-		ArrayList<String> headers = new ArrayList<>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1"); 
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
-		headers.add("Accept-Language: en-US,en;q=0.5"); 
-		headers.add("Set-Cookie: token="+TestTokens.hs256_token+";"); 
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		Cookie cookie = new Cookie(headers,"");
-		String result = cookie.findJWTInHeaders(headers);
-		assertEquals(TestTokens.hs256_token,result);	
-	}
-	
-	
-	@Test
-	public void testSetCookieReplace() {
-		List<String> headers = new ArrayList<String>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1"); 
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
-		headers.add("Accept-Language: en-US,en;q=0.5"); 
-		headers.add("Set-Cookie: token="+TestTokens.hs256_token+";"); 
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		Cookie cookie = new Cookie(headers,"");
-		@SuppressWarnings("unused")
-		String result = cookie.findJWTInHeaders(headers);
-		List<String> replaces = cookie.replaceTokenInHeader(TestTokens.hs256_token_2,headers);
-		Cookie cookieR = new Cookie(headers,"");
-		String resultR = cookieR.findJWTInHeaders(replaces);
-		
-		assertEquals(TestTokens.hs256_token_2,resultR);	
-	}
-	
-	@Test
-	public void testSetCookie() {
-		ArrayList<String> headers = new ArrayList<>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1"); 
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
-		headers.add("Accept-Language: en-US,en;q=0.5"); 
-		headers.add("Set-Cookie: token="+TestTokens.hs256_token); 
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		Cookie cookie = new Cookie(headers,"");
-		String result = cookie.findJWTInHeaders(headers);
-		assertEquals(TestTokens.hs256_token,result);	
-	}
+    @Test
+    void testCookieInvalidJWT() {
+        List<String> headers = asList(
+                "GET /jwt/response_cookie.php HTTP/1.1",
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language: en-US,en;q=0.5",
+                "Set-Cookie: token=" + INVALID_TOKEN,
+                "Connection: close",
+                "Upgrade-Insecure-Requests: 1"
+        );
+        Cookie cookie = new Cookie(headers, "");
+        String result = cookie.findJWTInHeaders(headers);
+        assertThat(result).isNull();
+    }
 
-	@Test
-	public void testSetCookieGetToken() {
-		ArrayList<String> headers = new ArrayList<>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1"); 
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
-		headers.add("Accept-Language: en-US,en;q=0.5"); 
-		headers.add("Set-Cookie: token="+TestTokens.hs256_token); 
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		Cookie cookie = new Cookie(headers,"");
-		@SuppressWarnings("unused")
-		String result = cookie.findJWTInHeaders(headers);
-		assertEquals(cookie.getToken(), TestTokens.hs256_token);
-	}
-	
-	@Test
-	public void testSetCookieSecureFlag() {
-		ArrayList<String> headers = new ArrayList<>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1"); 
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
-		headers.add("Accept-Language: en-US,en;q=0.5"); 
-		headers.add("Set-Cookie: token="+TestTokens.hs256_token+"; expires=Thu, 01-Jan-1970 01:40:00 GMT; Max-Age=0; path=/; secure;"); 
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		Cookie cookie = new Cookie(headers,"");
-		@SuppressWarnings("unused")
-		String result = cookie.findJWTInHeaders(headers);
-		assertEquals(true,cookie.getcFW().hasSecureFlag());
-	}
-	
-	@Test
-	public void testSetCookieHTTPOnlyFlag() {
-		ArrayList<String> headers = new ArrayList<>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1"); 
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
-		headers.add("Accept-Language: en-US,en;q=0.5"); 
-		headers.add("Set-Cookie: token="+TestTokens.hs256_token+"; expires=Thu, 01-Jan-1970 01:40:00 GMT; HttpOnly; Max-Age=0; path=/;"); 
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		Cookie cookie = new Cookie(headers,"");
-		@SuppressWarnings("unused")
-		String result = cookie.findJWTInHeaders(headers);
-		assertEquals(true,cookie.getcFW().hasHttpOnlyFlag());
-	}
-	
-	@Test
-	public void testSetCookieBothFlags() {
-		ArrayList<String> headers = new ArrayList<>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1"); 
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
-		headers.add("Accept-Language: en-US,en;q=0.5"); 
-		headers.add("Set-Cookie: token="+TestTokens.hs256_token+"; expires=Thu, 01-Jan-1970 01:40:00 GMT; HttpOnly; Max-Age=0; secure; path=/;"); 
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		Cookie cookie = new Cookie(headers,"");
-		@SuppressWarnings("unused")
-		String result = cookie.findJWTInHeaders(headers);
-		assertEquals(true,cookie.getcFW().hasHttpOnlyFlag());
-		assertEquals(true,cookie.getcFW().hasSecureFlag());
-	}
-	
-	@Test
-	public void testSetCookieNoFlags() {
-		ArrayList<String> headers = new ArrayList<>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1"); 
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"); 
-		headers.add("Accept-Language: en-US,en;q=0.5"); 
-		headers.add("Set-Cookie: token="+TestTokens.hs256_token+"; expires=Thu, 01-Jan-1970 01:40:00 GMT; Max-Age=0; path=/;"); 
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		Cookie cookie = new Cookie(headers,"");
-		@SuppressWarnings("unused")
-		String result = cookie.findJWTInHeaders(headers);
-		assertEquals(false,cookie.getcFW().hasHttpOnlyFlag());
-		assertEquals(false,cookie.getcFW().hasSecureFlag());
-	}
+    @Test
+    void testCookieNoJWT() {
+        List<String> headers = asList(
+                "GET /jwt/response_cookie.php HTTP/1.1",
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language: en-US,en;q=0.5",
+                "Cookie: test=besst",
+                "Connection: close",
+                "Upgrade-Insecure-Requests: 1"
+        );
+        Cookie cookie = new Cookie(headers, "");
+        String result = cookie.findJWTInHeaders(headers);
+        assertThat(result).isNull();
+    }
 
+    @Test
+    void testSetCookieGetTokenInvalid() {
+        List<String> headers = asList(
+                "GET /jwt/response_cookie.php HTTP/1.1",
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language: en-US,en;q=0.5",
+                "Set-Cookie: token=" + INVALID_TOKEN,
+                "Connection: close",
+                "Upgrade-Insecure-Requests: 1"
+        );
+        Cookie cookie = new Cookie(headers, "");
+        String result = cookie.findJWTInHeaders(headers);
+        assertThat(result).isNull();
+        assertThat(cookie.getToken()).isEmpty();
+        assertThat(cookie.positionFound()).isFalse();
+    }
 
+    @Test
+    void testSetCookieInvalid() {
+        List<String> headers = asList(
+                "GET /jwt/response_cookie.php HTTP/1.1",
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language: en-US,en;q=0.5",
+                "Set-Cookie: token=" + INVALID_TOKEN,
+                "Connection: close",
+                "Upgrade-Insecure-Requests: 1"
+        );
+        Cookie cookie = new Cookie(headers, "");
+        String result = cookie.findJWTInHeaders(headers);
+        assertThat(result).isNull();
+    }
+
+    @Test
+    void testSetCookieSemicolon() {
+        List<String> headers = asList(
+                "GET /jwt/response_cookie.php HTTP/1.1",
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language: en-US,en;q=0.5",
+                "Set-Cookie: token=" + HS256_TOKEN + ";",
+                "Connection: close",
+                "Upgrade-Insecure-Requests: 1"
+        );
+        Cookie cookie = new Cookie(headers, "");
+        String result = cookie.findJWTInHeaders(headers);
+        assertThat(result).isEqualTo(HS256_TOKEN);
+    }
+
+    @Test
+    void testSetCookieReplace() {
+        List<String> headers = new ArrayList<>(
+                asList(
+                        "GET /jwt/response_cookie.php HTTP/1.1",
+                        "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                        "Accept-Language: en-US,en;q=0.5",
+                        "Set-Cookie: token=" + HS256_TOKEN + ";",
+                        "Connection: close",
+                        "Upgrade-Insecure-Requests: 1"
+                )
+        );
+        Cookie cookie = new Cookie(headers, "");
+        String result = cookie.findJWTInHeaders(headers);
+        assertThat(result).isEqualTo(HS256_TOKEN);
+        List<String> replaces = cookie.replaceTokenInHeader(HS256_TOKEN_2, headers);
+        Cookie cookieR = new Cookie(headers, "");
+        String resultR = cookieR.findJWTInHeaders(replaces);
+
+        assertThat(resultR).isEqualTo(HS256_TOKEN_2);
+    }
+
+    @Test
+    void testSetCookie() {
+        List<String> headers = asList(
+                "GET /jwt/response_cookie.php HTTP/1.1",
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language: en-US,en;q=0.5",
+                "Set-Cookie: token=" + HS256_TOKEN,
+                "Connection: close",
+                "Upgrade-Insecure-Requests: 1"
+        );
+        Cookie cookie = new Cookie(headers, "");
+        String result = cookie.findJWTInHeaders(headers);
+        assertThat(result).isEqualTo(HS256_TOKEN);
+    }
+
+    @Test
+    void testSetCookieGetToken() {
+        List<String> headers = asList(
+                "GET /jwt/response_cookie.php HTTP/1.1",
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language: en-US,en;q=0.5",
+                "Set-Cookie: token=" + HS256_TOKEN,
+                "Connection: close",
+                "Upgrade-Insecure-Requests: 1"
+        );
+        Cookie cookie = new Cookie(headers, "");
+        @SuppressWarnings("unused")
+        String result = cookie.findJWTInHeaders(headers);
+        assertThat(cookie.getToken()).isEqualTo(HS256_TOKEN);
+    }
+
+    @Test
+    void testSetCookieSecureFlag() {
+        List<String> headers = asList(
+                "GET /jwt/response_cookie.php HTTP/1.1",
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language: en-US,en;q=0.5",
+                "Set-Cookie: token=" + HS256_TOKEN + "; expires=Thu, 01-Jan-1970 01:40:00 GMT; Max-Age=0; path=/; secure;",
+                "Connection: close",
+                "Upgrade-Insecure-Requests: 1"
+        );
+        Cookie cookie = new Cookie(headers, "");
+        String result = cookie.findJWTInHeaders(headers);
+        assertThat(result).isEqualTo(HS256_TOKEN);
+        assertThat(cookie.getcFW().hasSecureFlag()).isTrue();
+    }
+
+    @Test
+    void testSetCookieHTTPOnlyFlag() {
+        List<String> headers = asList(
+                "GET /jwt/response_cookie.php HTTP/1.1",
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language: en-US,en;q=0.5",
+                "Set-Cookie: token=" + HS256_TOKEN + "; expires=Thu, 01-Jan-1970 01:40:00 GMT; HttpOnly; Max-Age=0; path=/;",
+                "Connection: close",
+                "Upgrade-Insecure-Requests: 1"
+        );
+        Cookie cookie = new Cookie(headers, "");
+        String result = cookie.findJWTInHeaders(headers);
+        assertThat(result).isEqualTo(HS256_TOKEN);
+        assertThat(cookie.getcFW().hasHttpOnlyFlag()).isTrue();
+    }
+
+    @Test
+    void testSetCookieBothFlags() {
+        List<String> headers = asList(
+                "GET /jwt/response_cookie.php HTTP/1.1",
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language: en-US,en;q=0.5",
+                "Set-Cookie: token=" + HS256_TOKEN + "; expires=Thu, 01-Jan-1970 01:40:00 GMT; HttpOnly; Max-Age=0; secure; path=/;",
+                "Connection: close",
+                "Upgrade-Insecure-Requests: 1"
+        );
+        Cookie cookie = new Cookie(headers, "");
+        String result = cookie.findJWTInHeaders(headers);
+        assertThat(result).isEqualTo(HS256_TOKEN);
+        assertThat(cookie.getcFW().hasHttpOnlyFlag()).isTrue();
+        assertThat(cookie.getcFW().hasSecureFlag()).isTrue();
+    }
+
+    @Test
+    void testSetCookieNoFlags() {
+        List<String> headers = asList(
+                "GET /jwt/response_cookie.php HTTP/1.1",
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                "Accept-Language: en-US,en;q=0.5",
+                "Set-Cookie: token=" + HS256_TOKEN + "; expires=Thu, 01-Jan-1970 01:40:00 GMT; Max-Age=0; path=/;",
+                "Connection: close",
+                "Upgrade-Insecure-Requests: 1"
+        );
+        Cookie cookie = new Cookie(headers, "");
+        String result = cookie.findJWTInHeaders(headers);
+
+        assertThat(result).isEqualTo(HS256_TOKEN);
+        assertThat(cookie.getcFW().hasHttpOnlyFlag()).isFalse();
+        assertThat(cookie.getcFW().hasSecureFlag()).isFalse();
+    }
 }

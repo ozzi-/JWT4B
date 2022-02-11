@@ -1,35 +1,35 @@
 package app;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import model.CustomJWToken;
+import org.junit.jupiter.api.Test;
 
-public class TestCustomJWTDecoder {
-	@Test
-	public void testIfTokenCanbeDecoded() {
-		CustomJWToken reConstructedToken = new CustomJWToken(TestTokens.hs256_token);
-		assertEquals(TestTokens.hs256_token, reConstructedToken.getToken());
-		assertEquals(true,reConstructedToken.isBuiltSuccessful());
-	}
+import static app.TestTokens.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-	@Test
-	public void testBrokenToken() {
-		CustomJWToken reConstructedToken = new CustomJWToken(TestTokens.invalid_token);
-		assertEquals(false,reConstructedToken.isBuiltSuccessful());
-	}
+class TestCustomJWTDecoder {
 
+    @Test
+    void testIfTokenCanBeDecoded() {
+        CustomJWToken reConstructedToken = new CustomJWToken(HS256_TOKEN);
+        assertThat(HS256_TOKEN).isEqualTo(reConstructedToken.getToken());
+        assertThat(reConstructedToken.isBuiltSuccessful()).isTrue();
+    }
 
-	@Test
-	public void testIfTokenIsMinified(){
-		CustomJWToken reConstructedToken = new CustomJWToken(TestTokens.hs256_token);
-		assertEquals(true, reConstructedToken.isMinified());
-	}
+    @Test
+    void testBrokenToken() {
+        CustomJWToken reConstructedToken = new CustomJWToken(INVALID_TOKEN);
+        assertThat(reConstructedToken.isBuiltSuccessful()).isFalse();
+    }
 
-	@Test
-	public void testIfTokenIsNotMinified(){
-		CustomJWToken reConstructedToken = new CustomJWToken(TestTokens.hs256_beautified_token);
-		assertEquals(false, reConstructedToken.isMinified());
-	}
+    @Test
+    void testIfTokenIsMinified() {
+        CustomJWToken reConstructedToken = new CustomJWToken(HS256_TOKEN);
+        assertThat(reConstructedToken.isMinified()).isTrue();
+    }
+
+    @Test
+    void testIfTokenIsNotMinified() {
+        CustomJWToken reConstructedToken = new CustomJWToken(HS256_BEAUTIFIED_TOKEN);
+        assertThat(reConstructedToken.isMinified()).isFalse();
+    }
 }
