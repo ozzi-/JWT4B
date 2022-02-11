@@ -1,5 +1,7 @@
 package app.helpers;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -16,8 +18,6 @@ import org.apache.commons.lang.RandomStringUtils;
 import app.algorithm.AlgorithmLinker;
 import app.algorithm.AlgorithmType;
 
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
-
 public class KeyHelper {
 
   public static final String[] keyHeaderBeginMarkers = new String[]{"-----BEGIN PUBLIC KEY-----",
@@ -28,10 +28,10 @@ public class KeyHelper {
   public static String getRandomKey(String algorithm) {
     String algorithmType = AlgorithmLinker.getTypeOf(algorithm);
 
-    if (algorithmType.equals(AlgorithmType.symmetric)) {
+    if (algorithmType.equals(AlgorithmType.SYMMETRIC)) {
       return RandomStringUtils.randomAlphanumeric(6);
     }
-    if (algorithmType.equals(AlgorithmType.asymmetric) && algorithm.startsWith("RS")) {
+    if (algorithmType.equals(AlgorithmType.ASYMMETRIC) && algorithm.startsWith("RS")) {
       try {
         KeyPair keyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair();
 
@@ -41,7 +41,7 @@ public class KeyHelper {
         Output.outputError(e.getMessage());
       }
     }
-    if (algorithmType.equals(AlgorithmType.asymmetric) && algorithm.startsWith("ES")) {
+    if (algorithmType.equals(AlgorithmType.ASYMMETRIC) && algorithm.startsWith("ES")) {
       try {
         KeyPair keyPair = KeyPairGenerator.getInstance("EC").generateKeyPair();
         return Base64.encodeBase64String(keyPair.getPrivate().getEncoded());

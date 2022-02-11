@@ -208,15 +208,15 @@ public class JWTViewTab extends JPanel {
           }
 
         }
-        if (algorithmType.equals(AlgorithmType.symmetric)) {
+        if (algorithmType.equals(AlgorithmType.SYMMETRIC)) {
           keyLabel.setText("Secret");
           jwtKeyArea.setEnabled(true);
         }
-        if (algorithmType.equals(AlgorithmType.asymmetric)) {
+        if (algorithmType.equals(AlgorithmType.ASYMMETRIC)) {
           keyLabel.setText("Public Key");
           jwtKeyArea.setEnabled(true);
         }
-        if (algorithmType.equals(AlgorithmType.none)) {
+        if (algorithmType.equals(AlgorithmType.NONE)) {
           keyLabel.setText("");
           jwtKeyArea.setEnabled(false);
           jwtKeyArea.setEnabled(false);

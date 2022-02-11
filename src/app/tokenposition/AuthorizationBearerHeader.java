@@ -12,7 +12,7 @@ public class AuthorizationBearerHeader extends ITokenPosition {
   private Integer headerIndex;
   private final List<String> headers;
 
-  public AuthorizationBearerHeader(List<String> headers, String bodyP) {
+  public AuthorizationBearerHeader(List<String> headers) {
     this.headers = headers;
   }
 

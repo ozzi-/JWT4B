@@ -1,8 +1,12 @@
 package app.algorithm;
 
 public class AlgorithmType {
-	// dummy class that holds the different algorithm "types"
-	public final static String none = "none";
-	public final static String symmetric = "symmetric";
-	public final static String asymmetric = "asymmetric";
+
+  private AlgorithmType() {
+  }
+
+  // dummy class that holds the different algorithm "types"
+  public static final String NONE = "none";
+  public static final String SYMMETRIC = "symmetric";
+  public static final String ASYMMETRIC = "asymmetric";
 }

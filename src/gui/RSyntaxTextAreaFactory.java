@@ -7,7 +7,6 @@ import java.io.IOException;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
 
-import app.helpers.Output;
 import burp.IBurpExtenderCallbacks;
 
 public class RSyntaxTextAreaFactory {
@@ -60,8 +59,6 @@ public class RSyntaxTextAreaFactory {
       try {
         Theme theme = Theme.load(getClass().getResourceAsStream(themeResource));
         theme.apply(this);
-        Output.output("Changing theme to " + (themeDetector.isLightTheme() ? "light" : "dark") + " mode");
-
       } catch (IOException e) {
         outputError("Unable to apply rsyntax theme: " + e.getMessage());
       }

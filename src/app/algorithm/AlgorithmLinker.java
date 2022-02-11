@@ -1,5 +1,7 @@
 package app.algorithm;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 import java.io.UnsupportedEncodingException;
 import java.security.Key;
 import java.security.KeyFactory;
@@ -19,36 +21,37 @@ import com.auth0.jwt.interfaces.RSAKeyProvider;
 import app.helpers.KeyHelper;
 import app.helpers.Output;
 
-import static org.apache.commons.lang.StringUtils.isNotEmpty;
-
 public class AlgorithmLinker {
 
-  public static final String[] keyBeginMarkers = new String[]{"-----BEGIN PUBLIC KEY-----",
+  private AlgorithmLinker() {
+  }
+
+  protected static final String[] keyBeginMarkers = new String[]{"-----BEGIN PUBLIC KEY-----",
       "-----BEGIN CERTIFICATE-----"};
-  public static final String[] keyEndMarkers = new String[]{"-----END PUBLIC KEY-----", "-----END CERTIFICATE-----"};
+  protected static final String[] keyEndMarkers = new String[]{"-----END PUBLIC KEY-----", "-----END CERTIFICATE-----"};
 
   public static final app.algorithm.AlgorithmWrapper none = new app.algorithm.AlgorithmWrapper("none",
-      AlgorithmType.none);
+      AlgorithmType.NONE);
   public static final app.algorithm.AlgorithmWrapper HS256 = new app.algorithm.AlgorithmWrapper("HS256",
-      AlgorithmType.symmetric);
+      AlgorithmType.SYMMETRIC);
   public static final app.algorithm.AlgorithmWrapper HS384 = new app.algorithm.AlgorithmWrapper("HS384",
-      AlgorithmType.symmetric);
+      AlgorithmType.SYMMETRIC);
   public static final app.algorithm.AlgorithmWrapper HS512 = new app.algorithm.AlgorithmWrapper("HS512",
-      AlgorithmType.symmetric);
+      AlgorithmType.SYMMETRIC);
   public static final app.algorithm.AlgorithmWrapper RS256 = new app.algorithm.AlgorithmWrapper("RS256",
-      AlgorithmType.asymmetric);
+      AlgorithmType.ASYMMETRIC);
   public static final app.algorithm.AlgorithmWrapper RS384 = new app.algorithm.AlgorithmWrapper("RS384",
-      AlgorithmType.asymmetric);
+      AlgorithmType.ASYMMETRIC);
   public static final app.algorithm.AlgorithmWrapper RS512 = new app.algorithm.AlgorithmWrapper("RS512",
-      AlgorithmType.asymmetric);
+      AlgorithmType.ASYMMETRIC);
   public static final app.algorithm.AlgorithmWrapper ES256 = new app.algorithm.AlgorithmWrapper("ES256",
-      AlgorithmType.asymmetric);
+      AlgorithmType.ASYMMETRIC);
   public static final app.algorithm.AlgorithmWrapper ES256K = new app.algorithm.AlgorithmWrapper("ES256K",
-      AlgorithmType.asymmetric);
+      AlgorithmType.ASYMMETRIC);
   public static final app.algorithm.AlgorithmWrapper ES384 = new app.algorithm.AlgorithmWrapper("ES384",
-      AlgorithmType.asymmetric);
+      AlgorithmType.ASYMMETRIC);
   public static final app.algorithm.AlgorithmWrapper ES512 = new app.algorithm.AlgorithmWrapper("ES512",
-      AlgorithmType.asymmetric);
+      AlgorithmType.ASYMMETRIC);
 
   private static final app.algorithm.AlgorithmWrapper[] supportedAlgorithms = {none, HS256, HS384, HS512, RS256, RS384,
       RS512, ES256, ES256K, ES384, ES512};
@@ -178,7 +181,6 @@ public class AlgorithmLinker {
         generatePublicKeyFromString(key, algorithm);
   }
 
-
   /**
    * @return gets the type (asym, sym, none) of the provided @param algo
    */
@@ -188,6 +190,6 @@ public class AlgorithmLinker {
         return supportedAlgorithm.getType();
       }
     }
-    return AlgorithmType.none;
+    return AlgorithmType.NONE;
   }
 }
