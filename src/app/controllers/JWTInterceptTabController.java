@@ -47,9 +47,8 @@ public class JWTInterceptTabController implements IMessageEditorTab {
   private final JWTInterceptTab jwtST;
   private final IExtensionHelpers helpers;
   private ITokenPosition tokenPosition;
-  private boolean dontModifySignature;
+  private boolean resignOnType;
   private boolean randomKey;
-  private boolean keepOriginalSignature;
   private boolean chooseSignature;
   private boolean recalculateSignature;
   private String algAttackMode;
@@ -223,12 +222,13 @@ public class JWTInterceptTabController implements IMessageEditorTab {
 
   private void radioButtonChanged(boolean cDM, boolean cRK, boolean cOS, boolean cRS, boolean cCS) {
     clearError();
+    resignOnType = !cDM && !cOS;
     boolean oldRandomKey = randomKey;
     edited = true;
     addMetaHeader = false;
-    dontModifySignature = jwtST.getRdbtnDontModify().isSelected();
+    boolean dontModifySignature = jwtST.getRdbtnDontModify().isSelected();
     randomKey = jwtST.getRdbtnRandomKey().isSelected();
-    keepOriginalSignature = jwtST.getRdbtnOriginalSignature().isSelected();
+    boolean keepOriginalSignature = jwtST.getRdbtnOriginalSignature().isSelected();
     recalculateSignature = jwtST.getRdbtnRecalculateSignature().isSelected();
     chooseSignature = jwtST.getRdbtnChooseSignature().isSelected();
 
@@ -296,13 +296,13 @@ public class JWTInterceptTabController implements IMessageEditorTab {
     SwingUtilities.invokeLater(() -> {
       try {
         CustomJWToken token = ReadableTokenFormat.getTokenFromView(jwtST);
-        String randomKey = KeyHelper.getRandomKey(token.getAlgorithm());
-        Output.output("Generating Random Key for Signature Calculation: " + randomKey);
-        jwtIM.setJWTSignatureKey(randomKey);
-        Algorithm algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), randomKey);
+        String generatedRandomKey = KeyHelper.getRandomKey(token.getAlgorithm());
+        Output.output("Generating Random Key for Signature Calculation: " + generatedRandomKey);
+        jwtIM.setJWTSignatureKey(generatedRandomKey);
+        Algorithm algo = AlgorithmLinker.getSignerAlgorithm(token.getAlgorithm(), generatedRandomKey);
         token.calculateAndSetSignature(algo);
         jwtIM.setJwToken(token);
-        jwtST.setKeyFieldValue(randomKey);
+        jwtST.setKeyFieldValue(generatedRandomKey);
         jwtST.updateSetView(false);
       } catch (Exception e) {
         reportError("Exception during random key generation & signing: " + e.getMessage());
@@ -355,7 +355,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       reportError("invalid JWT");
       return;
     }
-    if ((recalculateSignature || randomKey) && jwtST.getKeyField().isEnabled()) {
+    if (resignOnType) {
       Output.output("Recalculating signature as key typed");
       CustomJWToken token = null;
       try {

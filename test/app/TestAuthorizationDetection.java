@@ -1,52 +1,51 @@
 package app;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
+import static java.util.Arrays.asList;
 
-import org.junit.Test;
+import static app.TestTokens.HS256_TOKEN;
+import static app.TestTokens.INVALID_TOKEN;
+
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 
 import app.tokenposition.AuthorizationBearerHeader;
 
-public class TestAuthorizationDetection {
-	@Test
-	public void testAuthValid() {
-		ArrayList<String> headers = new ArrayList<>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1");
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-		headers.add("Accept-Language: en-US,en;q=0.5");
-		headers.add("Authorization: Bearer " + TestTokens.hs256_token);
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		AuthorizationBearerHeader abh = new AuthorizationBearerHeader(headers,"");
-		assertEquals(true,abh.positionFound());
-		String result = abh.getToken();
-		assertEquals(TestTokens.hs256_token, result);
-	}
-	
-	@Test
-	public void testAuthInvalid() {
-		ArrayList<String> headers = new ArrayList<>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1");
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-		headers.add("Accept-Language: en-US,en;q=0.5");
-		headers.add("Authorization: Bearer " + TestTokens.invalid_token);
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		AuthorizationBearerHeader abh = new AuthorizationBearerHeader(headers,"");
-		assertEquals(false,abh.positionFound());
-	}
-	
-	@Test
-	public void testAuthInvalid2() {
-		ArrayList<String> headers = new ArrayList<>();
-		headers.add("GET /jwt/response_cookie.php HTTP/1.1");
-		headers.add("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-		headers.add("Accept-Language: en-US,en;q=0.5");
-		headers.add("Authorization: Bearer topsecret123456789!");
-		headers.add("Connection: close");
-		headers.add("Upgrade-Insecure-Requests: 1");
-		AuthorizationBearerHeader abh = new AuthorizationBearerHeader(headers,"");
-		assertEquals(false,abh.positionFound());
-	}
+class TestAuthorizationDetection {
+
+  @Test
+  void testAuthValid() {
+    List<String> headers = asList("GET /jwt/response_cookie.php HTTP/1.1",
+        "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "Accept-Language: en-US,en;q=0.5",
+        "Authorization: Bearer " + HS256_TOKEN, "Connection: close", "Upgrade-Insecure-Requests: 1");
+
+    AuthorizationBearerHeader abh = new AuthorizationBearerHeader(headers, "");
+
+    assertThat(abh.positionFound()).isTrue();
+    assertThat(abh.getToken()).isEqualTo(HS256_TOKEN);
+  }
+
+  @Test
+  void testAuthInvalid() {
+    List<String> headers = asList("GET /jwt/response_cookie.php HTTP/1.1",
+        "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "Accept-Language: en-US,en;q=0.5",
+        "Authorization: Bearer " + INVALID_TOKEN, "Connection: close", "Upgrade-Insecure-Requests: 1");
+
+    AuthorizationBearerHeader abh = new AuthorizationBearerHeader(headers, "");
+
+    assertThat(abh.positionFound()).isFalse();
+  }
+
+  @Test
+  void testAuthInvalid2() {
+    List<String> headers = asList("GET /jwt/response_cookie.php HTTP/1.1",
+        "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "Accept-Language: en-US,en;q=0.5",
+        "Authorization: Bearer topsecret123456789!", "Connection: close", "Upgrade-Insecure-Requests: 1");
+
+    AuthorizationBearerHeader abh = new AuthorizationBearerHeader(headers, "");
+
+    assertThat(abh.positionFound()).isFalse();
+  }
 }
