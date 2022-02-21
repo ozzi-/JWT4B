@@ -126,6 +126,7 @@ public class JWTViewTab extends JPanel {
     add(outputLabel, gbc_outputLabel);
 
     lbRegisteredClaims = new JLabel();
+    lbRegisteredClaims.putClientProperty("html.disable", null);
     lbRegisteredClaims.setBackground(SystemColor.controlHighlight);
     GridBagConstraints gbc_lbRegisteredClaims = new GridBagConstraints();
     gbc_lbRegisteredClaims.fill = GridBagConstraints.BOTH;
@@ -135,6 +136,7 @@ public class JWTViewTab extends JPanel {
     add(lbRegisteredClaims, gbc_lbRegisteredClaims);
 
     lblCookieFlags = new JLabel(" ");
+    lblCookieFlags.putClientProperty("html.disable", null);
     lblCookieFlags.setFont(new Font("Tahoma", Font.BOLD, 12));
     GridBagConstraints gbc_lblCookieFlags = new GridBagConstraints();
     gbc_lblCookieFlags.anchor = GridBagConstraints.SOUTHWEST;
