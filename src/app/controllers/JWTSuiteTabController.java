@@ -1,13 +1,13 @@
 package app.controllers;
 
 import java.awt.Component;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.swing.JTabbedPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import app.algorithm.AlgorithmWrapper;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.exceptions.InvalidClaimException;
@@ -15,7 +15,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import app.algorithm.AlgorithmLinker;
 import app.helpers.Output;
 import burp.ITab;
 import gui.JWTSuiteTab;
@@ -85,7 +84,7 @@ public class JWTSuiteTabController implements ITab {
     try {
       CustomJWToken token = new CustomJWToken(jwtSTM.getJwtInput());
       String curAlgo = token.getAlgorithm();
-      JWTVerifier verifier = JWT.require(AlgorithmLinker.getVerifierAlgorithm(curAlgo, key)).build();
+      JWTVerifier verifier = JWT.require(AlgorithmWrapper.getVerifierAlgorithm(curAlgo, key)).build();
       DecodedJWT test = verifier.verify(token.getToken());
       jwtSTM.setJwtSignatureColor(Settings.getValidColor());
       jwtSTM.setVerificationLabel(Strings.verificationValid);
@@ -105,7 +104,7 @@ public class JWTSuiteTabController implements ITab {
         jwtSTM.setVerificationLabel(Strings.verificationError);
       }
 
-    } catch (IllegalArgumentException | UnsupportedEncodingException e) {
+    } catch (IllegalArgumentException e) {
       Output.output("Verification failed (" + e.getMessage() + ")");
       jwtSTM.setJwtSignatureColor(Settings.getProblemColor());
       jwtSTM.setVerificationResult(e.getMessage());

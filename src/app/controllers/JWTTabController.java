@@ -1,7 +1,6 @@
 package app.controllers;
 
 import java.awt.Component;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,6 +8,8 @@ import java.util.Objects;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import app.algorithm.AlgorithmType;
+import app.algorithm.AlgorithmWrapper;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.exceptions.InvalidClaimException;
@@ -16,7 +17,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-import app.algorithm.AlgorithmLinker;
 import app.helpers.Output;
 import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
@@ -107,7 +107,7 @@ public class JWTTabController implements IMessageEditorTab {
       jwtTM.setVerificationResult("");
       jwtTM.setKey("");
     }
-    String algoType = AlgorithmLinker.getTypeOf(getCurrentAlgorithm());
+    AlgorithmType algoType = AlgorithmWrapper.getTypeOf(getCurrentAlgorithm());
     jwtVT.updateSetView(algoType);
   }
 
@@ -124,9 +124,9 @@ public class JWTTabController implements IMessageEditorTab {
   public void checkKey(String key) {
     jwtTM.setVerificationResult("");
     String curAlgo = getCurrentAlgorithm();
-    String algoType = AlgorithmLinker.getTypeOf(getCurrentAlgorithm());
+    AlgorithmType algoType = AlgorithmWrapper.getTypeOf(getCurrentAlgorithm());
     try {
-      JWTVerifier verifier = JWT.require(AlgorithmLinker.getVerifierAlgorithm(curAlgo, key)).build();
+      JWTVerifier verifier = JWT.require(AlgorithmWrapper.getVerifierAlgorithm(curAlgo, key)).build();
       DecodedJWT test = verifier.verify(jwtTM.getJWT());
       jwtTM.setVerificationLabel(Strings.verificationValid);
       jwtTM.setVerificationColor(Settings.getValidColor());
@@ -145,7 +145,7 @@ public class JWTTabController implements IMessageEditorTab {
       }
       jwtTM.setVerificationResult(e.getMessage());
       jwtVT.updateSetView(algoType);
-    } catch (IllegalArgumentException | UnsupportedEncodingException e) {
+    } catch (IllegalArgumentException e) {
       jwtTM.setVerificationResult(e.getMessage());
       jwtTM.setVerificationLabel(Strings.verificationInvalidKey);
       jwtTM.setVerificationColor(Settings.getProblemColor());

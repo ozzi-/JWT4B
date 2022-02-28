@@ -1,6 +1,6 @@
 package app;
 
-import app.algorithm.AlgorithmLinker;
+import app.algorithm.AlgorithmWrapper;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
@@ -9,10 +9,7 @@ import model.CustomJWToken;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
-import java.io.UnsupportedEncodingException;
-import java.security.Key;
 import java.util.stream.Stream;
 
 import static app.TestTokens.*;
@@ -20,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-class TestAlgorithmLinker {
+class TestAlgorithmWrapper {
 
 	static Stream<Arguments> tokensAndValidKeys() {
 		return Stream.of(
@@ -31,9 +28,9 @@ class TestAlgorithmLinker {
 
 	@MethodSource("tokensAndValidKeys")
 	@ParameterizedTest(name = "{0}")
-	void testTokenWithProperKey(String type, String token, String key) throws IllegalArgumentException, UnsupportedEncodingException {
+	void testTokenWithProperKey(String type, String token, String key) throws IllegalArgumentException {
 		CustomJWToken tokenObj = new CustomJWToken(token);
-		JWTVerifier verifier = JWT.require(AlgorithmLinker.getVerifierAlgorithm(tokenObj.getAlgorithm(), key)).build();
+		JWTVerifier verifier = JWT.require(AlgorithmWrapper.getVerifierAlgorithm(tokenObj.getAlgorithm(), key)).build();
 
 		DecodedJWT test = verifier.verify(token);
 
@@ -49,26 +46,10 @@ class TestAlgorithmLinker {
 
 	@MethodSource("tokensAndInvalidKeys")
 	@ParameterizedTest(name = "{0}")
-	void testHSWithFalseKey(String type, String token, String key) throws IllegalArgumentException, UnsupportedEncodingException {
+	void testHSWithFalseKey(String type, String token, String key) throws IllegalArgumentException {
 		CustomJWToken tokenObj = new CustomJWToken(token);
-		JWTVerifier verifier = JWT.require(AlgorithmLinker.getVerifierAlgorithm(tokenObj.getAlgorithm(), key)).build();
+		JWTVerifier verifier = JWT.require(AlgorithmWrapper.getVerifierAlgorithm(tokenObj.getAlgorithm(), key)).build();
 
 		assertThrows(SignatureVerificationException.class, () -> verifier.verify(token));
-	}
-
-	@ValueSource(strings = {"RSA", "EC"})
-	@ParameterizedTest
-	void testGetKeyInstanceWithNullPublicKey(String algorithm) {
-		Key key = AlgorithmLinker.getKeyInstance(null, algorithm, false);
-
-		assertThat(key).isNull();
-	}
-
-	@ValueSource(strings = {"RSA", "EC"})
-	@ParameterizedTest
-	void testGetKeyInstanceWithNullPrivateKey(String algorithm) {
-		Key key = AlgorithmLinker.getKeyInstance(null, algorithm, true);
-
-		assertThat(key).isNull();
 	}
 }

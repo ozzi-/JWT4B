@@ -186,7 +186,7 @@ public class JWTViewTab extends JPanel {
   }
 
 
-  public void updateSetView(final String algorithmType) {
+  public void updateSetView(AlgorithmType algorithmType) {
     SwingUtilities.invokeLater(new Runnable() {
 
       public void run() {
