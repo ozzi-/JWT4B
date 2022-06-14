@@ -17,11 +17,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import app.algorithm.AlgorithmWrapper;
+import org.apache.commons.codec.binary.Hex;
+
 import com.auth0.jwt.algorithms.Algorithm;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
+import app.algorithm.AlgorithmWrapper;
 import app.helpers.Config;
 import app.helpers.DelayedDocumentListener;
 import app.helpers.KeyHelper;
@@ -55,6 +57,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
   private boolean edited;
   private String originalSignature;
   private boolean addMetaHeader;
+  private final static String HEX_MARKER = "0x";
 
 
   public JWTInterceptTabController(IBurpExtenderCallbacks callbacks, JWTInterceptModel jwIM, JWTInterceptTab jwtST) {
@@ -161,10 +164,10 @@ public class JWTInterceptTabController implements IMessageEditorTab {
     jwtIM.setJWTSignatureKey(jwtST.getKeyFieldValue());
     try {
       if (jwtIM.getJWTKey() != null && jwtIM.getJWTKey().length() > 0 && jwtST.getKeyField().isEnabled()) {
-        Output.output("Signing with manually entered key - " + jwtIM.getJWTKey());
-        CustomJWToken token;
-        token = ReadableTokenFormat.getTokenFromView(jwtST);
-        Algorithm algo = AlgorithmWrapper.getSignerAlgorithm(token.getAlgorithm(), jwtIM.getJWTKey());
+        String key = getKeyWithHexDetection(jwtIM);
+        Output.output("Signing with manually entered key '" + key + "' (" + jwtIM.getJWTKey() + ")");
+        CustomJWToken token = ReadableTokenFormat.getTokenFromView(jwtST);
+        Algorithm algo = AlgorithmWrapper.getSignerAlgorithm(token.getAlgorithm(), key);
         token.calculateAndSetSignature(algo);
         reflectChangeToView(token, false);
         clearError();
@@ -175,6 +178,19 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       key = key.length() > len ? key.substring(0, len) + "..." : key;
       reportError("Cannot sign with key " + key + " - " + e.getMessage());
     }
+  }
+
+  private String getKeyWithHexDetection(JWTInterceptModel jwtIM) {
+    String key = jwtIM.getJWTKey();
+    if (key.startsWith(HEX_MARKER)) {
+      try {
+        key = key.substring(2);
+        key = new String(Hex.decodeHex(key));
+      } catch (Exception e) {
+        key = jwtIM.getJWTKey();
+      }
+    }
+    return key;
   }
 
   private void algAttackChanged() {
