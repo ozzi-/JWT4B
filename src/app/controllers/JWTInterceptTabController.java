@@ -17,11 +17,13 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import app.algorithm.AlgorithmWrapper;
+import org.apache.commons.codec.binary.Hex;
+
 import com.auth0.jwt.algorithms.Algorithm;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 
+import app.algorithm.AlgorithmWrapper;
 import app.helpers.Config;
 import app.helpers.DelayedDocumentListener;
 import app.helpers.KeyHelper;
@@ -37,7 +39,6 @@ import model.JWTInterceptModel;
 import model.Settings;
 import model.Strings;
 import model.TimeClaim;
-import org.apache.commons.codec.binary.Hex;
 
 
 // used in the proxy intercept and repeater tabs
@@ -56,6 +57,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
   private boolean edited;
   private String originalSignature;
   private boolean addMetaHeader;
+  private final static String HEX_MARKER = "0x";
 
 
   public JWTInterceptTabController(IBurpExtenderCallbacks callbacks, JWTInterceptModel jwIM, JWTInterceptTab jwtST) {
@@ -162,25 +164,9 @@ public class JWTInterceptTabController implements IMessageEditorTab {
     jwtIM.setJWTSignatureKey(jwtST.getKeyFieldValue());
     try {
       if (jwtIM.getJWTKey() != null && jwtIM.getJWTKey().length() > 0 && jwtST.getKeyField().isEnabled()) {
-        String key = jwtIM.getJWTKey();
-        //Output.output("testing key as hex..");
-        if (key.startsWith("0x")) {
-          try {
-            key = key.substring(2);
-            byte[] bytes = Hex.decodeHex(key);
-            //key = new String(bytes, "ascii");
-            key = new String(bytes);
-            Output.output("Signing with manually entered hex key - " + jwtIM.getJWTKey());
-          } catch (Exception e) {
-            key = "";
-            Output.output("Signing with empty key - see error log");
-            Output.outputError("Error decoding hex key - " + e.getMessage());
-          }
-        } else {
-          Output.output("Signing with manually entered key - " + key);
-        }
-        CustomJWToken token;
-        token = ReadableTokenFormat.getTokenFromView(jwtST);
+        String key = getKeyWithHexDetection(jwtIM);
+        Output.output("Signing with manually entered key '" + key + "' (" + jwtIM.getJWTKey() + ")");
+        CustomJWToken token = ReadableTokenFormat.getTokenFromView(jwtST);
         Algorithm algo = AlgorithmWrapper.getSignerAlgorithm(token.getAlgorithm(), key);
         token.calculateAndSetSignature(algo);
         reflectChangeToView(token, false);
@@ -192,6 +178,19 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       key = key.length() > len ? key.substring(0, len) + "..." : key;
       reportError("Cannot sign with key " + key + " - " + e.getMessage());
     }
+  }
+
+  private String getKeyWithHexDetection(JWTInterceptModel jwtIM) {
+    String key = jwtIM.getJWTKey();
+    if (key.startsWith(HEX_MARKER)) {
+      try {
+        key = key.substring(2);
+        key = new String(Hex.decodeHex(key));
+      } catch (Exception e) {
+        key = jwtIM.getJWTKey();
+      }
+    }
+    return key;
   }
 
   private void algAttackChanged() {
