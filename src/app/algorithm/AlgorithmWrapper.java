@@ -40,6 +40,40 @@ public enum AlgorithmWrapper {
 		return algorithmName;
 	}
 
+	private Algorithm algorithm(byte[] key) {
+		switch (this) {
+			// HMAC with SHA-XXX
+			case HS256:
+				return Algorithm.HMAC256(key);
+			case HS384:
+				return Algorithm.HMAC384(key);
+			case HS512:
+				return Algorithm.HMAC512(key);
+
+			// ECDSA with curve
+			case ES256:
+				return Algorithm.ECDSA256(new ECDSAKeyProviderImpl(new String(key)));
+			case ES256K:
+				return Algorithm.ECDSA256K(new ECDSAKeyProviderImpl(new String(key)));
+			case ES384:
+				return Algorithm.ECDSA384(new ECDSAKeyProviderImpl(new String(key)));
+			case ES512:
+				return Algorithm.ECDSA512(new ECDSAKeyProviderImpl(new String(key)));
+
+			// RSASSA-PKCS1-v1_5 with SHA-XXX
+			case RS256:
+				return Algorithm.RSA256(new RSAKeyProviderImpl(new String(key)));
+			case RS384:
+				return Algorithm.RSA384(new RSAKeyProviderImpl(new String(key)));
+			case RS512:
+				return Algorithm.RSA512(new RSAKeyProviderImpl(new String(key)));
+
+			case NONE:
+			default:
+				throw new AlgorithmMismatchException("Unsupported algorithm '" + algorithmName + "'");
+		}
+	}
+
 	private Algorithm algorithm(String key) {
 		switch (this) {
 			// HMAC with SHA-XXX
@@ -73,7 +107,6 @@ public enum AlgorithmWrapper {
 				throw new AlgorithmMismatchException("Unsupported algorithm '" + algorithmName + "'");
 		}
 	}
-
 	public static Algorithm getVerifierAlgorithm(String algo, String key) {
 		return withName(algo).algorithm(key);
 	}
@@ -82,6 +115,9 @@ public enum AlgorithmWrapper {
 		return withName(algo).algorithm(key);
 	}
 
+	public static Algorithm getSignerAlgorithm(String algo, byte[] key) {
+		return withName(algo).algorithm(key);
+	}
 	public static AlgorithmWrapper withName(String algorithm) {
 		return Stream.of(AlgorithmWrapper.values())
 				.filter(supportedAlgorithm -> algorithm.equals(supportedAlgorithm.algorithmName()))
