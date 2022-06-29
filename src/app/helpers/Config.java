@@ -23,6 +23,7 @@ public class Config {
   public static String highlightColor = "blue";
   public static String interceptComment = "Contains a JWT";
   public static boolean resetEditor = true;
+  public static boolean o365Support = true;
   public static String configName = "config.json";
   public static String configFolderName = ".JWT4B";
   public static String configPath =
@@ -126,6 +127,8 @@ public class Config {
 
       resetEditor = configJO.getBoolean("resetEditor", true);
 
+      o365Support = configJO.getBoolean("o365Support", true);
+
       highlightColor = configJO.get("highlightColor").asString();
       // 	red, orange, yellow, green, cyan, blue, pink, magenta, gray,or a null String to clear any existing highlight.
       ArrayList<String> allowedColors = new ArrayList<>(
@@ -161,6 +164,7 @@ public class Config {
     }
 
     configJO.add("resetEditor", true);
+    configJO.add("o365Support", true);
     configJO.add("highlightColor", highlightColor);
     configJO.add("interceptComment", interceptComment);
     configJO.add("jwtKeywords", jwtKeywordsJA);
