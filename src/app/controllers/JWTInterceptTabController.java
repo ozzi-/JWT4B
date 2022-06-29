@@ -146,7 +146,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       headerJSONObj.add("jwk", jwk);
       token.setHeaderJson(headerJSONObj.toString());
       try {
-        Algorithm algo = AlgorithmWrapper.getSignerAlgorithm(token.getAlgorithm(), Config.CVE_ATTACK_MODE_PRIVATE_KEY);
+        Algorithm algo = AlgorithmWrapper.getSignerAlgorithm(token.getAlgorithm(), Config.cveAttackModePrivateKey);
         token.calculateAndSetSignature(algo);
         reflectChangeToView(token, true);
       } catch (Exception e) {
