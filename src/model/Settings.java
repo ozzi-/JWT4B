@@ -6,6 +6,10 @@ import javax.swing.JButton;
 
 public class Settings {
 
+  Settings() {
+    
+  }
+
   public static final String TAB_NAME = "JSON Web Tokens";
   public static final String EXTENSION_NAME = "JSON Web Tokens";
 

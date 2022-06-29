@@ -1,54 +1,31 @@
 package app.controllers;
 
-import app.helpers.Output;
+import static com.eclipsesource.json.WriterConfig.PRETTY_PRINT;
+
+import static org.apache.commons.lang.StringUtils.isBlank;
+
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonValue;
 
+import app.helpers.Output;
 import gui.JWTInterceptTab;
 import model.CustomJWToken;
 
-import static com.eclipsesource.json.WriterConfig.PRETTY_PRINT;
-import static org.apache.commons.lang.StringUtils.isBlank;
-
 public class ReadableTokenFormat {
 
-  private static final String newline = System.getProperty("line.separator");
-  private static final String titleHeaders = "Headers = ";
-  private static final String titlePayload = newline + newline + "Payload = ";
-  private static final String titleSignature = newline + newline + "Signature = ";
+  ReadableTokenFormat() {
+
+  }
+
+  private static final String NEW_LINE = System.getProperty("line.separator");
+  private static final String TITTLE_HEADERS = "Headers = ";
+  private static final String TITLE_PAYLOAD = NEW_LINE + NEW_LINE + "Payload = ";
+  private static final String TITLE_SIGNATURE = NEW_LINE + NEW_LINE + "Signature = ";
 
   public static String getReadableFormat(CustomJWToken token) {
 
-    return titleHeaders + jsonBeautify(token.getHeaderJson()) + titlePayload + jsonBeautify(token.getPayloadJson())
-        + titleSignature + "\"" + token.getSignature() + "\"";
-  }
-
-  public static CustomJWToken getTokenFromReadableFormat(String token) throws InvalidTokenFormat {
-    if (!token.startsWith(titleHeaders)) {
-      throw new InvalidTokenFormat("Cannot parse token");
-    }
-
-    token = token.substring(titleHeaders.length());
-
-    if (!token.contains(titlePayload)) {
-      throw new InvalidTokenFormat("Cannot parse token");
-    }
-
-    String[] split = token.split(titlePayload);
-
-    String header = split[0];
-    String payloadAndSignature = split[1];
-
-    if (!payloadAndSignature.contains(titleSignature)) {
-      throw new InvalidTokenFormat("Cannot parse token");
-    }
-
-    String[] split2 = payloadAndSignature.split(titleSignature);
-
-    String payload = split2[0];
-    String signature = split2[1];
-
-    return new CustomJWToken(header, payload, signature);
+    return TITTLE_HEADERS + jsonBeautify(token.getHeaderJson()) + TITLE_PAYLOAD + jsonBeautify(token.getPayloadJson())
+        + TITLE_SIGNATURE + "\"" + token.getSignature() + "\"";
   }
 
   public static String jsonBeautify(String input) {

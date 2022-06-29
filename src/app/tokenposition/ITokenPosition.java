@@ -4,156 +4,164 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import app.helpers.Output;
 import app.helpers.CookieFlagWrapper;
+import app.helpers.Output;
 import burp.IExtensionHelpers;
 import burp.IRequestInfo;
 import burp.IResponseInfo;
 import model.Strings;
 
 public abstract class ITokenPosition {
-	
-	protected IExtensionHelpers helpers;
-	protected byte[] message;
-	protected boolean isRequest;
-	public abstract boolean positionFound();
-	public abstract String getToken();
-	public abstract byte[] replaceToken(String newToken);
-	private static CookieFlagWrapper cookieFlagWrap;
 
-	public void setMessage(byte[] message, boolean isRequest) {
-		this.message = message;
-		this.isRequest = isRequest;
-	}
+  protected IExtensionHelpers helpers;
+  protected byte[] message;
+  protected boolean isRequest;
 
-	public void setMessage(byte[] message) {
-		this.message = message;
-	}
+  public abstract boolean positionFound();
 
-	public void setHelpers(IExtensionHelpers helpers) {
-		this.helpers = helpers;
-	}
+  public abstract String getToken();
 
-	protected List<String> getHeaders() {
-		if (message == null) {
-			return new ArrayList<String>();
-		}
-		if (isRequest) {
-			IRequestInfo requestInfo = helpers.analyzeRequest(message);
-			return requestInfo.getHeaders();
-		} else {
-			IResponseInfo responseInfo = helpers.analyzeResponse(message);
-			return responseInfo.getHeaders();
-		}
-	}
+  public abstract byte[] replaceToken(String newToken);
 
-	public static ITokenPosition findTokenPositionImplementation(byte[] content, boolean isRequest, IExtensionHelpers helpers) {
-		List<Class<? extends ITokenPosition>> implementations = Arrays.asList(AuthorizationBearerHeader.class, PostBody.class, Cookie.class,Body.class);
-		if(content==null) {
-			return new Dummy();
-		}
-		for (Class<? extends ITokenPosition> implClass : implementations) {
-			try {
-				List<String> headers;
-				int bodyOffset;
-				if (isRequest) {
-					IRequestInfo requestInfo = helpers.analyzeRequest(content);
-					headers = requestInfo.getHeaders();
-					bodyOffset = requestInfo.getBodyOffset();
-				} else {
-					IResponseInfo responseInfo = helpers.analyzeResponse(content);
-					headers = responseInfo.getHeaders();
-					bodyOffset = responseInfo.getBodyOffset();
+  private static CookieFlagWrapper cookieFlagWrap;
 
-				}
-				String body = new String(Arrays.copyOfRange(content, bodyOffset, content.length));
-				ITokenPosition impl = (ITokenPosition) implClass.getConstructors()[0].newInstance(headers, body);
+  public void setMessage(byte[] message, boolean isRequest) {
+    this.message = message;
+    this.isRequest = isRequest;
+  }
 
-				impl.setHelpers(helpers);
-				impl.setMessage(content, isRequest);
-				if (impl.positionFound()) {
-					if (impl instanceof Cookie) {
-						cookieFlagWrap = ((Cookie) impl).getcFW();
-					}else{
-						cookieFlagWrap = new CookieFlagWrapper(false,false,false);
-					}
-					return impl;
-				}
-			} catch (Exception e) {
-				// sometimes 'isEnabled' is called in order to build the views
-				// before an actual request / response passes through - in that case
-				// it is not worth reporting
-				if (!e.getMessage().equals("Request cannot be null") && !e.getMessage().equals("1")) {
-					Output.outputError(e.getMessage());
-				}
-				return null;
-			}
-		}
-		return null;
-	}
+  public void setMessage(byte[] message) {
+    this.message = message;
+  }
 
-	protected int getBodyOffset() {
-		if (isRequest) {
-			IRequestInfo requestInfo = helpers.analyzeRequest(message);
-			return requestInfo.getBodyOffset();
-		} else {
-			IResponseInfo responseInfo = helpers.analyzeResponse(message);
-			return responseInfo.getBodyOffset();
-		}
-	}
+  public void setHelpers(IExtensionHelpers helpers) {
+    this.helpers = helpers;
+  }
 
-	protected byte[] getBody() {
-		return Arrays.copyOfRange(message, getBodyOffset(), message.length);
-	}
+  protected List<String> getHeaders() {
+    if (message == null) {
+      return new ArrayList<String>();
+    }
+    if (isRequest) {
+      IRequestInfo requestInfo = helpers.analyzeRequest(message);
+      return requestInfo.getHeaders();
+    } else {
+      IResponseInfo responseInfo = helpers.analyzeResponse(message);
+      return responseInfo.getHeaders();
+    }
+  }
 
-	protected IExtensionHelpers getHelpers() {
-		return helpers;
-	}
+  public static ITokenPosition findTokenPositionImplementation(byte[] content,
+      boolean isRequest,
+      IExtensionHelpers helpers) {
+    List<Class<? extends ITokenPosition>> implementations = Arrays.asList(AuthorizationBearerHeader.class,
+        PostBody.class, Cookie.class, Body.class);
+    if (content == null) {
+      return new Dummy();
+    }
+    for (Class<? extends ITokenPosition> implClass : implementations) {
+      try {
+        List<String> headers;
+        int bodyOffset;
+        if (isRequest) {
+          IRequestInfo requestInfo = helpers.analyzeRequest(content);
+          headers = requestInfo.getHeaders();
+          bodyOffset = requestInfo.getBodyOffset();
+        } else {
+          IResponseInfo responseInfo = helpers.analyzeResponse(content);
+          headers = responseInfo.getHeaders();
+          bodyOffset = responseInfo.getBodyOffset();
 
-	public void addHeader(String headerToAdd) {
-		List<String> headers;
-		int offset;
-		if (isRequest) {
-			IRequestInfo requestInfo = helpers.analyzeRequest(message);
-			headers = requestInfo.getHeaders();
-			offset = requestInfo.getBodyOffset();
-		} else {
-			IResponseInfo responseInfo = helpers.analyzeResponse(message);
-			headers = responseInfo.getHeaders();
-			offset = responseInfo.getBodyOffset();
-		}
-		headers.add(headerToAdd);
-		this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));
-	}
+        }
+        String body = new String(Arrays.copyOfRange(content, bodyOffset, content.length));
+        ITokenPosition impl = (ITokenPosition) implClass.getConstructors()[0].newInstance(headers, body);
 
-	public void cleanJWTHeaders() {
-		List<String> headers;
-		List<String> toOverwriteHeaders = new ArrayList<String>();
-		int offset;
+        impl.setHelpers(helpers);
+        impl.setMessage(content, isRequest);
+        if (impl.positionFound()) {
+          if (impl instanceof Cookie) {
+            cookieFlagWrap = ((Cookie) impl).getcFW();
+          } else {
+            cookieFlagWrap = new CookieFlagWrapper(false, false, false);
+          }
+          return impl;
+        }
+      } catch (Exception e) {
+        // sometimes 'isEnabled' is called in order to build the views
+        // before an actual request / response passes through - in that case
+        // it is not worth reporting
+        if (!e.getMessage().equals("Request cannot be null") && !e.getMessage().equals("1")) {
+          Output.outputError(e.getMessage());
+        }
+        return null;
+      }
+    }
+    return null;
+  }
 
-		if (isRequest) {
-			IRequestInfo requestInfo = helpers.analyzeRequest(message);
-			headers = requestInfo.getHeaders();
-			offset = requestInfo.getBodyOffset();
-		} else {
-			IResponseInfo responseInfo = helpers.analyzeResponse(message);
-			headers = responseInfo.getHeaders();
-			offset = responseInfo.getBodyOffset();
-		}
+  protected int getBodyOffset() {
+    if (isRequest) {
+      IRequestInfo requestInfo = helpers.analyzeRequest(message);
+      return requestInfo.getBodyOffset();
+    } else {
+      IResponseInfo responseInfo = helpers.analyzeResponse(message);
+      return responseInfo.getBodyOffset();
+    }
+  }
 
-		for (String header : headers) {
-			if (header.startsWith(Strings.JWTHeaderPrefix)) {
-				toOverwriteHeaders.add(header);
-			}
-		}
-		headers.removeAll(toOverwriteHeaders);
-		this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));
-	}
+  protected byte[] getBody() {
+    return Arrays.copyOfRange(message, getBodyOffset(), message.length);
+  }
 
-	public byte[] getMessage(){
-		return this.message;
-	}
-	public CookieFlagWrapper getcFW() {
-		return cookieFlagWrap;
-	}
+  protected IExtensionHelpers getHelpers() {
+    return helpers;
+  }
+
+  public void addHeader(String headerToAdd) {
+    List<String> headers;
+    int offset;
+    if (isRequest) {
+      IRequestInfo requestInfo = helpers.analyzeRequest(message);
+      headers = requestInfo.getHeaders();
+      offset = requestInfo.getBodyOffset();
+    } else {
+      IResponseInfo responseInfo = helpers.analyzeResponse(message);
+      headers = responseInfo.getHeaders();
+      offset = responseInfo.getBodyOffset();
+    }
+    headers.add(headerToAdd);
+    this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));
+  }
+
+  public void cleanJWTHeaders() {
+    List<String> headers;
+    List<String> toOverwriteHeaders = new ArrayList<>();
+    int offset;
+
+    if (isRequest) {
+      IRequestInfo requestInfo = helpers.analyzeRequest(message);
+      headers = requestInfo.getHeaders();
+      offset = requestInfo.getBodyOffset();
+    } else {
+      IResponseInfo responseInfo = helpers.analyzeResponse(message);
+      headers = responseInfo.getHeaders();
+      offset = responseInfo.getBodyOffset();
+    }
+
+    for (String header : headers) {
+      if (header.startsWith(Strings.JWTHeaderPrefix)) {
+        toOverwriteHeaders.add(header);
+      }
+    }
+    headers.removeAll(toOverwriteHeaders);
+    this.message = helpers.buildHttpMessage(headers, Arrays.copyOfRange(message, offset, message.length));
+  }
+
+  public byte[] getMessage() {
+    return this.message;
+  }
+
+  public CookieFlagWrapper getcFW() {
+    return cookieFlagWrap;
+  }
 }

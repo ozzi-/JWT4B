@@ -5,7 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
-public class TokenCheck {
+public class TokenChecker {
 
   public static final String JWT_ALLOWED_CHARS_REGEXP = "[A-Za-z0-9+/=_-]+";
 

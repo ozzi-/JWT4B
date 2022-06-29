@@ -9,7 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import app.helpers.Config;
 import app.helpers.KeyValuePair;
 import app.helpers.Output;
-import app.helpers.TokenCheck;
+import app.helpers.TokenChecker;
 
 public class PostBody extends ITokenPosition {
 
@@ -18,8 +18,8 @@ public class PostBody extends ITokenPosition {
   private String body;
 
 
-  public PostBody(List<String> headersP, String bodyP) {
-    body = bodyP;
+  public PostBody(List<String> headersP, String body) {
+    this.body = body;
   }
 
   @Override
@@ -59,7 +59,7 @@ public class PostBody extends ITokenPosition {
     }
     for (String keyword : Config.tokenKeywords) {
       for (KeyValuePair postParameter : postParameterList) {
-        if (keyword.equals(postParameter.getName()) && TokenCheck.isValidJWT(postParameter.getValue())) {
+        if (keyword.equals(postParameter.getName()) && TokenChecker.isValidJWT(postParameter.getValue())) {
           return postParameter;
         }
       }

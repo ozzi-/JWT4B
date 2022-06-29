@@ -6,9 +6,7 @@ import java.awt.Frame;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 import java.util.List;
@@ -30,6 +28,7 @@ import app.algorithm.AlgorithmWrapper;
 import app.helpers.Config;
 import app.helpers.DelayedDocumentListener;
 import app.helpers.KeyHelper;
+import app.helpers.O365;
 import app.helpers.Output;
 import app.helpers.PublicKeyBroker;
 import app.tokenposition.ITokenPosition;
@@ -60,7 +59,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
   private boolean edited;
   private String originalSignature;
   private boolean addMetaHeader;
-  private final static String HEX_MARKER = "0x";
+  private static final String HEX_MARKER = "0x";
 
 
   public JWTInterceptTabController(IBurpExtenderCallbacks callbacks, JWTInterceptModel jwIM, JWTInterceptTab jwtST) {
@@ -147,7 +146,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       headerJSONObj.add("jwk", jwk);
       token.setHeaderJson(headerJSONObj.toString());
       try {
-        Algorithm algo = AlgorithmWrapper.getSignerAlgorithm(token.getAlgorithm(), Config.cveAttackModePrivateKey);
+        Algorithm algo = AlgorithmWrapper.getSignerAlgorithm(token.getAlgorithm(), Config.CVE_ATTACK_MODE_PRIVATE_KEY);
         token.calculateAndSetSignature(algo);
         reflectChangeToView(token, true);
       } catch (Exception e) {
@@ -170,41 +169,11 @@ public class JWTInterceptTabController implements IMessageEditorTab {
         String key = getKeyWithHexDetection(jwtIM);
         Output.output("Signing with manually entered key '" + key + "' (" + jwtIM.getJWTKey() + ")");
         CustomJWToken token = ReadableTokenFormat.getTokenFromView(jwtST);
-        String tokenalgo = token.getAlgorithm();
-        boolean o365 = false;
 
-        if ( Config.o365Support && token.getHeaderJson().contains(  "\"ctx\":") && tokenalgo.contains("HS256")) {
-          String label = "AzureAD-SecureConversation";
-          String ctx = token.getHeaderJsonNode().get("ctx").asText();
-          byte[] ctxbytes = Base64.getDecoder().decode(ctx);
-
-          //if token was created with kdf version 2
-          if (token.getHeaderJson().contains("\"kdf_ver\": 2")) {
-            byte[] fullctxbytes = new byte[24 + token.getPayloadJson().replaceAll(" ","").replaceAll("\n","").length()];
-            System.arraycopy(ctxbytes,0,fullctxbytes,0,24);
-            System.arraycopy(token.getPayloadJson().replaceAll(" ","")
-                            .replaceAll("\n","").getBytes(StandardCharsets.ISO_8859_1),0,fullctxbytes,
-                    24,token.getPayloadJson().replaceAll(" ","").replaceAll("\n","").length());
-            byte[] keydata = key.getBytes(StandardCharsets.ISO_8859_1);
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            ctxbytes =  digest.digest(fullctxbytes);
-          }
-
-          byte[] newarr = new byte[4 + label.getBytes("UTF-8").length + 1 + ctxbytes.length + 4];
-          System.arraycopy(new byte[]{(byte) 0x00, 0x00, 0x00, 0x01}, 0, newarr,0,4 );
-          System.arraycopy(label.getBytes("UTF-8"),0,newarr,4,26);
-          System.arraycopy(new byte[]{(byte) 0x00},0,newarr,30,1);
-          System.arraycopy(ctxbytes,0,newarr,31,ctxbytes.length);
-          System.arraycopy(new byte[]{(byte) 0x00, 0x00, 0x01, 0x00}, 0, newarr,newarr.length-4,4 );
-          byte[] keydata = key.getBytes(StandardCharsets.ISO_8859_1);
-          byte[] hmacSha256 = KeyHelper.calcHmacSha256(keydata, newarr);
-
-          Algorithm algo = AlgorithmWrapper.getSignerAlgorithm(token.getAlgorithm(), hmacSha256);
-          Output.output("Signing with MS O365 derived key: " + Hex.encodeHexString(hmacSha256));
-          token.calculateAndSetSignature(algo);
+        if (Config.o365Support && O365.isO365Request(token, token.getAlgorithm())) {
+          O365.handleO365(key, token);
           reflectChangeToView(token, false);
-        }
-        else {
+        } else {
           Algorithm algo = AlgorithmWrapper.getSignerAlgorithm(token.getAlgorithm(), key);
           token.calculateAndSetSignature(algo);
           reflectChangeToView(token, false);
@@ -218,6 +187,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
       reportError("Cannot sign with key " + key + " - " + e.getMessage());
     }
   }
+
 
   private String getKeyWithHexDetection(JWTInterceptModel jwtIM) {
     String key = jwtIM.getJWTKey();

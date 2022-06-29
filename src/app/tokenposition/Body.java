@@ -10,7 +10,7 @@ import com.eclipsesource.json.JsonObject;
 
 import app.helpers.KeyValuePair;
 import app.helpers.Output;
-import app.helpers.TokenCheck;
+import app.helpers.TokenChecker;
 
 //finds and replaces JWT's in HTTP bodies
 public class Body extends ITokenPosition {
@@ -19,8 +19,8 @@ public class Body extends ITokenPosition {
   private boolean found = false;
   private String body;
 
-  public Body(List<String> headersP, String bodyP) {
-    body = bodyP;
+  public Body(List<String> ignored, String body) {
+    this.body = body;
   }
 
   @Override
@@ -48,7 +48,7 @@ public class Body extends ITokenPosition {
   private KeyValuePair getJWTFromBodyWithoutParametersOrJSON() {
     String[] split = StringUtils.split(body);
     for (String strg : split) {
-      if (TokenCheck.isValidJWT(strg)) {
+      if (TokenChecker.isValidJWT(strg)) {
         return new KeyValuePair("", strg);
       }
     }
@@ -72,7 +72,7 @@ public class Body extends ITokenPosition {
     KeyValuePair rec;
     for (String name : object.names()) {
       if (object.get(name).isString()) {
-        if (TokenCheck.isValidJWT(object.get(name).asString())) {
+        if (TokenChecker.isValidJWT(object.get(name).asString())) {
           return new KeyValuePair(name, object.get(name).asString().trim());
         }
       } else if (object.get(name).isObject()) {
@@ -98,7 +98,7 @@ public class Body extends ITokenPosition {
       if (parameterSplit.length > 1) {
         String name = parameterSplit[0];
         String value = parameterSplit[1];
-        if (TokenCheck.isValidJWT(value)) {
+        if (TokenChecker.isValidJWT(value)) {
           return new KeyValuePair(name, value);
         }
 
