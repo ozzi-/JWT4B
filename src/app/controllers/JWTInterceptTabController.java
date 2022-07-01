@@ -6,6 +6,7 @@ import java.awt.Frame;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.nio.charset.StandardCharsets;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 import java.util.List;
@@ -27,6 +28,7 @@ import app.algorithm.AlgorithmWrapper;
 import app.helpers.Config;
 import app.helpers.DelayedDocumentListener;
 import app.helpers.KeyHelper;
+import app.helpers.O365;
 import app.helpers.Output;
 import app.helpers.PublicKeyBroker;
 import app.tokenposition.ITokenPosition;
@@ -57,7 +59,7 @@ public class JWTInterceptTabController implements IMessageEditorTab {
   private boolean edited;
   private String originalSignature;
   private boolean addMetaHeader;
-  private final static String HEX_MARKER = "0x";
+  private static final String HEX_MARKER = "0x";
 
 
   public JWTInterceptTabController(IBurpExtenderCallbacks callbacks, JWTInterceptModel jwIM, JWTInterceptTab jwtST) {
@@ -167,9 +169,15 @@ public class JWTInterceptTabController implements IMessageEditorTab {
         String key = getKeyWithHexDetection(jwtIM);
         Output.output("Signing with manually entered key '" + key + "' (" + jwtIM.getJWTKey() + ")");
         CustomJWToken token = ReadableTokenFormat.getTokenFromView(jwtST);
-        Algorithm algo = AlgorithmWrapper.getSignerAlgorithm(token.getAlgorithm(), key);
-        token.calculateAndSetSignature(algo);
-        reflectChangeToView(token, false);
+
+        if (Config.o365Support && O365.isO365Request(token, token.getAlgorithm())) {
+          O365.handleO365(key, token);
+          reflectChangeToView(token, false);
+        } else {
+          Algorithm algo = AlgorithmWrapper.getSignerAlgorithm(token.getAlgorithm(), key);
+          token.calculateAndSetSignature(algo);
+          reflectChangeToView(token, false);
+        }
         clearError();
       }
     } catch (Exception e) {
@@ -180,12 +188,14 @@ public class JWTInterceptTabController implements IMessageEditorTab {
     }
   }
 
+
   private String getKeyWithHexDetection(JWTInterceptModel jwtIM) {
     String key = jwtIM.getJWTKey();
     if (key.startsWith(HEX_MARKER)) {
       try {
         key = key.substring(2);
-        key = new String(Hex.decodeHex(key));
+        byte[] bytes = Hex.decodeHex(key);
+        key = new String(bytes, StandardCharsets.ISO_8859_1);
       } catch (Exception e) {
         key = jwtIM.getJWTKey();
       }

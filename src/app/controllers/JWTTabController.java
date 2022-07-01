@@ -8,8 +8,6 @@ import java.util.Objects;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import app.algorithm.AlgorithmType;
-import app.algorithm.AlgorithmWrapper;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.exceptions.InvalidClaimException;
@@ -17,6 +15,8 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
+import app.algorithm.AlgorithmType;
+import app.algorithm.AlgorithmWrapper;
 import app.helpers.Output;
 import app.tokenposition.ITokenPosition;
 import burp.IBurpExtenderCallbacks;
@@ -88,7 +88,9 @@ public class JWTTabController implements IMessageEditorTab {
     jwtTM.setJWTJSON(ReadableTokenFormat.getReadableFormat(jwt));
     List<TimeClaim> tcl = jwt.getTimeClaimList();
     jwtTM.setTimeClaims(tcl);
-    jwtTM.setcFW(tokenPosition.getcFW());
+    if (tokenPosition != null) {
+      jwtTM.setcFW(tokenPosition.getcFW());
+    }
 
     JWTTabModel current = new JWTTabModel(jwtTM.getKey(), content);
     int containsIndex = modelStateList.indexOf(current);

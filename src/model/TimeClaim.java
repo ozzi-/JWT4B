@@ -33,11 +33,7 @@ public class TimeClaim {
   public String getDate() {
     return date;
   }
-
-  public long getUnixTimestamp() {
-    return unixTimestamp;
-  }
-
+  
   public boolean canBeValid() {
     return canBeValid;
   }
@@ -47,16 +43,18 @@ public class TimeClaim {
   }
 
   public static String getTimeClaimsAsHTML(List<TimeClaim> tcl) {
-    String timeClaimString = "<html>";
-    if (tcl != null && tcl.size() > 0) {
+    StringBuilder timeClaimSB = new StringBuilder();
+    timeClaimSB.append("<html>");
+    if (tcl != null && !tcl.isEmpty()) {
       for (TimeClaim timeClaim : tcl) {
-        timeClaimString += "<b>" + timeClaim.getClaimName() + (timeClaim.canBeValid() ?
+        timeClaimSB.append("<b>" + timeClaim.getClaimName() + (timeClaim.canBeValid() ?
             "</b> check " + (timeClaim.isValid() ?
                 "<span style=\"color: green\">passed</span>" :
                 "<span style=\"color: red\">failed</span>") :
-            "</b>") + " - " + timeClaim.getDate() + "<br>";
+            "</b>") + " - " + timeClaim.getDate() + "<br>");
       }
     }
-    return timeClaimString + "</html>";
+    timeClaimSB.append("</html>");
+    return timeClaimSB.toString();
   }
 }

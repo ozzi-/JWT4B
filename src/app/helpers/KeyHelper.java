@@ -14,18 +14,27 @@ import java.security.spec.EncodedKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-import app.algorithm.AlgorithmWrapper;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.RandomStringUtils;
 
 import app.algorithm.AlgorithmType;
+import app.algorithm.AlgorithmWrapper;
 
 public class KeyHelper {
-    private static final String[] KEY_BEGIN_MARKERS = new String[]{"-----BEGIN PUBLIC KEY-----",
-          "-----BEGIN CERTIFICATE-----"};
-    private static final String[] KEY_END_MARKERS = new String[]{"-----END PUBLIC KEY-----", "-----END CERTIFICATE-----"};
 
-    public static String getRandomKey(String algorithm) {
+  KeyHelper() {
+
+  }
+
+  private static final String[] KEY_BEGIN_MARKERS = new String[]{"-----BEGIN PUBLIC KEY-----",
+      "-----BEGIN CERTIFICATE-----"};
+  private static final String[] KEY_END_MARKERS = new String[]{"-----END PUBLIC KEY-----", "-----END CERTIFICATE-----"};
+  public static final String HMAC_SHA_256 = "HmacSHA256";
+
+  public static String getRandomKey(String algorithm) {
     AlgorithmType algorithmType = AlgorithmWrapper.getTypeOf(algorithm);
 
     if (algorithmType.equals(AlgorithmType.SYMMETRIC)) {
@@ -49,7 +58,8 @@ public class KeyHelper {
         Output.outputError(e.getMessage());
       }
     }
-    throw new RuntimeException("Cannot get random key of provided algorithm as it does not seem valid HS, RS or ES");
+    throw new IllegalArgumentException(
+        "Cannot get random key of provided algorithm as it does not seem valid HS, RS or ES");
   }
 
   public static PrivateKey generatePrivateKeyFromString(String key, String algorithm) {
@@ -113,8 +123,20 @@ public class KeyHelper {
   }
 
   public static Key getKeyInstance(String key, String algorithm, boolean isPrivate) {
-    return isPrivate ?
-            generatePrivateKeyFromString(key, algorithm) :
-            generatePublicKeyFromString(key, algorithm);
+    return isPrivate ? generatePrivateKeyFromString(key, algorithm) : generatePublicKeyFromString(key, algorithm);
+  }
+
+  public static byte[] calcHmacSha256(byte[] secretKey, byte[] message) {
+    byte[] hmacSha256 = null;
+    try {
+      Mac mac = Mac.getInstance(HMAC_SHA_256);
+      SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, HMAC_SHA_256);
+      mac.init(secretKeySpec);
+      hmacSha256 = mac.doFinal(message);
+    } catch (Exception e) {
+      Output.outputError("Exception during " + HMAC_SHA_256 + ": " + e.getMessage());
+    }
+    return hmacSha256;
   }
 }
+

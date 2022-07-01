@@ -55,11 +55,7 @@ public class JWTTabModel {
   public String getKeyLabel() {
     return keyLabel;
   }
-
-  public void setKeyLabel(String keyLabel) {
-    this.keyLabel = keyLabel;
-  }
-
+  
   public String getVerificationLabel() {
     return key.equals("") ? "" : verificationLabel;
   }
@@ -78,10 +74,6 @@ public class JWTTabModel {
 
   public void setKey(String key) {
     this.key = key;
-  }
-
-  public void setHashCode(int hashCode) {
-    this.hashCode = hashCode;
   }
 
   public void setJWT(String token) {

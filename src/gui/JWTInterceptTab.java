@@ -8,7 +8,6 @@ import java.awt.GridLayout;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.util.Enumeration;
@@ -36,6 +35,7 @@ import org.fife.ui.rsyntaxtextarea.Style;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Token;
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.controllers.ReadableTokenFormat;
@@ -47,9 +47,9 @@ import model.Strings;
 public class JWTInterceptTab extends JPanel {
 
   private static final long serialVersionUID = 1L;
+  public static final String HTML_DISABLE = "html.disable";
   private final JWTInterceptModel jwtIM;
   private final RSyntaxTextAreaFactory rSyntaxTextAreaFactory;
-  private final String jwtAreaOriginalContent = "none";
   private JRadioButton rdbtnRecalculateSignature;
   private JRadioButton rdbtnRandomKey;
   private JRadioButton rdbtnOriginalSignature;
@@ -135,11 +135,10 @@ public class JWTInterceptTab extends JPanel {
     jwtPayloadArea = rSyntaxTextAreaFactory.rSyntaxTextArea(3, 20);
     jwtPayloadArea.setMarginLinePosition(70);
     jwtPayloadArea.setWhitespaceVisible(true);
-    //area.setMinimumSize(new Dimension(300, 300));
     scheme = jwtPayloadArea.getSyntaxScheme();
     style = new Style();
     style.foreground = new Color(222, 133, 10);
-    scheme.setStyle(Token.LITERAL_STRING_DOUBLE_QUOTE, style);
+    scheme.setStyle(TokenTypes.LITERAL_STRING_DOUBLE_QUOTE, style);
     jwtPayloadArea.revalidate();
     jwtPayloadArea.setHighlightCurrentLine(false);
     jwtPayloadArea.setCurrentLineHighlightColor(Color.WHITE);
@@ -154,11 +153,10 @@ public class JWTInterceptTab extends JPanel {
     jwtSignatureArea.setMarginLinePosition(70);
     jwtSignatureArea.setLineWrap(true);
     jwtSignatureArea.setWhitespaceVisible(true);
-    //area.setMinimumSize(new Dimension(300, 300));
     scheme = jwtSignatureArea.getSyntaxScheme();
     style = new Style();
     style.foreground = new Color(222, 133, 10);
-    scheme.setStyle(Token.LITERAL_STRING_DOUBLE_QUOTE, style);
+    scheme.setStyle(TokenTypes.LITERAL_STRING_DOUBLE_QUOTE, style);
     jwtSignatureArea.revalidate();
     jwtSignatureArea.setHighlightCurrentLine(false);
     jwtSignatureArea.setCurrentLineHighlightColor(Color.WHITE);
@@ -182,7 +180,7 @@ public class JWTInterceptTab extends JPanel {
     actionPanel.add(rdbtnDontModifySignature, c);
 
     rdbtnRecalculateSignature = new JRadioButton(Strings.recalculateSignature);
-    rdbtnRecalculateSignature.putClientProperty("html.disable", null);
+    rdbtnRecalculateSignature.putClientProperty(HTML_DISABLE, null);
     rdbtnRecalculateSignature.setToolTipText(Strings.recalculateSignatureToolTip);
     rdbtnRecalculateSignature.setHorizontalAlignment(SwingConstants.LEFT);
     c.gridy = 2;
@@ -195,7 +193,7 @@ public class JWTInterceptTab extends JPanel {
     actionPanel.add(rdbtnOriginalSignature, c);
 
     rdbtnRandomKey = new JRadioButton(Strings.randomKey);
-    rdbtnRandomKey.putClientProperty("html.disable", null);
+    rdbtnRandomKey.putClientProperty(HTML_DISABLE, null);
     rdbtnRandomKey.setToolTipText(Strings.randomKeyToolTip);
     rdbtnRandomKey.setHorizontalAlignment(SwingConstants.LEFT);
     c.gridy = 4;
@@ -218,9 +216,6 @@ public class JWTInterceptTab extends JPanel {
     jwtKeyArea.setPreferredSize(new Dimension(400, 55));
 
     JScrollPane jp = new JScrollPane(jwtKeyArea);
-    //jp.setMinimumSize(new Dimension(100, 70));
-    //jp.setMaximumSize(new Dimension(100, 70));
-    //jp.setPreferredSize(new Dimension(100, 70));
     c.gridy = 7;
     c.weightx = 0.9;
     actionPanel.add(jp, c);
@@ -251,7 +246,7 @@ public class JWTInterceptTab extends JPanel {
     actionPanel.add(lblCookieFlags, c);
 
     lbRegisteredClaims = new JLabel();
-    lbRegisteredClaims.putClientProperty("html.disable", null);
+    lbRegisteredClaims.putClientProperty(HTML_DISABLE, null);
     lbRegisteredClaims.setBackground(SystemColor.controlHighlight);
     c.gridy = 13;
     actionPanel.add(lbRegisteredClaims, c);
@@ -274,16 +269,10 @@ public class JWTInterceptTab extends JPanel {
     btgrp.add(rdbtnChooseSignature);
 
 
-    btnCopyPubPrivKeyCVEAttack.addActionListener(new ActionListener() {
-
-      public void actionPerformed(ActionEvent arg0) {
-        Toolkit.getDefaultToolkit()
-            .getSystemClipboard()
-            .setContents(new StringSelection(
-                "Public Key:\r\n" + Config.cveAttackModePublicKey + "\r\n\r\nPrivate Key:\r\n"
-                    + Config.cveAttackModePrivateKey), null);
-      }
-    });
+    btnCopyPubPrivKeyCVEAttack.addActionListener(a -> Toolkit.getDefaultToolkit()
+        .getSystemClipboard()
+        .setContents(new StringSelection("Public Key:\r\n" + Config.cveAttackModePublicKey + "\r\n\r\nPrivate Key:\r\n"
+            + Config.cveAttackModePrivateKey), null));
 
     noneAttackComboBox.addItem("  -");
     noneAttackComboBox.addItem("Alg: none");
@@ -349,36 +338,31 @@ public class JWTInterceptTab extends JPanel {
   }
 
   public void updateSetView(final boolean reset, final boolean noKeyUpdate) {
-    SwingUtilities.invokeLater(new Runnable() {
+    SwingUtilities.invokeLater(() -> {
+      Output.output("Updating view - reset: " + reset);
 
-      public void run() {
-        Output.output("Updating view - reset: " + reset);
-
-        if (reset) {
-          rdbtnDontModifySignature.setSelected(true);
-          jwtKeyArea.setText("");
-          jwtKeyArea.setEnabled(false);
-        } else {
-          // jwtArea.setText(ReadableTokenFormat.getReadableFormat(jwtIM.getJwToken()));
-          jwtHeaderArea.setText(ReadableTokenFormat.jsonBeautify(jwtIM.getJwToken().getHeaderJson()));
-          jwtPayloadArea.setText(ReadableTokenFormat.jsonBeautify(jwtIM.getJwToken().getPayloadJson()));
-          jwtSignatureArea.setText(jwtIM.getJwToken().getSignature());
-          if (noKeyUpdate) {
-            jwtKeyArea.setText(jwtIM.getJWTKey());
-          }
+      if (reset) {
+        rdbtnDontModifySignature.setSelected(true);
+        jwtKeyArea.setText("");
+        jwtKeyArea.setEnabled(false);
+      } else {
+        jwtHeaderArea.setText(ReadableTokenFormat.jsonBeautify(jwtIM.getJwToken().getHeaderJson()));
+        jwtPayloadArea.setText(ReadableTokenFormat.jsonBeautify(jwtIM.getJwToken().getPayloadJson()));
+        jwtSignatureArea.setText(jwtIM.getJwToken().getSignature());
+        if (noKeyUpdate) {
+          jwtKeyArea.setText(jwtIM.getJWTKey());
         }
-        lblProblem.setText(jwtIM.getProblemDetail());
-        // -> response of https://oz-web.com/jwt/request_cookie.php
-        if (jwtIM.getcFW().isCookie()) {
-          lblCookieFlags.setText(jwtIM.getcFW().toHTMLString());
-        } else {
-          lblCookieFlags.setText("");
-        }
-        lbRegisteredClaims.setText(jwtIM.getTimeClaimsAsText());
       }
+      lblProblem.setText(jwtIM.getProblemDetail());
+      // -> response of https://oz-web.com/jwt/request_cookie.php
+      if (jwtIM.getcFW().isCookie()) {
+        lblCookieFlags.setText(jwtIM.getcFW().toHTMLString());
+      } else {
+        lblCookieFlags.setText("");
+      }
+      lbRegisteredClaims.setText(jwtIM.getTimeClaimsAsText());
     });
   }
-
 
   public RSyntaxTextArea getJwtHeaderArea() {
     return jwtHeaderArea;
@@ -408,13 +392,8 @@ public class JWTInterceptTab extends JPanel {
     return jwtKeyArea;
   }
 
-
   public void setKeyFieldValue(String string) {
     jwtKeyArea.setText(string);
-  }
-
-  public JComboBox<String> getAlgorithmComboBox() {
-    return noneAttackComboBox;
   }
 
 }

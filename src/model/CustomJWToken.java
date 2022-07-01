@@ -5,9 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
@@ -18,7 +16,6 @@ import org.apache.commons.codec.binary.StringUtils;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.interfaces.Claim;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
@@ -173,7 +170,6 @@ public class CustomJWToken extends JWT {
     try {
       return objectMapper.readTree(getHeaderJson());
     } catch (IOException e) {
-      //Output.outputError("IO exception reading json tree (" + e.getMessage() + ")");
       return null;
     }
   }
@@ -250,47 +246,6 @@ public class CustomJWToken extends JWT {
     return this;
   }
 
-  public CustomJWToken setPayloadJson(String payloadJson) {
-    this.payloadJson = payloadJson;
-    return this;
-  }
-
-  public List<String> getAudience() {
-    throw new UnsupportedOperationException();
-  }
-
-  public Claim getClaim(String arg0) {
-    throw new UnsupportedOperationException();
-  }
-
-  public Map<String, Claim> getClaims() {
-    throw new UnsupportedOperationException();
-  }
-
-  public Date getExpiresAt() {
-    throw new UnsupportedOperationException();
-  }
-
-  public String getId() {
-    throw new UnsupportedOperationException();
-  }
-
-  public Date getIssuedAt() {
-    throw new UnsupportedOperationException();
-  }
-
-  public String getIssuer() {
-    throw new UnsupportedOperationException();
-  }
-
-  public Date getNotBefore() {
-    throw new UnsupportedOperationException();
-  }
-
-  public String getSubject() {
-    throw new UnsupportedOperationException();
-  }
-
   public boolean isMinified() {
     return isMinified;
   }
@@ -303,22 +258,6 @@ public class CustomJWToken extends JWT {
       // ignored
     }
     return algorithm;
-  }
-
-  public String getContentType() {
-    return getHeaderJsonNode().get("typ").asText();
-  }
-
-  public Claim getHeaderClaim(String arg0) {
-    throw new UnsupportedOperationException();
-  }
-
-  public String getKeyId() {
-    throw new UnsupportedOperationException();
-  }
-
-  public String getType() {
-    throw new UnsupportedOperationException();
   }
 
   public String getSignature() {
