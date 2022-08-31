@@ -249,6 +249,7 @@ public class JWTSuiteTab extends JPanel {
 
 
     lbRegisteredClaims = new JLabel();
+    lbRegisteredClaims.putClientProperty("html.disable", false);
     lbRegisteredClaims.setBackground(new Color(238, 238, 238));
     GridBagConstraints gbc_lbRegisteredClaims = new GridBagConstraints();
     gbc_lbRegisteredClaims.fill = GridBagConstraints.BOTH;
@@ -256,7 +257,6 @@ public class JWTSuiteTab extends JPanel {
     gbc_lbRegisteredClaims.gridx = 1;
     gbc_lbRegisteredClaims.gridy = 11;
     add(lbRegisteredClaims, gbc_lbRegisteredClaims);
-
   }
 
   public String getJWTInput() {
