@@ -47,7 +47,7 @@ import model.Strings;
 public class JWTInterceptTab extends JPanel {
 
   private static final long serialVersionUID = 1L;
-  public static final String HTML_DISABLE = "html.disable";
+  private static final String HTML_DISABLE = "html.disable";
   private final JWTInterceptModel jwtIM;
   private final RSyntaxTextAreaFactory rSyntaxTextAreaFactory;
   private JRadioButton rdbtnRecalculateSignature;
@@ -242,6 +242,7 @@ public class JWTInterceptTab extends JPanel {
     actionPanel.add(chkbxCVEAttack, c);
 
     lblCookieFlags = new JLabel("");
+    lblCookieFlags.putClientProperty(HTML_DISABLE, null);
     c.gridy = 12;
     actionPanel.add(lblCookieFlags, c);
 
