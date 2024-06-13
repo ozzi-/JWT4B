@@ -25,10 +25,12 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Token;
+import org.fife.ui.rsyntaxtextarea.Style;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
-import main.java.model.JWTSuiteTabModel;
-import main.java.model.Strings;
+import app.helpers.Config;
+import model.JWTSuiteTabModel;
+import model.Strings;
 
 public class JWTSuiteTab extends JPanel {
 
