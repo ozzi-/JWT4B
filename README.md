@@ -48,7 +48,7 @@ Note: If resetEditor is set to false, all options such as the re-singing and alg
 
 ## Building your own version (with Eclipse)
 1. Clone repository and create new Eclipse Java Project
-2. Rightclick -> Configure -> Convert to Maven Project (downloading all required libraries)
+2. Rightclick -> Configure -> Convert to Gradle Project (downloading all required libraries)
 3. Open Burp -> Extensions -> APIs -> Save interface files -> Copy all files to JWT4B\src\burp
 4. Export runnable fat JAR including libraries
 5. Load the JAR in Burp through the Extender Tab -> Extensions -> Add (Good to know: CTRL+Click on a extension to reload it)

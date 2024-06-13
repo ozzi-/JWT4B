@@ -112,23 +112,23 @@ public class JWTSuiteTab extends JPanel {
               "<h2>About JWT4B</h2>JSON Web Tokens (also known as JWT4B) is developed by Oussama Zgheb<br>");
           jLabelLink.addURL("<a href=\"https://zgheb.com/\">Mantainer Website</a>", "zgheb.com");
           jLabelLink.addURL("<a href=\"https://github.com/ozzi-/JWT4B\">GitHub Repository</a>", "github.com/ozzi/JWT4B");
-          jLabelLink.addText("<br><br>");
+          jLabelLink.addText("<br>");
           jLabelLink.addText(
               "JWT4B, excluding the libraries mentioned below and the Burp extender classes, uses the GPL 3 license.");
           jLabelLink.addURL(
-              "* <a href=\"https://github.com/bobbylight/RSyntaxTextArea/blob/master/src/main/dist/RSyntaxTextArea.License.txt\">RSyntaxTextArea</a>",
+              "· <a href=\"https://github.com/bobbylight/RSyntaxTextArea/blob/master/src/main/dist/RSyntaxTextArea.License.txt\">RSyntaxTextArea</a>",
               "github.com/bobbylight/RSyntaxTextArea");
-          jLabelLink.addURL("* <a href=\"https://github.com/auth0/java-jwt/blob/master/LICENSE\">Auth0 -java-jwt</a>",
+          jLabelLink.addURL("· <a href=\"https://github.com/auth0/java-jwt/blob/master/LICENSE\">Auth0 -java-jwt</a>",
               "github.com/auth0/java-jwt");
-          jLabelLink.addURL("* <a href=\"https://www.apache.org/licenses/\">Apache Commons Lang</a>", "apache.org");
-          jLabelLink.addText("<br><br>");
-          jLabelLink.addText("Thanks to Compass Security AG for providing development time for the initial version<br>");
-          jLabelLink.addURL("<a href=\"https://www.compass-security.com\">compass-security.com</a><br>",
+          jLabelLink.addURL("· <a href=\"https://www.apache.org/licenses/\">Apache Commons Lang</a>", "apache.org");
+          jLabelLink.addText("<br>");
+          jLabelLink.addText("Thanks to:<br>· Compass Security AG for providing development time for the initial version<br>");
+          jLabelLink.addURL("&nbsp;&nbsp;<a href=\"https://www.compass-security.com\">compass-security.com</a><br>",
               "compass-security.com");
-          jLabelLink.addText(", to Brainloop for providing broader token support!");
-          jLabelLink.addURL("<a href=\"https://www.brainloop.com\">brainloop.com</a><br><br>", "brainloop.com");
-          jLabelLink.addText("and to Cyrill for porting it to the Montaya API!");
-          jLabelLink.addURL("<a href=\"https://github.com/bcyrill\">github.com/bcyrill</a><br><br>", "github.com/bcyrill");
+          jLabelLink.addText("· Brainloop for providing broader token support");
+          jLabelLink.addURL("&nbsp;&nbsp;<a href=\"https://www.brainloop.com\">brainloop.com</a><br>", "brainloop.com");
+          jLabelLink.addText("· Cyrill for the help porting JWT4B to the Montaya API");
+          jLabelLink.addURL("&nbsp;&nbsp;<a href=\"https://github.com/bcyrill\">github.com/bcyrill</a><br><br>", "github.com/bcyrill");
           jLabelLink.addLogoImage();
     });
     GridBagConstraints gbc_creditButton = new GridBagConstraints();
