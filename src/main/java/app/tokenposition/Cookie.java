@@ -3,17 +3,15 @@ package app.tokenposition;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import app.helpers.CookieFlagWrapper;
 import app.helpers.KeyValuePair;
 import app.helpers.Output;
+import app.helpers.TokenChecker;
 import burp.api.montoya.http.message.HttpHeader;
 import burp.api.montoya.http.message.HttpMessage;
 import burp.api.montoya.http.message.params.HttpParameter;
 import burp.api.montoya.http.message.requests.HttpRequest;
 import burp.api.montoya.http.message.responses.HttpResponse;
-import org.apache.commons.lang.StringUtils;
-
-import app.helpers.CookieFlagWrapper;
-import app.helpers.TokenChecker;
 
 //finds and replaces JWT's in cookies
 public class Cookie extends ITokenPosition {
@@ -47,12 +45,14 @@ public class Cookie extends ITokenPosition {
 
 	@Override
 	public HttpRequest getRequest() {
+		Output.output("GET COOKIE REQUEST - replacing");
 		HttpRequest httpRequest = (HttpRequest) httpMessage;
 		return httpRequest.withParameter(HttpParameter.cookieParameter(cookieHeader.getName(), token));
 	}
 
 	@Override
 	public HttpResponse getResponse() {
+		Output.output("GET COOKIE RESPONSE - replacing");
 		return HttpResponse.httpResponse(replaceTokenImpl(this.token, httpMessage.toString()));
 	}
 
@@ -74,18 +74,18 @@ public class Cookie extends ITokenPosition {
 
 		for (HttpHeader httpHeader : headers) {
 			if (httpHeader.name().regionMatches(true, 0, SET_COOKIE_HEADER, 0, SET_COOKIE_HEADER.length())) {
-				String cookie = httpHeader.value();
-				if (cookie.length() > 1 && cookie.contains("=")) {
-					String name = cookie.split(Pattern.quote("="))[0];
-					String value = cookie.split(Pattern.quote("="))[1];
+				String setCookieValue = httpHeader.value();
+				if (setCookieValue.length() > 1 && setCookieValue.contains("=")) { // sanity check
+					int nameMarkerPos = setCookieValue.indexOf("=");
+					String name = setCookieValue.substring(0,nameMarkerPos);
+					String value = setCookieValue.substring(nameMarkerPos);
 					int flagMarker = value.indexOf(";");
 					if (flagMarker != -1) {
 						value = value.substring(0, flagMarker);
-						cFW = new CookieFlagWrapper(true, cookie.toLowerCase().contains("; secure"), cookie.toLowerCase().contains("; httponly"));
+						cFW = new CookieFlagWrapper(true, setCookieValue.toLowerCase().contains("; secure"), setCookieValue.toLowerCase().contains("; httponly"));
 					} else {
 						cFW = new CookieFlagWrapper(true, false, false);
 					}
-					TokenChecker.isValidJWT(value);
 					if (TokenChecker.isValidJWT(value)) {
 						return new KeyValuePair(name, value);
 					}
@@ -93,32 +93,26 @@ public class Cookie extends ITokenPosition {
 			}
 
 			if (httpHeader.name().regionMatches(true, 0, COOKIE_HEADER, 0, COOKIE_HEADER.length())) {
-				String cookieHeader = httpHeader.value();
-				cookieHeader = cookieHeader.endsWith(";") ? cookieHeader : cookieHeader + ";";
-				int from = 0;
-				int index = cookieHeader.indexOf(";");
-				int cookieCount = StringUtils.countMatches(cookieHeader, ";");
-				for (int i = 0; i < cookieCount; i++) {
-					String cookie = cookieHeader.substring(from, index);
-					cookie = cookie.replace(";", "");
-					String[] cvp = cookie.split(Pattern.quote("="));
-					String name = cvp[0];
-					String value = cvp.length == 2 ? cvp[1] : "";
-
-					if (TokenChecker.isValidJWT(value)) {
-						return new KeyValuePair(name, value);
-					}
-					from = index;
-					index = cookieHeader.indexOf(";", index + 1);
-					if (index == -1) {
-						index = cookieHeader.length();
-					}
-				}
+				String cookieHeaderValue = httpHeader.value();
+		        if (cookieHeaderValue != null && !cookieHeaderValue.isEmpty()) {
+		            String[] pairs = cookieHeaderValue.split(";\\s*");
+		            for (String pair : pairs) {
+		                String[] parts = pair.split("=", 2);
+		                if (parts.length == 2) {
+		                    String name = parts[0].trim();
+		                    String value = parts[1].trim();
+							if (TokenChecker.isValidJWT(value)) {
+								return new KeyValuePair(name, value);
+							}
+		                }
+		            }
+		        }
 			}
 		}
 		return null;
 	}
 
+	
 	@Override
 	public CookieFlagWrapper getcFW() {
 		return this.cFW;
