@@ -29,6 +29,27 @@ class TestAuthorizationDetection {
 		assertThat(abh.positionFound()).isTrue();
 		assertThat(abh.getToken()).isEqualTo(HS256_TOKEN);
 	}
+	
+	@Test
+	void testAuthValidLowerCase() {
+		Map<String, Object> params = Map.of("ADD_HEADER", "authorization: bearer " + HS256_TOKEN);
+		HttpRequest httpRequest = httpRequest(StringSubstitutor.replace(REQUEST_TEMPLATE, params));
+		AuthorizationBearerHeader abh = new AuthorizationBearerHeader(httpRequest, true);
+
+		assertThat(abh.positionFound()).isTrue();
+		assertThat(abh.getToken()).isEqualTo(HS256_TOKEN);
+	}
+	
+	@Test
+	void testAuthValidNonAuthHeader() {
+		Map<String, Object> params = Map.of("ADD_HEADER", "X-AUTH: bearer " + HS256_TOKEN);
+		HttpRequest httpRequest = httpRequest(StringSubstitutor.replace(REQUEST_TEMPLATE, params));
+		AuthorizationBearerHeader abh = new AuthorizationBearerHeader(httpRequest, true);
+
+		assertThat(abh.positionFound()).isTrue();
+		assertThat(abh.getToken()).isEqualTo(HS256_TOKEN);
+	}
+
 
 	@Test
 	void testAuthInvalid() {

@@ -109,7 +109,7 @@ public class Config {
     try {
       String configRaw = new String(Files.readAllBytes(Paths.get(configPath)));
       JsonObject configJO = Json.parse(configRaw).asObject();
-
+     
       JsonArray tokenKeywordsJA = configJO.get("tokenKeywords").asArray();
       tokenKeywords = new ArrayList<>();
       for (JsonValue tokenKeyword : tokenKeywordsJA) {

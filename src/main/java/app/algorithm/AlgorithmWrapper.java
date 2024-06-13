@@ -70,7 +70,8 @@ public enum AlgorithmWrapper {
 
 			case NONE:
 			default:
-				throw new AlgorithmMismatchException("Unsupported algorithm '" + algorithmName + "'");
+				throwUnsupportedAlgo();
+				return null;
 		}
 	}
 
@@ -104,7 +105,8 @@ public enum AlgorithmWrapper {
 
 			case NONE:
 			default:
-				throw new AlgorithmMismatchException("Unsupported algorithm '" + algorithmName + "'");
+				throwUnsupportedAlgo();
+				return null;
 		}
 	}
 	public static Algorithm getVerifierAlgorithm(String algo, String key) {
@@ -178,4 +180,9 @@ public enum AlgorithmWrapper {
 			return "id";
 		}
 	}
+	
+	private void throwUnsupportedAlgo() {
+		throw new AlgorithmMismatchException("Unsupported algorithm '" + algorithmName + "'");
+	}
+
 }

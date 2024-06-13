@@ -57,7 +57,7 @@ public class CustomJWToken extends JWT {
             for (int result = gis.read(); result != -1; result = gis.read()) {
               buf.write((byte) result);
             }
-            payloadJson = buf.toString("UTF-8");
+            payloadJson = buf.toString(StandardCharsets.UTF_8);
           }
         } catch (IOException e) {
           Output.outputError("Could not gunzip JSON - " + e.getMessage());
@@ -108,7 +108,7 @@ public class CustomJWToken extends JWT {
         java.util.Date time = new java.util.Date(expUT * 1000);
         String expDate = time.toString();
         boolean expValid = expUT > curUT;
-        timeClaimList.add(new TimeClaim("[exp] Expired", expDate, expUT, expValid));
+        timeClaimList.add(new TimeClaim("[exp] Expired", expDate, expUT, expValid,true));
       } catch (Exception e) {
         Output.output("Could not parse claim (exp) - " + e.getMessage() + " - " + e.getCause());
       }
@@ -121,7 +121,7 @@ public class CustomJWToken extends JWT {
         java.util.Date time = new java.util.Date(nbfUT * 1000);
         String nbfDate = time.toString();
         boolean nbfValid = nbfUT <= curUT;
-        timeClaimList.add(new TimeClaim("[nbf] Not before", nbfDate, nbfUT, nbfValid));
+        timeClaimList.add(new TimeClaim("[nbf] Not before", nbfDate, nbfUT, nbfValid,true));
       } catch (Exception e) {
         Output.output("Could not parse claim (nbf) - " + e.getMessage() + " - " + e.getCause());
       }
@@ -133,7 +133,7 @@ public class CustomJWToken extends JWT {
         long iatUT = getDateJSONValue(iat);
         java.util.Date time = new java.util.Date(iatUT * 1000);
         String iatDate = time.toString();
-        timeClaimList.add(new TimeClaim("[iat] Issued at ", iatDate, iatUT));
+        timeClaimList.add(new TimeClaim("[iat] Issued at ", iatDate, iatUT,true,false));
       } catch (Exception e) {
         Output.output("Could not parse claim (iat) - " + e.getMessage() + " - " + e.getCause());
       }
