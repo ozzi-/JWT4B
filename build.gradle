@@ -6,7 +6,11 @@ group = 'org.example'
 version = '1.0-SNAPSHOT'
 
 repositories {
-    mavenCentral()
+        maven { url "https://artifact.swissre.com/artifactory/internal" }
+        maven { url "https://artifact.swissre.com/artifactory/external" }
+        maven { url "https://artifact.swissre.com/artifactory/thirdparty" }
+
+    //mavenCentral()
 }
 
 dependencies {
