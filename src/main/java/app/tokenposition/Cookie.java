@@ -1,11 +1,9 @@
 package app.tokenposition;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 import app.helpers.CookieFlagWrapper;
 import app.helpers.KeyValuePair;
-import app.helpers.Output;
 import app.helpers.TokenChecker;
 import burp.api.montoya.http.message.HttpHeader;
 import burp.api.montoya.http.message.HttpMessage;
@@ -45,14 +43,12 @@ public class Cookie extends ITokenPosition {
 
 	@Override
 	public HttpRequest getRequest() {
-		Output.output("GET COOKIE REQUEST - replacing");
 		HttpRequest httpRequest = (HttpRequest) httpMessage;
 		return httpRequest.withParameter(HttpParameter.cookieParameter(cookieHeader.getName(), token));
 	}
 
 	@Override
 	public HttpResponse getResponse() {
-		Output.output("GET COOKIE RESPONSE - replacing");
 		return HttpResponse.httpResponse(replaceTokenImpl(this.token, httpMessage.toString()));
 	}
 
