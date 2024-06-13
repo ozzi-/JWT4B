@@ -18,7 +18,6 @@ class TestInvalidJSONToken {
 		String getToken = cjt.getToken();
 		// we now assume that invalid tokens will be returned as received
 
-		System.out.println(getToken);
 		assertEquals(getToken, getToken); // TODO
 	}
 }

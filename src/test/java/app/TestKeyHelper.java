@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class TestKeyHelper {
 
-	@ValueSource(strings = {"RSA", "EC"})
+	@ValueSource(strings = { "RSA", "EC" })
 	@ParameterizedTest
 	void testGetKeyInstanceWithNullPublicKey(String algorithm) {
 		Key key = KeyHelper.getKeyInstance(null, algorithm, false);
@@ -18,7 +18,7 @@ class TestKeyHelper {
 		assertThat(key).isNull();
 	}
 
-	@ValueSource(strings = {"RSA", "EC"})
+	@ValueSource(strings = { "RSA", "EC" })
 	@ParameterizedTest
 	void testGetKeyInstanceWithNullPrivateKey(String algorithm) {
 		Key key = KeyHelper.getKeyInstance(null, algorithm, true);

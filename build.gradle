@@ -18,6 +18,7 @@ dependencies {
     compileOnly "net.portswigger.burp.extensions:montoya-api:${extender_version}"
 
     implementation (
+    		'org.projectlombok:lombok:1.18.32',
             'com.auth0:java-jwt:3.11.0',
             'commons-codec:commons-codec:1.15',
             'com.fifesoft:rsyntaxtextarea:3.1.1',

@@ -5,10 +5,11 @@ package app.helpers;
  */
 public class PublicKeyBroker {
 
-  PublicKeyBroker() {
-		
-  }
+	PublicKeyBroker() {
 
-  // This hack is used to get public Key from the Random Key generator to the controller. Just for logging
-  public static String publicKey;
+	}
+
+	// This hack is used to get public Key from the Random Key generator to the
+	// controller. Just for logging
+	public static String publicKey;
 }

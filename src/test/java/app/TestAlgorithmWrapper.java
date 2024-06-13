@@ -20,10 +20,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 class TestAlgorithmWrapper {
 
 	static Stream<Arguments> tokensAndValidKeys() {
-		return Stream.of(
-			arguments("HS256", HS256_TOKEN, "secret"),
-			arguments("ES256", ES256_TOKEN, ES256_TOKEN_PUB)
-		);
+		return Stream.of(arguments("HS256", HS256_TOKEN, "secret"), arguments("ES256", ES256_TOKEN, ES256_TOKEN_PUB));
 	}
 
 	@MethodSource("tokensAndValidKeys")
@@ -38,10 +35,7 @@ class TestAlgorithmWrapper {
 	}
 
 	static Stream<Arguments> tokensAndInvalidKeys() {
-		return Stream.of(
-				arguments("HS256", HS256_TOKEN, "invalid"),
-				arguments("ES256", ES256_TOKEN, ES256_TOKEN_PUB.replace("Z", "Y"))
-		);
+		return Stream.of(arguments("HS256", HS256_TOKEN, "invalid"), arguments("ES256", ES256_TOKEN, ES256_TOKEN_PUB.replace("Z", "Y")));
 	}
 
 	@MethodSource("tokensAndInvalidKeys")

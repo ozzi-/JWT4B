@@ -1,12 +1,12 @@
 package burp.api.montoya.core;
 
-import burp.api.montoya.http.message.HttpHeader;
-import burp.api.montoya.http.message.HttpMessage;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+
+import burp.api.montoya.http.message.HttpHeader;
+import burp.api.montoya.http.message.HttpMessage;
 
 public class FakeHttpMessage implements HttpMessage {
 
