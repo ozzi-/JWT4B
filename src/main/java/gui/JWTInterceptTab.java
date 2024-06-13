@@ -204,11 +204,12 @@ public class JWTInterceptTab extends JPanel {
 		jwtKeyArea.setRows(3);
 		jwtKeyArea.setLineWrap(false);
 		jwtKeyArea.setEnabled(false);
-		jwtKeyArea.setPreferredSize(new Dimension(400, 55));
+		jwtKeyArea.setPreferredSize(new Dimension(350, 55));
 
 		JScrollPane jp = new JScrollPane(jwtKeyArea);
 		c.gridy = 7;
 		c.weightx = 0.9;
+		jp.setMinimumSize(new Dimension(350, 55));
 		actionPanel.add(jp, c);
 
 		lblProblem = new JLabel("");
