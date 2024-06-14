@@ -26,12 +26,6 @@ A config file will be created under "%user.home%\.JWT4B\config.json" with the fo
   "resetEditor": true,
   "highlightColor": "blue",
   "interceptComment": "Contains a JWT",
-  "jwtKeywords": [
-    "Authorization: Bearer",
-    "Authorization: bearer",
-    "authorization: Bearer",
-    "authorization: bearer"
-  ],
   "tokenKeywords": [
     "id_token",
     "ID_TOKEN",
@@ -48,9 +42,9 @@ Note: If resetEditor is set to false, all options such as the re-singing and alg
 
 ## Building your own version (with Eclipse)
 1. Clone repository and create new Eclipse Java Project
-2. Rightclick -> Configure -> Convert to Maven Project (downloading all required libraries)
+2. Rightclick -> Configure -> Convert to Gradle Project (downloading all required libraries)
 3. Open Burp -> Extensions -> APIs -> Save interface files -> Copy all files to JWT4B\src\burp
-4. Export runnable fat JAR including libraries
+4. Gradle -> build jar
 5. Load the JAR in Burp through the Extender Tab -> Extensions -> Add (Good to know: CTRL+Click on a extension to reload it)
 
 # Installation from BApp Store

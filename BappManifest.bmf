@@ -6,7 +6,7 @@ ScreenVersion: 2.2
 SerialVersion: 21
 MinPlatformVersion: 0
 ProOnly: False
-Author: Oussama Zgheb & Mathias Vetsch
+Author: Oussama Zgheb
 ShortDescription: Enables Burp to decode and manipulate JSON web tokens.
 EntryPoint: target/JWT4B-jar-with-dependencies.jar
 BuildCommand: mvn package -DskipTests=true -Dmaven.javadoc.skip=true -B
