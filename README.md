@@ -26,12 +26,6 @@ A config file will be created under "%user.home%\.JWT4B\config.json" with the fo
   "resetEditor": true,
   "highlightColor": "blue",
   "interceptComment": "Contains a JWT",
-  "jwtKeywords": [
-    "Authorization: Bearer",
-    "Authorization: bearer",
-    "authorization: Bearer",
-    "authorization: bearer"
-  ],
   "tokenKeywords": [
     "id_token",
     "ID_TOKEN",
