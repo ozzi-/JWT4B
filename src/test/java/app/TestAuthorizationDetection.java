@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import burp.api.montoya.MontoyaExtension;
 import burp.api.montoya.http.message.requests.HttpRequest;
 
-import app.tokenposition.AuthorizationBearerHeader;
+import app.tokenposition.BearerHeader;
 
 import org.apache.commons.text.StringSubstitutor;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class TestAuthorizationDetection {
 	void testAuthValid() {
 		Map<String, Object> params = Map.of("ADD_HEADER", "Authorization: Bearer " + HS256_TOKEN);
 		HttpRequest httpRequest = httpRequest(StringSubstitutor.replace(REQUEST_TEMPLATE, params));
-		AuthorizationBearerHeader abh = new AuthorizationBearerHeader(httpRequest, true);
+		BearerHeader abh = new BearerHeader(httpRequest, true);
 
 		assertThat(abh.positionFound()).isTrue();
 		assertThat(abh.getToken()).isEqualTo(HS256_TOKEN);
@@ -34,7 +34,7 @@ class TestAuthorizationDetection {
 	void testAuthValidLowerCase() {
 		Map<String, Object> params = Map.of("ADD_HEADER", "authorization: bearer " + HS256_TOKEN);
 		HttpRequest httpRequest = httpRequest(StringSubstitutor.replace(REQUEST_TEMPLATE, params));
-		AuthorizationBearerHeader abh = new AuthorizationBearerHeader(httpRequest, true);
+		BearerHeader abh = new BearerHeader(httpRequest, true);
 
 		assertThat(abh.positionFound()).isTrue();
 		assertThat(abh.getToken()).isEqualTo(HS256_TOKEN);
@@ -44,7 +44,7 @@ class TestAuthorizationDetection {
 	void testAuthValidNonAuthHeader() {
 		Map<String, Object> params = Map.of("ADD_HEADER", "X-AUTH: bearer " + HS256_TOKEN);
 		HttpRequest httpRequest = httpRequest(StringSubstitutor.replace(REQUEST_TEMPLATE, params));
-		AuthorizationBearerHeader abh = new AuthorizationBearerHeader(httpRequest, true);
+		BearerHeader abh = new BearerHeader(httpRequest, true);
 
 		assertThat(abh.positionFound()).isTrue();
 		assertThat(abh.getToken()).isEqualTo(HS256_TOKEN);
@@ -55,7 +55,7 @@ class TestAuthorizationDetection {
 	void testAuthInvalid() {
 		Map<String, Object> params = Map.of("ADD_HEADER", "Authorization: Bearer " + INVALID_HEADER_TOKEN);
 		HttpRequest httpRequest = httpRequest(StringSubstitutor.replace(REQUEST_TEMPLATE, params));
-		AuthorizationBearerHeader abh = new AuthorizationBearerHeader(httpRequest, true);
+		BearerHeader abh = new BearerHeader(httpRequest, true);
 
 		assertThat(abh.positionFound()).isFalse();
 	}
@@ -64,7 +64,7 @@ class TestAuthorizationDetection {
 	void testAuthInvalid2() {
 		Map<String, Object> params = Map.of("ADD_HEADER", "Authorization: Bearer topsecret123456789!");
 		HttpRequest httpRequest = httpRequest(StringSubstitutor.replace(REQUEST_TEMPLATE, params));
-		AuthorizationBearerHeader abh = new AuthorizationBearerHeader(httpRequest, true);
+		BearerHeader abh = new BearerHeader(httpRequest, true);
 
 		assertThat(abh.positionFound()).isFalse();
 	}

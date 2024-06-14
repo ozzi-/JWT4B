@@ -31,7 +31,7 @@ public abstract class ITokenPosition {
 	private static CookieFlagWrapper cookieFlagWrap;
 
 	public static ITokenPosition findTokenPositionImplementation(HttpMessage httpMessage, boolean isRequest) {
-		List<Class<? extends ITokenPosition>> implementations = Arrays.asList(AuthorizationBearerHeader.class, PostBody.class, Body.class, Cookie.class);
+		List<Class<? extends ITokenPosition>> implementations = Arrays.asList(BearerHeader.class, PostBody.class, Body.class, Cookie.class);
 
 		for (Class<? extends ITokenPosition> implClass : implementations) {
 			try {

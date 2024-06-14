@@ -10,13 +10,13 @@ import burp.api.montoya.http.message.responses.HttpResponse;
 import model.CustomJWToken;
 
 // finds and replaces JWT's in authorization headers
-public class AuthorizationBearerHeader extends ITokenPosition {
+public class BearerHeader extends ITokenPosition {
 
 	private Optional<String> headerContainsJwt;
 	private String headerName;
 	private String headerKeyword;
 
-	public AuthorizationBearerHeader(HttpMessage httpMessage, boolean isRequest) {
+	public BearerHeader(HttpMessage httpMessage, boolean isRequest) {
 		super(httpMessage, isRequest);
 	}
 
