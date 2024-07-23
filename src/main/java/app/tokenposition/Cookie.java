@@ -74,7 +74,7 @@ public class Cookie extends ITokenPosition {
 				if (setCookieValue.length() > 1 && setCookieValue.contains("=")) { // sanity check
 					int nameMarkerPos = setCookieValue.indexOf("=");
 					String name = setCookieValue.substring(0,nameMarkerPos);
-					String value = setCookieValue.substring(nameMarkerPos);
+					String value = setCookieValue.substring(nameMarkerPos+1);
 					int flagMarker = value.indexOf(";");
 					if (flagMarker != -1) {
 						value = value.substring(0, flagMarker);
