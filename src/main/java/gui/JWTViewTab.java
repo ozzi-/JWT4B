@@ -57,25 +57,8 @@ public class JWTViewTab extends JPanel {
 		jwtKeyArea.getDocument().addDocumentListener(inputFieldListener);
 	}
 
-//	breaks UI, waiting for info
-//	@Override
-//	public void updateUI() {
-//		if (api != null) {
-//				super.updateUI();
-//				Font currentFont = getCurrentFont();
-//				keyLabel.setFont(currentFont);
-//				outputLabel.setFont(currentFont);
-//				lblCookieFlags.setFont(currentFont);
-//				String lbRegClaimText = lbRegisteredClaims.getText();
-//				lbRegisteredClaims.putClientProperty("html.disable", false);
-//				lbRegisteredClaims.setText("<html>reinitializing needed for proper html display</html>");
-//				lbRegisteredClaims.setText(lbRegClaimText);
-//				outputField.setFont(currentFont);
-//		}
-//	}
-
 	private void drawPanel() {
-		Font currentFont = getCurrentFont();
+		Font currentFont = api.userInterface().currentDisplayFont();
 
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 10, 447, 0, 0 };
@@ -125,6 +108,7 @@ public class JWTViewTab extends JPanel {
 		UIManager.put("RSyntaxTextAreaUI.inputMap", null);
 		UIManager.put("RTextAreaUI.actionMap", null);
 		UIManager.put("RTextAreaUI.inputMap", null);
+		outputField.setFont(currentFont);
 
 		outputField.setWhitespaceVisible(true);
 		SyntaxScheme scheme = outputField.getSyntaxScheme();
@@ -256,7 +240,4 @@ public class JWTViewTab extends JPanel {
 		});
 	}
 
-	private Font getCurrentFont() {
-		return api.userInterface().currentDisplayFont();
-	}
 }

@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -41,6 +42,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import app.controllers.ReadableTokenFormat;
 import app.helpers.Config;
 import app.helpers.Output;
+import burp.api.montoya.MontoyaApi;
 import model.JWTInterceptModel;
 import model.Strings;
 
@@ -71,9 +73,11 @@ public class JWTInterceptTab extends JPanel {
 	private JCheckBox chkbxCVEAttack;
 	private JButton btnCopyPubPrivKeyCVEAttack;
 	private ButtonGroup btgrp;
+	private MontoyaApi api;
 
-	public JWTInterceptTab(JWTInterceptModel jwtIM, RSyntaxTextAreaFactory rSyntaxTextAreaFactory) {
+	public JWTInterceptTab(JWTInterceptModel jwtIM, RSyntaxTextAreaFactory rSyntaxTextAreaFactory, MontoyaApi api) {
 		this.jwtIM = jwtIM;
+		this.api = api;
 		this.rSyntaxTextAreaFactory = rSyntaxTextAreaFactory;
 		drawGui();
 	}
@@ -107,7 +111,9 @@ public class JWTInterceptTab extends JPanel {
 
 		fixSyntaxArea();
 
+		Font currentFont = api.userInterface().currentDisplayFont();
 		jwtHeaderArea = rSyntaxTextAreaFactory.rSyntaxTextArea(3, 20);
+		jwtHeaderArea.setFont(currentFont);
 		jwtHeaderArea.setMarginLinePosition(70);
 		jwtHeaderArea.setWhitespaceVisible(true);
 		SyntaxScheme scheme = jwtHeaderArea.getSyntaxScheme();
@@ -125,6 +131,7 @@ public class JWTInterceptTab extends JPanel {
 		headerPane.setLineNumbersEnabled(false);
 
 		jwtPayloadArea = rSyntaxTextAreaFactory.rSyntaxTextArea(3, 20);
+		jwtPayloadArea.setFont(currentFont);
 		jwtPayloadArea.setMarginLinePosition(70);
 		jwtPayloadArea.setWhitespaceVisible(true);
 		scheme = jwtPayloadArea.getSyntaxScheme();
@@ -142,6 +149,7 @@ public class JWTInterceptTab extends JPanel {
 		payloadPane.setLineNumbersEnabled(false);
 
 		jwtSignatureArea = rSyntaxTextAreaFactory.rSyntaxTextArea(3, 10);
+		jwtSignatureArea.setFont(currentFont);
 		jwtSignatureArea.setMarginLinePosition(70);
 		jwtSignatureArea.setLineWrap(true);
 		jwtSignatureArea.setWhitespaceVisible(true);

@@ -28,7 +28,7 @@ public class JWT4BEditorProvider implements HttpRequestEditorProvider, HttpRespo
 
 		if (creationContext.editorMode() == EditorMode.DEFAULT) {
 			JWTInterceptModel jwtSTM = new JWTInterceptModel();
-			JWTInterceptTab jwtST = new JWTInterceptTab(jwtSTM, rSyntaxTextAreaFactory);
+			JWTInterceptTab jwtST = new JWTInterceptTab(jwtSTM, rSyntaxTextAreaFactory,api);
 			jwtTC = new JWTRequestInterceptTabController(jwtSTM, jwtST);
 		} else {
 			// Read Only
@@ -46,7 +46,7 @@ public class JWT4BEditorProvider implements HttpRequestEditorProvider, HttpRespo
 
 		if (creationContext.editorMode() == EditorMode.DEFAULT) {
 			JWTInterceptModel jwtSTM = new JWTInterceptModel();
-			JWTInterceptTab jwtST = new JWTInterceptTab(jwtSTM, rSyntaxTextAreaFactory);
+			JWTInterceptTab jwtST = new JWTInterceptTab(jwtSTM, rSyntaxTextAreaFactory,api);
 			jwtTC = new JWTResponseInterceptTabController(jwtSTM, jwtST);
 		} else {
 			// Read Only

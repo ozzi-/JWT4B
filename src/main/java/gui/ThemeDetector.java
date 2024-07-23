@@ -5,6 +5,8 @@ import model.Settings;
 
 import static burp.api.montoya.ui.Theme.LIGHT;
 
+import java.awt.Font;
+
 public class ThemeDetector {
 
 	private final UserInterface userInterface;
@@ -18,4 +20,5 @@ public class ThemeDetector {
 		Settings.isLight = isLight; // TODO not so nice, since settings are static
 		return isLight;
 	}
+
 }

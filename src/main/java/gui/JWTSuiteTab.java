@@ -94,7 +94,7 @@ public class JWTSuiteTab extends JPanel {
 	public void updateUI() {
 		if(api!=null) {
 			SwingUtilities.invokeLater(() -> {
-				Font currentFont = getCurrentFont();
+				Font currentFont = api.userInterface().currentDisplayFont();
 				lblPasteJwtToken.setFont(currentFont);			
 				lblEnterSecret.setFont(currentFont);
 				lblDecodedJwt.setFont(currentFont);
@@ -108,8 +108,7 @@ public class JWTSuiteTab extends JPanel {
 	}
 	
 	private void drawGui() {
-		
-		Font currentFont = getCurrentFont();
+		Font currentFont = api.userInterface().currentDisplayFont();
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 10, 0, 0, 0 };
@@ -282,9 +281,6 @@ public class JWTSuiteTab extends JPanel {
 		add(lbRegisteredClaims, gbc_lbRegisteredClaims);
 	}
 
-	private Font getCurrentFont() {
-		return api.userInterface().currentDisplayFont();
-	}
 
 	public String getJWTInput() {
 		return jwtInputField.getText();
