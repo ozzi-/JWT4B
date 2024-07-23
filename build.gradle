@@ -7,15 +7,11 @@ group = 'org.example'
 version = '1.0-SNAPSHOT'
 
 repositories {
-        maven { url "https://artifact.swissre.com/artifactory/internal" }
-        maven { url "https://artifact.swissre.com/artifactory/external" }
-        maven { url "https://artifact.swissre.com/artifactory/thirdparty" }
-
-    //mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-    compileOnly "net.portswigger.burp.extensions:montoya-api:${extender_version}"
+	compileOnly "net.portswigger.burp.extensions:montoya-api:${extender_version}"
 	compileOnly 'org.projectlombok:lombok:1.18.32'
 	annotationProcessor 'org.projectlombok:lombok:1.18.32'
 	

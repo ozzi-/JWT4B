@@ -1,11 +1,9 @@
 package gui;
 
-import static java.awt.Color.WHITE;
-
-import javax.swing.JLabel;
-
 import burp.api.montoya.ui.UserInterface;
 import model.Settings;
+
+import static burp.api.montoya.ui.Theme.LIGHT;
 
 public class ThemeDetector {
 
@@ -16,9 +14,7 @@ public class ThemeDetector {
 	}
 
 	boolean isLightTheme() {
-		JLabel label = new JLabel();
-		userInterface.applyThemeToComponent(label);
-		boolean isLight = label.getBackground().equals(WHITE);
+		boolean isLight = userInterface.currentTheme() == LIGHT;
 		Settings.isLight = isLight; // TODO not so nice, since settings are static
 		return isLight;
 	}

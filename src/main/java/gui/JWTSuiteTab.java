@@ -22,13 +22,14 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.Style;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.Token;
-import org.fife.ui.rsyntaxtextarea.Style;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.helpers.Config;
+import burp.api.montoya.MontoyaApi;
 import model.JWTSuiteTabModel;
 import model.Strings;
 
@@ -37,7 +38,6 @@ public class JWTSuiteTab extends JPanel {
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	public static final String TAHOMA = "Tahoma";
 	private JTextArea jwtInputField;
 	private RSyntaxTextArea jwtOuputField;
 	private JButton jwtSignatureButton;
@@ -46,9 +46,14 @@ public class JWTSuiteTab extends JPanel {
 	private final RSyntaxTextAreaFactory rSyntaxTextAreaFactory;
 	private JLabel lbRegisteredClaims;
 	private JLabel lblExtendedVerificationInfo;
+	private MontoyaApi api;
+	private JLabel lblPasteJwtToken;
+	private JLabel lblEnterSecret;
+	private JLabel lblDecodedJwt;
 
-	public JWTSuiteTab(JWTSuiteTabModel jwtSTM, RSyntaxTextAreaFactory rSyntaxTextAreaFactory) {
+	public JWTSuiteTab(JWTSuiteTabModel jwtSTM, RSyntaxTextAreaFactory rSyntaxTextAreaFactory, MontoyaApi api) {
 		this.rSyntaxTextAreaFactory = rSyntaxTextAreaFactory;
+		this.api = api;
 		drawGui();
 		this.jwtSTM = jwtSTM;
 	}
@@ -85,7 +90,27 @@ public class JWTSuiteTab extends JPanel {
 		jwtKeyArea.getDocument().addDocumentListener(jwtKeyListener);
 	}
 
+	@Override
+	public void updateUI() {
+		if(api!=null) {
+			SwingUtilities.invokeLater(() -> {
+				Font currentFont = getCurrentFont();
+				lblPasteJwtToken.setFont(currentFont);			
+				lblEnterSecret.setFont(currentFont);
+				lblDecodedJwt.setFont(currentFont);
+				String lbRegClaimText = lbRegisteredClaims.getText();
+				lbRegisteredClaims.putClientProperty("html.disable", false);
+				lbRegisteredClaims.setText("<html>reinitializing needed for proper html display</html>");
+				lbRegisteredClaims.setText(lbRegClaimText);
+				jwtOuputField.setFont(currentFont);
+			});
+		}
+	}
+	
 	private void drawGui() {
+		
+		Font currentFont = getCurrentFont();
+		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 10, 0, 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -93,8 +118,8 @@ public class JWTSuiteTab extends JPanel {
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
-		JLabel lblPasteJwtToken = new JLabel(Strings.ENTER_JWT);
-		lblPasteJwtToken.setFont(new Font(TAHOMA, Font.BOLD, 12));
+		lblPasteJwtToken = new JLabel(Strings.ENTER_JWT);
+		lblPasteJwtToken.setFont(currentFont);
 		GridBagConstraints gbc_lblPasteJwtToken = new GridBagConstraints();
 		gbc_lblPasteJwtToken.anchor = GridBagConstraints.SOUTHWEST;
 		gbc_lblPasteJwtToken.insets = new Insets(0, 0, 5, 5);
@@ -162,8 +187,8 @@ public class JWTSuiteTab extends JPanel {
 		gbc_jwtInputField.gridy = 2;
 		add(jwtInputField, gbc_jwtInputField);
 
-		JLabel lblEnterSecret = new JLabel(Strings.ENTER_SECRET_KEY);
-		lblEnterSecret.setFont(new Font(TAHOMA, Font.BOLD, 12));
+		lblEnterSecret = new JLabel(Strings.ENTER_SECRET_KEY);
+		lblEnterSecret.setFont(currentFont);
 		GridBagConstraints gbc_lblEnterSecret = new GridBagConstraints();
 		gbc_lblEnterSecret.anchor = GridBagConstraints.WEST;
 		gbc_lblEnterSecret.insets = new Insets(0, 0, 5, 5);
@@ -236,8 +261,8 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lblExtendedVerificationInfo.gridy = 7;
 		add(lblExtendedVerificationInfo, gbc_lblExtendedVerificationInfo);
 
-		JLabel lblDecodedJwt = new JLabel(Strings.DECODED_JWT);
-		lblDecodedJwt.setFont(new Font(TAHOMA, Font.BOLD, 12));
+		lblDecodedJwt = new JLabel(Strings.DECODED_JWT);
+		lblDecodedJwt.setFont(currentFont);
 		GridBagConstraints gbc_lblDecodedJwt = new GridBagConstraints();
 		gbc_lblDecodedJwt.anchor = GridBagConstraints.WEST;
 		gbc_lblDecodedJwt.insets = new Insets(0, 0, 5, 5);
@@ -245,6 +270,7 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lblDecodedJwt.gridy = 8;
 		add(lblDecodedJwt, gbc_lblDecodedJwt);
 
+		
 		lbRegisteredClaims = new JLabel();
 		lbRegisteredClaims.putClientProperty("html.disable", false);
 		lbRegisteredClaims.setBackground(new Color(238, 238, 238));
@@ -254,6 +280,10 @@ public class JWTSuiteTab extends JPanel {
 		gbc_lbRegisteredClaims.gridx = 1;
 		gbc_lbRegisteredClaims.gridy = 11;
 		add(lbRegisteredClaims, gbc_lbRegisteredClaims);
+	}
+
+	private Font getCurrentFont() {
+		return api.userInterface().currentDisplayFont();
 	}
 
 	public String getJWTInput() {

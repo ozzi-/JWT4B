@@ -28,6 +28,7 @@ import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import app.algorithm.AlgorithmType;
+import burp.api.montoya.MontoyaApi;
 import model.JWTTabModel;
 import model.Strings;
 
@@ -42,9 +43,12 @@ public class JWTViewTab extends JPanel {
 	private final RSyntaxTextAreaFactory rSyntaxTextAreaFactory;
 	private JLabel lblCookieFlags;
 	private JLabel lbRegisteredClaims;
+	private JLabel outputLabel;
+	private MontoyaApi api;
 
-	public JWTViewTab(JWTTabModel jwtTM, RSyntaxTextAreaFactory rSyntaxTextAreaFactory) {
+	public JWTViewTab(JWTTabModel jwtTM, RSyntaxTextAreaFactory rSyntaxTextAreaFactory, MontoyaApi api) {
 		this.rSyntaxTextAreaFactory = rSyntaxTextAreaFactory;
+		this.api = api;
 		drawPanel();
 		this.jwtTM = jwtTM;
 	}
@@ -53,7 +57,26 @@ public class JWTViewTab extends JPanel {
 		jwtKeyArea.getDocument().addDocumentListener(inputFieldListener);
 	}
 
+//	breaks UI, waiting for info
+//	@Override
+//	public void updateUI() {
+//		if (api != null) {
+//				super.updateUI();
+//				Font currentFont = getCurrentFont();
+//				keyLabel.setFont(currentFont);
+//				outputLabel.setFont(currentFont);
+//				lblCookieFlags.setFont(currentFont);
+//				String lbRegClaimText = lbRegisteredClaims.getText();
+//				lbRegisteredClaims.putClientProperty("html.disable", false);
+//				lbRegisteredClaims.setText("<html>reinitializing needed for proper html display</html>");
+//				lbRegisteredClaims.setText(lbRegClaimText);
+//				outputField.setFont(currentFont);
+//		}
+//	}
+
 	private void drawPanel() {
+		Font currentFont = getCurrentFont();
+
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 10, 447, 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -62,7 +85,7 @@ public class JWTViewTab extends JPanel {
 		setLayout(gridBagLayout);
 
 		keyLabel = new JLabel(" ");
-		keyLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+		keyLabel.setFont(currentFont);
 		GridBagConstraints gbc_inputLabel1 = new GridBagConstraints();
 		gbc_inputLabel1.fill = GridBagConstraints.VERTICAL;
 		gbc_inputLabel1.insets = new Insets(0, 0, 5, 5);
@@ -115,8 +138,8 @@ public class JWTViewTab extends JPanel {
 		outputField.setEditable(false);
 		outputField.setPopupMenu(new JPopupMenu()); // no context menu on right-click
 
-		JLabel outputLabel = new JLabel("JWT");
-		outputLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+		outputLabel = new JLabel("JWT");
+		outputLabel.setFont(currentFont);
 		GridBagConstraints gbc_outputLabel = new GridBagConstraints();
 		gbc_outputLabel.anchor = GridBagConstraints.WEST;
 		gbc_outputLabel.insets = new Insets(0, 0, 5, 5);
@@ -136,7 +159,7 @@ public class JWTViewTab extends JPanel {
 
 		lblCookieFlags = new JLabel(" ");
 		lblCookieFlags.putClientProperty("html.disable", null);
-		lblCookieFlags.setFont(new Font("Tahoma", Font.BOLD, 12));
+		lblCookieFlags.setFont(currentFont);
 		GridBagConstraints gbc_lblCookieFlags = new GridBagConstraints();
 		gbc_lblCookieFlags.anchor = GridBagConstraints.SOUTHWEST;
 		gbc_lblCookieFlags.insets = new Insets(0, 0, 5, 5);
@@ -233,4 +256,7 @@ public class JWTViewTab extends JPanel {
 		});
 	}
 
+	private Font getCurrentFont() {
+		return api.userInterface().currentDisplayFont();
+	}
 }
