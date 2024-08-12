@@ -12,7 +12,7 @@ import model.CustomJWToken;
 // finds and replaces JWT's in authorization headers
 public class AuthorizationBearerHeader extends ITokenPosition {
 
-	private Optional<String> headerContainsJwt;
+	private Optional<String> containedJwt;
 	private String headerName;
 	private String headerKeyword;
 
@@ -23,15 +23,10 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 	public boolean positionFound() {
 		try {
 			for (HttpHeader header : httpMessage.headers()) {
-				headerContainsJwt = containsJwt(header.value(), List.of("Bearer","bearer","BEARER"));
-				if (headerContainsJwt.isPresent()) {
-					headerName = header.name();
-					headerKeyword = headerContainsJwt.get();
-					String jwtValue = header.value().substring(headerContainsJwt.get().length() + 1);
-					if (CustomJWToken.isValidJWT(jwtValue)) {
-						this.token = jwtValue;
-						return true;
-					}
+				containedJwt = containsJwt(header.value(), List.of("Bearer","bearer","BEARER"));
+				if (containedJwt.isPresent()) {
+					this.token = containedJwt.get();
+					return true;
 				}
 			}
 		} catch (Exception ignored) {
@@ -40,13 +35,19 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 		return false;
 	}
 
-	private Optional<String> containsJwt(String header, List<String> jwtKeywords) {
+	private Optional<String> containsJwt(String headerValue, List<String> jwtKeywords) {
 		for (String keyword : jwtKeywords) {
-			if (header.startsWith(keyword)) {
-				String jwt = header.replace(keyword, "").trim();
-				if (CustomJWToken.isValidJWT(jwt)) {
-					return Optional.of(keyword);
+			if (headerValue.startsWith(keyword)) {
+				String potentialJwt = headerValue.replace(keyword, "").trim();
+				if (CustomJWToken.isValidJWT(potentialJwt)) {
+					return Optional.of(potentialJwt);
 				}
+			}
+		}
+		if(headerValue.toLowerCase().startsWith("ey") || containsExactlyTwoDots(headerValue)) {
+			String potentialJwt = headerValue.trim();
+			if (CustomJWToken.isValidJWT(potentialJwt)) {
+				return Optional.of(potentialJwt);
 			}
 		}
 		return Optional.empty();
@@ -55,7 +56,7 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 	@Override
 	public HttpRequest getRequest() {
 		HttpRequest httpRequest = HttpRequest.httpRequest(httpMessage.toString());
-		if (headerContainsJwt.isEmpty()) {
+		if (containedJwt.isEmpty()) {
 			return httpRequest;
 		}
 		return httpRequest.withUpdatedHeader(headerName, headerKeyword + " " + token);
@@ -64,9 +65,21 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 	@Override
 	public HttpResponse getResponse() {
 		HttpResponse httpResponse = HttpResponse.httpResponse(httpMessage.toString());
-		if (headerContainsJwt.isEmpty()) {
+		if (containedJwt.isEmpty()) {
 			return httpResponse;
 		}
 		return httpResponse.withUpdatedHeader(headerName, headerKeyword + " " + token);
+	}
+	
+	private boolean containsExactlyTwoDots(String str) {
+	    int firstDotIndex = str.indexOf('.');
+	    if (firstDotIndex == -1) {
+	        return false;
+	    }
+	    int secondDotIndex = str.indexOf('.', firstDotIndex + 1);
+	    if (secondDotIndex == -1) {
+	        return false;
+	    }
+	    return str.indexOf('.', secondDotIndex + 1) == -1;
 	}
 }
