@@ -128,7 +128,7 @@ public class JWTSuiteTab extends JPanel {
 
 		JButton creditButton = new JButton("About");
 		creditButton.addActionListener(arg0 -> {
-			JLabelLink jLabelLink = new JLabelLink(Strings.CREDIT_TITLE, 530, 565);
+			JLabelLink jLabelLink = new JLabelLink(Strings.CREDIT_TITLE, 530, 625);
 
 			jLabelLink.addText("<h2>About JWT4B</h2>JSON Web Tokens (also known as JWT4B) is developed by Oussama Zgheb<br>");
 			jLabelLink.addURL("<a href=\"https://zgheb.com/\">Mantainer Website</a>", "zgheb.com");
