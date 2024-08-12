@@ -25,6 +25,7 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 			for (HttpHeader header : httpMessage.headers()) {
 				containedJwt = containsJwt(header.value(), List.of("Bearer","bearer","BEARER"));
 				if (containedJwt.isPresent()) {
+					headerName = header.name();
 					this.token = containedJwt.get();
 					return true;
 				}
@@ -40,6 +41,7 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 			if (headerValue.startsWith(keyword)) {
 				String potentialJwt = headerValue.replace(keyword, "").trim();
 				if (CustomJWToken.isValidJWT(potentialJwt)) {
+					headerKeyword = keyword;
 					return Optional.of(potentialJwt);
 				}
 			}
@@ -47,6 +49,7 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 		if(headerValue.toLowerCase().startsWith("ey") || containsExactlyTwoDots(headerValue)) {
 			String potentialJwt = headerValue.trim();
 			if (CustomJWToken.isValidJWT(potentialJwt)) {
+				headerKeyword = "";
 				return Optional.of(potentialJwt);
 			}
 		}
@@ -59,7 +62,7 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 		if (containedJwt.isEmpty()) {
 			return httpRequest;
 		}
-		return httpRequest.withUpdatedHeader(headerName, headerKeyword + " " + token);
+		return httpRequest.withUpdatedHeader(headerName, headerKeyword + needsSpace(headerKeyword) + token);
 	}
 
 	@Override
@@ -68,8 +71,14 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 		if (containedJwt.isEmpty()) {
 			return httpResponse;
 		}
-		return httpResponse.withUpdatedHeader(headerName, headerKeyword + " " + token);
+		return httpResponse.withUpdatedHeader(headerName, headerKeyword + needsSpace(headerKeyword) + token);
 	}
+	
+
+	private String needsSpace(String headerKeyword) {
+		return headerKeyword.equals("")?"":" ";
+	}
+
 	
 	private boolean containsExactlyTwoDots(String str) {
 	    int firstDotIndex = str.indexOf('.');
