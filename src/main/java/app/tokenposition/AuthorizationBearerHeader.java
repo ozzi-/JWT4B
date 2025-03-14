@@ -38,12 +38,15 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 
 	private Optional<String> containsJwt(String headerValue, List<String> jwtKeywords) {
 		for (String keyword : jwtKeywords) {
-			if (headerValue.startsWith(keyword)) {
-				String potentialJwt = headerValue.replace(keyword, "").trim();
-				if (CustomJWToken.isValidJWT(potentialJwt)) {
-					headerKeyword = keyword;
-					return Optional.of(potentialJwt);
+			if (!headerValue.startsWith(keyword)) {
+				if(headerValue.contains(" ") && headerValue.contains("ey")) {
+					keyword = headerValue.split(" ")[0];
 				}
+			}
+			String potentialJwt = headerValue.replace(keyword, "").trim();
+			if (CustomJWToken.isValidJWT(potentialJwt)) {
+				headerKeyword = keyword;
+				return Optional.of(potentialJwt);
 			}
 		}
 		if(headerValue.toLowerCase().startsWith("ey") || containsExactlyTwoDots(headerValue)) {
