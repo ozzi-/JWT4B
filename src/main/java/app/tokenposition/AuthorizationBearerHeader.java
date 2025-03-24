@@ -36,14 +36,16 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 		return false;
 	}
 
-	private Optional<String> containsJwt(String headerValue, List<String> jwtKeywords) {
+	public Optional<String> containsJwt(String headerValue, List<String> jwtKeywords) {
 		for (String keyword : jwtKeywords) {
-			if (headerValue.startsWith(keyword)) {
-				String potentialJwt = headerValue.replace(keyword, "").trim();
-				if (CustomJWToken.isValidJWT(potentialJwt)) {
-					headerKeyword = keyword;
-					return Optional.of(potentialJwt);
-				}
+			boolean usesCustomAuthType = !headerValue.startsWith(keyword) && (headerValue.contains(" ") && headerValue.contains("ey"));
+			if (usesCustomAuthType) {
+					keyword = headerValue.split(" ")[0];
+			}
+			String potentialJwt = headerValue.replace(keyword, "").trim();
+			if (CustomJWToken.isValidJWT(potentialJwt)) {
+				headerKeyword = keyword;
+				return Optional.of(potentialJwt);
 			}
 		}
 		if(headerValue.toLowerCase().startsWith("ey") || containsExactlyTwoDots(headerValue)) {
