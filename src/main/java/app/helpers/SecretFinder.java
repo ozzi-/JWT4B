@@ -1,23 +1,30 @@
 package app.helpers;
 
-
+import java.net.URI;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import app.algorithm.AlgorithmWrapper;
 import app.tokenposition.ITokenPosition;
 import burp.api.montoya.http.handler.HttpRequestToBeSent;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import lombok.Getter;
 import model.CustomJWToken;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.stream.Collectors;
 
 
 public class SecretFinder {
@@ -29,7 +36,7 @@ public class SecretFinder {
     private final String algorithm;
 
     @Getter
-    private final ArrayList<String> secrets;
+    private final List<String> secrets;
     private final HttpRequestToBeSent httpRequestToBeSent;
 
 
@@ -43,7 +50,7 @@ public class SecretFinder {
 
     }
 
-    public ArrayList<String> collectSecrets(){
+    public List<String> collectSecrets(){
         Set<String> secretSet = new LinkedHashSet<>();
 
         String host = getHost();
@@ -55,7 +62,7 @@ public class SecretFinder {
         String domain = getDomain(host);
         secretSet.add(domain);
 
-        ArrayList<String> values = getAllValues(this.jwtPayload);
+        List<String> values = getAllValues(this.jwtPayload);
         secretSet.addAll(values);
 
         ArrayList<String> upperSecrets = secretSet.stream()
@@ -90,16 +97,17 @@ public class SecretFinder {
         String urlString = this.httpRequestToBeSent.url();
         String host = "";
         try {
-            URL url = new URL(urlString);
+            URI uri = new URI(urlString);
+            URL url = uri.toURL();
             host = url.getHost();
         } catch (Exception e) {
-            Output.outputError("new URL error: " + e.getMessage());
+            Output.outputError("URL Parse Error: " + e.getMessage());
         }
 
         return host;
     }
 
-    public static ArrayList<String> getAllValues(String jsonString) {
+    public static List<String> getAllValues(String jsonString) {
         ArrayList<String> values = new ArrayList<>();
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -142,9 +150,4 @@ public class SecretFinder {
 
         return false;
     }
-
-
-
-
-
 }
