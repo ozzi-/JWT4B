@@ -19,6 +19,8 @@ public class Config {
   public static List<String> tokenKeywords = Arrays.asList("id_token", "ID_TOKEN", "access_token", "token");
   public static String highlightColor = "Blue";
   public static String interceptComment = "Contains a JWT";
+  public static String SecretFoundHighlightColor = "Red";
+  public static String SecretFoundInterceptComment = "JWT secret found: ";
   public static boolean resetEditor = true;
   public static boolean o365Support = true;
   public static String configName = "config.json";
