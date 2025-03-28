@@ -10,16 +10,16 @@ class TestJWTValidCheck {
 
 	@Test
 	void testValid() {
-		assertThat(CustomJWToken.isValidJWT(HS256_TOKEN)).isTrue();
+		assertThat(CustomJWToken.isValidJWT(HS256_TOKEN,true)).isTrue();
 	}
 
 	@Test
 	void testInvalidHeader() {
-		assertThat(CustomJWToken.isValidJWT(INVALID_HEADER_TOKEN)).isFalse();
+		assertThat(CustomJWToken.isValidJWT(INVALID_HEADER_TOKEN,true)).isFalse();
 	}
 
 	@Test
 	void testInvalidHeader2() {
-		assertThat(CustomJWToken.isValidJWT(INVALID_HEADER_TOKEN_2)).isFalse();
+		assertThat(CustomJWToken.isValidJWT(INVALID_HEADER_TOKEN_2,true)).isFalse();
 	}
 }

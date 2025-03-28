@@ -360,7 +360,7 @@ public class JWTInterceptTabController implements ExtensionProvidedHttpRequestEd
 		try {
 			CustomJWToken tokenFromView = ReadableTokenFormat.getTokenFromView(jwtST);
 			if (tokenFromView.getHeaderJsonNode().get("alg") != null) {
-				valid = CustomJWToken.isValidJWT(tokenFromView.getToken());
+				valid = CustomJWToken.isValidJWT(tokenFromView.getToken(),true);
 			}
 		} catch (Exception ignored) {
 			// ignored

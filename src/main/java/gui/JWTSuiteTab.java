@@ -128,7 +128,7 @@ public class JWTSuiteTab extends JPanel {
 
 		JButton creditButton = new JButton("About");
 		creditButton.addActionListener(arg0 -> {
-			JLabelLink jLabelLink = new JLabelLink(Strings.CREDIT_TITLE, 530, 625);
+			JLabelLink jLabelLink = new JLabelLink(Strings.CREDIT_TITLE, 530, 640);
 
 			jLabelLink.addText("<h2>About JWT4B</h2>JSON Web Tokens (also known as JWT4B) is developed by Oussama Zgheb<br>");
 			jLabelLink.addURL("<a href=\"https://zgheb.com/\">Mantainer Website</a>", "zgheb.com");
@@ -140,12 +140,15 @@ public class JWTSuiteTab extends JPanel {
 			jLabelLink.addURL("· <a href=\"https://github.com/auth0/java-jwt/blob/master/LICENSE\">Auth0 -java-jwt</a>", "github.com/auth0/java-jwt");
 			jLabelLink.addURL("· <a href=\"https://www.apache.org/licenses/\">Apache Commons Lang</a>", "apache.org");
 			jLabelLink.addText("<br>");
-			jLabelLink.addText("Thanks to:<br>· Compass Security AG for providing development time for the initial version<br>");
+			jLabelLink.addText("Thanks to:<br>· Compass for providing development time for the initial version<br>");
 			jLabelLink.addURL("&nbsp;&nbsp;<a href=\"https://www.compass-security.com\">compass-security.com</a><br>", "compass-security.com");
+			jLabelLink.addText("· Swiss Re for providing time for me to maintain JWT4B<br>");
+			jLabelLink.addURL("&nbsp;&nbsp;<a href=\"https://www.swissre.com/careers.html\">swissre.com</a><br>", "swissre.com");
 			jLabelLink.addText("· Brainloop for providing broader token support");
 			jLabelLink.addURL("&nbsp;&nbsp;<a href=\"https://www.brainloop.com\">brainloop.com</a><br>", "brainloop.com");
 			jLabelLink.addText("· Cyrill for the help porting JWT4B to the Montaya API");
-			jLabelLink.addURL("&nbsp;&nbsp;<a href=\"https://github.com/bcyrill\">github.com/bcyrill</a><br><br>", "github.com/bcyrill");
+			jLabelLink.addURL("&nbsp;&nbsp;<a href=\"https://github.com/bcyrill\">github.com/bcyrill</a><br>", "github.com/bcyrill");
+			jLabelLink.addText("· All the other great contributors on GitHub");
 			jLabelLink.addLogoImage();
 		});
 		GridBagConstraints gbc_creditButton = new GridBagConstraints();

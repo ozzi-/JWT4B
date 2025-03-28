@@ -17,12 +17,24 @@ public class Output {
 		System.out.println("init");
 		logging = _logging;
 	}
+	
+	public static void output(String string, boolean log) {
+		if(log) {
+			output(string);
+		}
+	}
 
 	public static void output(String string) {
 		if (logging != null) {
 			logging.logToOutput(formatString(string));
 		} else {
 			System.out.println(string);
+		}
+	}
+	
+	public static void outputError(String string, boolean log) {
+		if(log) {
+			outputError(string);
 		}
 	}
 

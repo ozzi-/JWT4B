@@ -43,14 +43,14 @@ public class AuthorizationBearerHeader extends ITokenPosition {
 					keyword = headerValue.split(" ")[0];
 			}
 			String potentialJwt = headerValue.replace(keyword, "").trim();
-			if (CustomJWToken.isValidJWT(potentialJwt)) {
+			if (CustomJWToken.isValidJWT(potentialJwt,false)) {
 				headerKeyword = keyword;
 				return Optional.of(potentialJwt);
 			}
 		}
 		if(headerValue.toLowerCase().startsWith("ey") || containsExactlyTwoDots(headerValue)) {
 			String potentialJwt = headerValue.trim();
-			if (CustomJWToken.isValidJWT(potentialJwt)) {
+			if (CustomJWToken.isValidJWT(potentialJwt,false)) {
 				headerKeyword = "";
 				return Optional.of(potentialJwt);
 			}
