@@ -23,7 +23,6 @@ public class HighLightController implements HttpHandler {
 			if (containsJWT) {
 				SecretFinder sfh = new SecretFinder(tokenPosition, requestToBeSent);
 				
-				// // THIS TODO
 				this.validSecret = sfh.collectSecrets().stream()
 						.filter(sfh::checkSecret)
 						.findFirst()

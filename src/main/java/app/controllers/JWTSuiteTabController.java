@@ -59,7 +59,7 @@ public class JWTSuiteTabController {
 		jwts = jwts.replaceAll("\\s", "");
 		jwtSTM.setJwtInput(jwts);
 		try {
-			CustomJWToken jwt = new CustomJWToken(jwts);
+			CustomJWToken jwt = new CustomJWToken(jwts,true);
 			List<TimeClaim> tcl = jwt.getTimeClaimList();
 			jwtSTM.setTimeClaims(tcl);
 			jwtSTM.setJwtJSON(ReadableTokenFormat.getReadableFormat(jwt));
@@ -81,7 +81,7 @@ public class JWTSuiteTabController {
 		jwtSTM.setJwtKey(key);
 		jwtSTM.setVerificationResult("");
 		try {
-			CustomJWToken token = new CustomJWToken(jwtSTM.getJwtInput());
+			CustomJWToken token = new CustomJWToken(jwtSTM.getJwtInput(),true);
 			String curAlgo = token.getAlgorithm();
 			JWTVerifier verifier = JWT.require(AlgorithmWrapper.getVerifierAlgorithm(curAlgo, key)).build();
 			DecodedJWT test = verifier.verify(token.getToken());
