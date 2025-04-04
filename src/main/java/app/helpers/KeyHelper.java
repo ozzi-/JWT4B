@@ -112,7 +112,7 @@ public class KeyHelper {
 				EncodedKeySpec keySpec = new X509EncodedKeySpec(keyByteArray);
 				publicKey = kf.generatePublic(keySpec);
 			} catch (Exception e) {
-				Output.outputError(e.getMessage());
+				Output.outputError(e.getMessage()); // THIS TODO
 			}
 		}
 		return publicKey;

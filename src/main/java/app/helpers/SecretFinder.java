@@ -1,7 +1,11 @@
 package app.helpers;
 
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
+
 import java.net.URI;
 import java.net.URL;
+import java.security.KeyFactory;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -44,7 +48,6 @@ public class SecretFinder {
 		this.algorithm = cjwt.getAlgorithm();
 		this.httpRequestToBeSent = requestToBeSent;
 		this.secrets = collectSecrets();
-
 	}
 
 	public List<String> collectSecrets() {
@@ -128,11 +131,29 @@ public class SecretFinder {
 
 	public Boolean checkSecret(String secret) {
 		try {
+			if(!checkIfIsX509Key(secret,this.algorithm)) {
+				return false;
+			}
 			JWTVerifier verifier = JWT.require(AlgorithmWrapper.getVerifierAlgorithm(this.algorithm, secret)).build();
 			verifier.verify(this.jwt);
 			return true;
 		} catch (Exception ignored) {
 			return false;
 		}
+	}
+	
+	
+	private static boolean checkIfIsX509Key(String key, String algorithm) {
+		if (isNotEmpty(key)) {
+			byte[] keyByteArray = java.util.Base64.getDecoder().decode(key);
+			try {
+				KeyFactory.getInstance(algorithm);
+				new X509EncodedKeySpec(keyByteArray);
+				return true;
+			} catch (Exception e) {
+				return false;
+			}
+		}
+		return false;
 	}
 }
