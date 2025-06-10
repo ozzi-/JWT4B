@@ -88,8 +88,8 @@ public class CustomJWToken extends JWT {
 		try {
 			JsonNode jsonNode = objectMapper.readValue(json, JsonNode.class);
 			return jsonNode.toString().equals(json);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+		} catch (JsonProcessingException ignored) {
+			// ignored
 		}
 		return false;
 	}
