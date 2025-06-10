@@ -56,7 +56,7 @@ public class Strings {
 				contentBuilder.append(sCurrentLine).append(System.lineSeparator());
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			return "Failed to load file ("+e.getMessage()+")";
 		}
 		String result = contentBuilder.toString();
 		return result.substring(0, result.length() - System.lineSeparator().length());

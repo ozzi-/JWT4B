@@ -232,8 +232,6 @@ public class JWTInterceptTabController implements ExtensionProvidedHttpRequestEd
 				String file = dialog.getDirectory() + dialog.getFile();
 				Output.output(file + " chosen.");
 				String chosen = Strings.filePathToString(file);
-				// TODO error will be redirected to Output.outputError, but make sure this case
-				// will be shown in UI too
 				jwtIM.setJWTSignatureKey(chosen);
 				jwtST.setKeyFieldValue(chosen);
 				jwtST.updateSetView(false);

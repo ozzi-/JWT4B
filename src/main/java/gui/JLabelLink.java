@@ -72,7 +72,7 @@ public class JLabelLink extends JFrame {
 			label.setIcon(icon);
 			pan.add(label);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Output.output("Could not load logo img - " + e.getMessage());
 		}
 	}
 
