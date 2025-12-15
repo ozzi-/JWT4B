@@ -13,9 +13,8 @@ public class Output {
 
 	private static Logging logging;
 
-	public static void initialise(Logging _logging) {
-		System.out.println("init");
-		logging = _logging;
+	public static void initialise(Logging logging) {
+		Output.logging = logging;
 	}
 	
 	public static void output(String string, boolean log) {
